@@ -11,14 +11,16 @@ use App\Models\UserModel;
  *
  * @author Ashok
  */
-class Editor extends BaseController {
+class Editor extends BaseController
+{
 
     public $editorModel;
     public $session;
     public $email;
     public $user;
 
-    public function __construct() {
+    public function __construct()
+    {
         helper(['url', 'form']);
         $this->editorModel = new EditorModel();
         $this->user = new UserModel();
@@ -26,24 +28,25 @@ class Editor extends BaseController {
         $this->email = \Config\Services::email();
     }
 
-    public function index() {
+    public function index()
+    {
         $data = [];
         $underReviw = [];
         $editorialDecision = [];
         $revData = [];
         $status = 0;
         $submissions = $this->editorModel->allActive($status);
-        
-        if($submissions){
-        foreach ($submissions as $key => $submission) {
-            $underReviw[] = $this->editorModel->reviewStatus($submission->submissionID);
-            $editorialDecision[] = $this->editorModel->getEditoriealStatus($submission->submissionID);
+
+        if ($submissions) {
+            foreach ($submissions as $key => $submission) {
+                $underReviw[] = $this->editorModel->reviewStatus($submission->submissionID);
+                $editorialDecision[] = $this->editorModel->getEditoriealStatus($submission->submissionID);
+            }
         }
-        }
-//        print '<pre>';
-//        print_r($underReviw);
-//        print_r($editorialDecision);
-//        exit;
+        //        print '<pre>';
+        //        print_r($underReviw);
+        //        print_r($editorialDecision);
+        //        exit;
 
         $data['submissions'] = $submissions;
         $data['editorialDecision'] = $editorialDecision;
@@ -52,8 +55,9 @@ class Editor extends BaseController {
         return view('editor/index', $data);
     }
 
-    public function byAuthor() {
-       
+    public function byAuthor()
+    {
+
         $data = [];
         $uri = $this->request->getUri();
         $submissionID = $uri->getSegment(3);
@@ -74,13 +78,15 @@ class Editor extends BaseController {
         return view('editor/byauthor', $data);
     }
 
-    public function downloads() {
+    public function downloads()
+    {
         $uri = $this->request->getUri();
         $name = WRITEPATH . 'uploads/' . $uri->getSegment(3);
         return $this->response->download($name, null);
     }
 
-    public function notify() {
+    public function notify()
+    {
         if ($this->request->getMethod() == 'post') {
             $uri = $this->request->getUri();
             $autorId = $uri->getSegment(3);
@@ -117,7 +123,8 @@ class Editor extends BaseController {
         return view('editor/notify');
     }
 
-    function getRevisionFile() {
+    function getRevisionFile()
+    {
         $uri = $this->request->getUri();
         $content_id = $uri->getSegment(3);
         $resp = $this->editorModel->getRevisionFile($content_id);
@@ -128,18 +135,20 @@ class Editor extends BaseController {
         echo $resp->content . '#' . $resp->submission_date;
     }
 
-    public function logout() {
+    public function logout()
+    {
         session()->destroy();
         return redirect()->to('/login');
     }
 
-    public function toReview() {
+    public function toReview()
+    {
         $reviewer = $this->editorModel->getReviewer();
         $subid = $this->request->getVar('submissionid');
         $title = $this->request->getVar('title');
         $editorContent = $this->editorModel->getEditorialUploadsBySubId($subid);
         $subContents = $this->editorModel->getBySubmissionId('submission_content', $subid);
-        
+
         $peer = [];
         foreach ($reviewer as $review) {
             $peer[$review->userID] = $review->username;
@@ -154,7 +163,8 @@ class Editor extends BaseController {
         return view('editor/toreview', $data);
     }
 
-    public function sendtopeer() {
+    public function sendtopeer()
+    {
         if ($this->request->getMethod() == 'post') {
             if (!$this->editorModel->checkPeer($this->request->getVar('peer'), $this->request->getVar('submissionid'))) {
                 $data_reviews['submissionID'] = $this->request->getVar('submissionid');
@@ -212,16 +222,17 @@ class Editor extends BaseController {
         }
     }
 
-    public function editorUpload() {
-//        if($this->request->getMethod()=='post'){
-//            $sid = $this->request->getVar('submission_id');
-//            $editorData = $this->editorModel->getEditorialDecisionBySubId($sid);
-//            if($editorData){
-//                $err =['error' =>'You alredy have file, first delete and try to upload new file.'];
-//            
-//                return json_encode($err);
-//            }
-//        }
+    public function editorUpload()
+    {
+        //        if($this->request->getMethod()=='post'){
+        //            $sid = $this->request->getVar('submission_id');
+        //            $editorData = $this->editorModel->getEditorialDecisionBySubId($sid);
+        //            if($editorData){
+        //                $err =['error' =>'You alredy have file, first delete and try to upload new file.'];
+        //            
+        //                return json_encode($err);
+        //            }
+        //        }
         if ($this->request->getMethod() == 'post' && ($_FILES['revisionFile']['size'] > 0)) {
 
 
@@ -254,7 +265,7 @@ class Editor extends BaseController {
                         $decision_id = $this->editorModel->insertEditorialUploads($editor_uploads);
                         $editorial = $this->editorModel->getEditorialUploads($decision_id);
 
-//print_r($editorial);
+                        //print_r($editorial);
                         return json_encode($editorial);
                     } else {
                         echo $file->getErrorString() . " " . $file->getError();
@@ -267,7 +278,8 @@ class Editor extends BaseController {
         }
     }
 
-    public function deleteEditorUpload() {
+    public function deleteEditorUpload()
+    {
         $uri = $this->request->getUri();
         $subId = $uri->getSegment(3);
         $id = $uri->getSegment(4);
@@ -275,7 +287,8 @@ class Editor extends BaseController {
         return redirect()->to('editor/byauthor/' . $subId);
     }
 
-    public function peerDiscussion() {
+    public function peerDiscussion()
+    {
 
         if ($this->request->getMethod() == 'post') {
             $rules = [
@@ -315,7 +328,8 @@ class Editor extends BaseController {
                 $mailMsg = $this->request->getVar('message');
                 $body = $mailMsg . $mailContent;
 
-                $this->email->setTo($editor->email);
+                //$this->email->setTo($editor->email);
+                $this->email->setTo($editorData->email); // may be true
                 $this->email->setFrom(session()->get('logged_user'), 'Info');
                 $this->email->setSubject($this->request->getVar('title'));
                 $this->email->setMessage($body);
@@ -328,8 +342,9 @@ class Editor extends BaseController {
             }
         }
     }
-    
-        public function copyeditorDiscussion() {
+
+    public function copyeditorDiscussion()
+    {
 
         if ($this->request->getMethod() == 'post') {
             $rules = [
@@ -383,12 +398,13 @@ class Editor extends BaseController {
             }
         }
     }
-    
-     public function tocpeditor() {
+
+    public function tocpeditor()
+    {
         $cpEditor = $this->editorModel->getCopyeditor();
         $submissionid = $this->request->getVar('submissionid');
         $title = $this->request->getVar('title');
-        
+
         $copyeditor = [];
         foreach ($cpEditor as $ceditor) {
             $copyeditor[$ceditor->userID] = $ceditor->username;
@@ -399,7 +415,8 @@ class Editor extends BaseController {
         $data['title'] = $title;
         return view('editor/tocpeditor', $data);
     }
-    public function sendCopyEditor(){
+    public function sendCopyEditor()
+    {
         if ($this->request->getMethod() == 'post' && ($_FILES['cpFile']['size'] > 0)) {
 
             $editorieal_decision = [];
@@ -425,9 +442,9 @@ class Editor extends BaseController {
                         $editorieal_decision['submissionID'] = $this->request->getVar('submission_id');
                         $editorieal_decision['upload_content'] = $newName;
                         $editorieal_decision['status'] = 1;
-                        
+
                         $decision_id = $this->editorModel->sendToCopyEditor($editorieal_decision);
-                        
+
                         $editor = $this->user->getUser($this->request->getVar('copyeditor'));
                         $notification['sender'] = session()->get('username');
                         $notification['sender_email'] = session()->get('logged_user');
@@ -445,7 +462,7 @@ class Editor extends BaseController {
                         if ($decision_id) {
                             //send email
                             $mailContent = '';
-                            $editorData = $this->editorModel->getEditorialDecision($decision_id); 
+                            $editorData = $this->editorModel->getEditorialDecision($decision_id);
                             $mailContent .= '<p><a href=' . base_url() . 'editor/downloads/' . $editorData->upload_content . '>' . $editorData->upload_content . '</a></p>';
                             $mailMsg = $this->request->getVar('message');
                             $body = $mailMsg . $mailContent;
@@ -455,7 +472,7 @@ class Editor extends BaseController {
                             $this->email->setMessage($body);
                             if ($this->email->send()) {
                                 $this->session->setTempdata("success", "Notification sent successfully to the Copy Editor.", 3);
-                                return redirect()->to('editor/byauthor/'.$this->request->getVar('submission_id'));
+                                return redirect()->to('editor/byauthor/' . $this->request->getVar('submission_id'));
                             } else {
                                 $this->session->setTempdata("error", "Something happen wrong!", 3);
                             }
@@ -468,6 +485,5 @@ class Editor extends BaseController {
                 $data['validation'] = $this->validator;
             }
         }
-        
     }
 }

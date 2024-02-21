@@ -6,110 +6,146 @@
  */
 
 namespace App\Controllers;
+
 use CodeIgniter\Controller;
 use App\Models\RegistrationModel;
+
 /**
  * Description of Register
  *
  * @author Ashok
  */
-class Registration extends Controller {
+class Registration extends Controller
+{
     public $registrationModel;
     public $session;
     public $email;
-    public function __construct() {
+    public function __construct()
+    {
         helper('form');
         $this->registrationModel = new RegistrationModel();
         $this->session = \Config\Services::session();
         $this->email = \Config\Services::email();
     }
-    public function index(){
-        $data=[];
-        $data['validation']= null;
-        
-        if($this->request->getMethod()=='post'){
-         
-            $rules =[
+    public function index()
+    {
+        $data = [];
+        $data['validation'] = null;
+
+        if ($this->request->getMethod() == 'post') {
+
+            $rules = [
                 'username' => 'required',
                 'email' => 'required|valid_email|is_unique[users.email]',
-                'password' =>'required',
+                'password' => 'required',
                 'cpass' => 'required|matches[password]',
-                'phone'=>'required|exact_length[10]|numeric',
+                'phone' => 'required|exact_length[10]|numeric',
                 'country' => 'required',
             ];
-            if($this->validate($rules))
-            {
-                $uniid = md5(str_shuffle('abcdefghijklmnopqrstuvwxyz'.time()));
-            
+            if ($this->validate($rules)) {
+                $uniid = md5(str_shuffle('abcdefghijklmnopqrstuvwxyz' . time()));
+
                 $userdata = [
-                    'username' => $this->request->getVar('username',FILTER_SANITIZE_STRING),
+                    'title' => $this->request->getVar('title', FILTER_SANITIZE_STRING),
+                    'username' => $this->request->getVar('username', FILTER_SANITIZE_STRING),
+                    'middle_name' => $this->request->getVar('middle_name', FILTER_SANITIZE_STRING),
+                    'last_name' => $this->request->getVar('last_name', FILTER_SANITIZE_STRING),
                     'email' => $this->request->getVar('email'),
                     'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
                     'uniid' => $uniid,
                     'activation_date' => date("Y-m-d h:i:s"),
-                    'country'=> $this->request->getVar('country', FILTER_SANITIZE_STRING),
+                    'country' => $this->request->getVar('country', FILTER_SANITIZE_STRING),
+                    'data_consent' => $this->request->getVar('data_consent', FILTER_SANITIZE_STRING),
+                    'notification' => $this->request->getVar('notification', FILTER_SANITIZE_STRING),
+                    'contact' => $this->request->getVar('contact', FILTER_SANITIZE_STRING),
+                    'interests' => $this->request->getVar('interests', FILTER_SANITIZE_STRING),
                     'roleID' => $this->request->getVar('roleID'),
                 ];
-                //print('<pre>');
-                //print_r($userdata);
-               if($this->registrationModel->createUsers($userdata)){
-                  //end email. 
-                   $to = $this->request->getVar('email');
-                   $subject = 'Account Activation link -';
-                   $message = 'Hi '. $this->request->getVar('username',FILTER_SANITIZE_STRING).",<br><br>Thanks Your account created successfully. Please click the below link to activate your Account<br><br>"
-                           ."<a href='".base_url()."activate/".$uniid."'target='_blank'>Activate Now</a><br>";
-                   $this->email->setTo($to);
-                   $this->email->setFrom('ashok@whizti.com','Info');
-                   $this->email->setSubject($subject);
-                   $this->email->setMessage($message);
-                   if($this->email->send()){
-                      $this->session->setTempdata("success","Account created successfully, Please activate your account.",3);
-                   return redirect()->to(current_url()); 
-                   }else{
-//                       $errorData = $this->email->printDebugger(['headers']);
-//                       print($errorData);
-                       $this->session->setTempdata('error','Account created successfully. Sorry! unable to send activation link. Contact Admin');
-                       return redirect()->to(current_url());
-                   }
-                   
-               }else{
-                   //send error.
-                   $this->session->setTempdata("error", "Sorry! Unable to crate an account, try again",3);
-                   return redirect()->to(current_url());
-               }
-            }else{
+                if ($this->registrationModel->createUsers($userdata)) {
+                    //send activation email. 
+                    $mailData = [];
+                    $mailData['title'] = $this->request->getVar('title');
+                    $mailData['name'] = $this->request->getVar('username');
+                    $mailData['last_name'] = $this->request->getVar('last_name');
+                    $mailData['link'] = base_url() . 'activate/' . $uniid;
+                    $to = $this->request->getVar('email');
+                    $subject = 'Verify Your Scripture Account';
+                    $this->email->setMailType('html');
+                    $this->email->setTo($to);
+                    //$this->email->setFrom('support@orthotvprime.com', 'Info');
+                    $this->email->setSubject($subject);
+                    $body =  view('activation_email', $mailData);
+                    $this->email->setMessage($body);
+                    $this->email->send();
+                    if ($this->email->send()) {
+                        $this->session->setTempdata("success", "Account created successfully, Please activate your account.", 3);
+                        return redirect()->to('registration/thankyou'); //redirect()->to(current_url());
+                    } else {
+                        //                       $errorData = $this->email->printDebugger(['headers']);
+                        //                       print($errorData);
+                        $this->session->setTempdata('error', 'Account created successfully. Sorry! unable to send activation link. Contact Admin');
+                        return redirect()->to(current_url());
+                    }
+                } else {
+                    //send error.
+                    $this->session->setTempdata("error", "Sorry! Unable to crate an account, try again", 3);
+                    return redirect()->to(current_url());
+                }
+            } else {
                 $data['validation'] = $this->validator;
             }
         }
-       return view("registration", $data);
+        return view("registration", $data);
         //echo "Registration";
     }
-    public function activate($uniid=null){
-        $data=[];
-        
-       
-        if(isset($uniid)){
-           // return view('activation', $data);
+    public function activate($uniid = null)
+    {
+        $data = [];
+
+
+        if (isset($uniid)) {
+            // return view('activation', $data);
             $userData = $this->registrationModel->verifyUniid($uniid);
-            if($userData){
-                if($userData->status =='inactive'){
+            if ($userData) {
+                if ($userData->status == 'inactive') {
                     $status = $this->registrationModel->updateStatus($uniid);
-                    if($status == true){
-                        $data['success']= 'Account activated successfully';
+                    if ($status == true) {
+                        $data['success'] = 'Your account has been successfully verified. Now you can submit your articles.';
+                        //send credential email.
+                        $cred = [];
+                        $cred['email'] = $userData->email;
+                        $cred['link'] = base_url();
+                        $to = $userData->email;
+                        $subject = 'Your login activated';
+                        $config['mailtype'] = 'html';
+                        $this->email->setTo($to);
+                        //$this->email->setFrom('support@orthotvprime.com', 'Info');
+                        $this->email->setSubject($subject);
+                        $credBody = view('user_cred_email', $cred);
+                        $this->email->setMessage($credBody);
+                        $this->email->send();
+
+                        if (!$this->email->send()) {
+                            $data['error'] = 'Sorry!, we are unable to find your account';
+                        }
                     }
-                }else{
+                } else {
                     $data['success'] = 'Your account is alredy activated';
                 }
-                
-            }else{
+            } else {
                 $data['error'] = 'Sorry!, we are unable to find your account';
             }
         }
-        
-//        else{
-//         $data['error'] = 'Sorry!, unable to process your request';
-//        }
-        
+
+        //        else{
+        //         $data['error'] = 'Sorry!, unable to process your request';
+        //        }
+
         return view('activation', $data);
+    }
+
+    public function thankyou()
+    {
+        return view('thankyou');
     }
 }

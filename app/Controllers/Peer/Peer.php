@@ -13,7 +13,8 @@ use App\Models\SubmissionModel;
  *
  * @author Ashok
  */
-class Peer extends BaseController {
+class Peer extends BaseController
+{
 
     public $peerModel;
     public $editorModel;
@@ -22,7 +23,8 @@ class Peer extends BaseController {
     public $session;
     public $email;
 
-    public function __construct() {
+    public function __construct()
+    {
         helper(['url', 'form']);
         $this->peerModel = new PeerModel();
         $this->userModel = new UserModel();
@@ -32,32 +34,67 @@ class Peer extends BaseController {
         $this->email = \Config\Services::email();
     }
 
-    public function index() {
+    public function index()
+    {
         $data = [];
         $uid = session()->get('userID');
         $reviews = $this->peerModel->getReviewRequest($uid);
-        if($reviews)
-        $editorPeerContent = $this->peerModel->getEditoriealUploads($reviews[0]->submissionID);
+        /*
+        if ($reviews)
+
+            $editorPeerContent = $this->peerModel->getEditoriealUploads($reviews[0]->submissionID);
         $noteCount = $this->peerModel->noteCount($uid);
+
         $data['reviews'] = $reviews;
-        $data['noteCount'] = ($noteCount) ? $noteCount: 0;
-        if(isset($editorPeerContent))
-        $data['editorPeerContent'] = $editorPeerContent;
-        
+        $data['noteCount'] = ($noteCount) ? $noteCount : 0;
+        if (isset($editorPeerContent))
+            $data['editorPeerContent'] = $editorPeerContent;
+        */
+        if ($reviews) {
+            foreach ($reviews as $review) {
+                $editorPeerContent[] = $this->peerModel->getEditoriealUploads($review->submissionID);
+                $noteCount[] = $this->peerModel->noteCount($uid, $review->submissionID);
+            }
+        }
+
+        $data['reviews'] = $reviews;
+        if (isset($noteCount)) {
+            $data['noteCount'] = $noteCount;
+        }
+        if (isset($editorPeerContent))
+            $data['editorPeerContent'] = array_filter($editorPeerContent);
         return view('peer/index', $data);
     }
 
-    public function discussion() {
+    public function accept()
+    {
+        if ($this->request->getMethod() == 'post') {
+            $status = $this->request->getVar('consent');
+            $rev_id = $this->request->getVar('rev_id');
+            $this->peerModel->updateReview($rev_id, $status);
+            return redirect()->to('peer');
+        } else {
+            $uri = $this->request->getUri();
+            $submission_id = $uri->getSegment(3);
+            $revId = $uri->getSegment(4);
+            $data['submission_id'] = $submission_id;
+            $data['rev_id'] = $revId;
+            return view('peer/accept', $data);
+        }
+    }
+
+    public function discussion()
+    {
         $uri = $this->request->getUri();
         $submission_id = $uri->getSegment(3);
         $editor_id = $uri->getSegment(4);
         $data = [];
         $data['submission_id'] = $submission_id;
         $data['editor_id'] = $editor_id;
-        
- //$data['discussions'] = $this->editorModel->getDiscussion(session()->get('userID'), $submission_id);
- $data['peerDiscussions'] = $this->editorModel->getPeerDiscussion(session()->get('userID'), $submission_id);      
- if ($this->request->getMethod() == 'post' && ($_FILES['revisionFile']['size'] > 0)) {
+
+        //$data['discussions'] = $this->editorModel->getDiscussion(session()->get('userID'), $submission_id);
+        $data['peerDiscussions'] = $this->editorModel->getPeerDiscussion(session()->get('userID'), $submission_id);
+        if ($this->request->getMethod() == 'post' && ($_FILES['revisionFile']['size'] > 0)) {
 
             $submission_content = [];
             $notification = [];
@@ -70,7 +107,7 @@ class Peer extends BaseController {
                     $newName = $file->getRandomName() . '_' . $file->getClientName();
                     if ($file->move(WRITEPATH . 'uploads/', $newName)) {
                         echo '<p>Uploaded successfully</p>';
-                       /*
+                        /*
                         $submission_content['editor_id'] = $this->request->getVar('editor_id');
                         $submission_content['peer_id'] = session()->get('userID');
                         $submission_content['submission_id'] = $this->request->getVar('submission_id');
@@ -90,15 +127,15 @@ table='editor_peer_content'
                         $notification['message'] = $this->request->getVar('message');
 
                         $note = $this->peerModel->uploadPeerResponseToEditor($notification);
+                        print_r($note);
 
                         if ($note) {
                             //send email
-//print $note;
+                            //print $note;
 
                             $mailContent = '';
                             $editorData = $this->peerModel->getEditorPeerContent($note); //$revision_id or $note
-
-                            $mailContent .= '<p><a href=' . base_url() . 'editor/downloads/' . $editorData->content . '>' . $editorData->content . '</a></p>';
+                            $mailContent .= '<p><a href=' . base_url() . 'editor/downloads/' . $editorData[0]->content . '>' . $editorData[0]->content . '</a></p>';
 
                             $mailMsg = $this->request->getVar('message');
                             $body = $mailMsg . $mailContent;
@@ -124,22 +161,20 @@ table='editor_peer_content'
         }
         return view('peer/discussion', $data);
     }
-    public function updateReview(){
+    public function updateReview()
+    {
         $uid = session()->get('userID');
-        
+
         $revId = $this->request->getVar('reviewID');
         $status = $this->request->getVar('status');
         $q = $this->peerModel->updateReview($revId, $status);
-      
-        if($q){
-            $success = array('success'=>'Review status has been updated successfully!');
+
+        if ($q) {
+            $success = array('success' => 'Review status has been updated successfully!');
             return json_encode($success);
-            
-        }else{
-             $error = array('error'=>'Somethng went wrong!');
-           return json_encode($error);
-             
+        } else {
+            $error = array('error' => 'Somethng went wrong!');
+            return json_encode($error);
         }
-        
     }
 }

@@ -6,6 +6,7 @@
  */
 
 namespace App\Models;
+
 use CodeIgniter\Model;
 
 /**
@@ -13,17 +14,18 @@ use CodeIgniter\Model;
  *
  * @author Ashok
  */
-class LoginModel extends Model {
-    public function verifyEmail($email) {
+class LoginModel extends Model
+{
+    public function verifyEmail($email)
+    {
         $q = $this->db->table('users');
-        $q->select("userID,username, uniid,roleID, status, email, password");
+        $q->select("userID, title, username, middle_name, last_name, uniid,roleID, status, email, password");
         $q->where('email', $email);
         $result = $q->get();
-        if(count($result->getResultArray()) ==1){
+        if (count($result->getResultArray()) == 1) {
             return $result->getRowArray();
-        }else{
+        } else {
             return false;
         }
-        
     }
 }
