@@ -174,16 +174,18 @@ Dashboard
 
                             <?php if ($submission_content) : ?>
                                 <?php foreach ($submission_content as $content) : ?>
-                                    <option value="<?= $content->id; ?>"><?= $content->article_component; ?> - (<?= $content->content; ?>) </option>
+                                    <option value="<?= $content->id; ?>">Revision of <?= $content->article_component; ?> - (<?= $content->content; ?>) </option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
 
                         </select>
 
                         <div class="fw-bold">Article Component *</div>
+
                         <select class="form-select" name="article_type" id="article_type">
-                            <option>Select article component</option>
+                            <option value="" disabled selected>Select article component</option>
                             <option value="Article Text">Article Text</option>
+                            <option value="Title Page">Title Page</option>
                             <option value="Reasearch Instrument">Research Instrument</option>
                             <option value="Research Materials">Research Materials</option>
                             <option value="Research Results">Research Results</option>

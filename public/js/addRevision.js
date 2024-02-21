@@ -17,7 +17,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   replyForm.addEventListener("submit", function (e) {
     e.preventDefault(); // Prevent the form from submitting traditionally
+
+    const article = document.getElementById("article_type").value;
+    if (!article) {
+      alert("Please select article component");
+      return false;
+    }
     const formData = new FormData(replyForm);
+    console.log(formData);
     formData.append("submissionID", subId);
     // body: new FormData(replyForm),
     // Perform AJAX request
@@ -34,7 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(function (data) {
         // Handle the response from the server
         //window.location.reload();
-        console.log(data, subId);
 
         const msg = document.getElementById("msg");
         msg.innerHTML = `<div class="alert alert-success alert-dismissible  role="alert">
@@ -42,6 +48,9 @@ document.addEventListener("DOMContentLoaded", function () {
              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                       </div>`;
         // You can update the modal or perform any other actions here
+        setTimeout(function () {
+          location.reload();
+        }, 1000);
       })
       .catch(function (error) {
         console.error("Error:", error);

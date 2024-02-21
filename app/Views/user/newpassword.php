@@ -56,6 +56,11 @@
                                 <input type="hidden" name="uniid" value="<?= $uniid; ?>">
                             </div>
                         </div>
+                        <div class="form-group mb-3 row">
+                            <div class="col-12">
+                                <input name="confirmPassword" class="form-control" placeholder="Confirm new password" type="password" required>
+                            </div>
+                        </div>
 
 
 

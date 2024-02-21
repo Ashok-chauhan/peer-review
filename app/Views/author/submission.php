@@ -406,7 +406,7 @@ $attributes = ['id' => 'submission', 'name' => 'submission', 'onsubmit' => 'retu
             <!-- First modal dialog -->
             <div class="modal fade" id="contributorModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true" aria-labelledby="contributorModalLabel" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
-                    <form id="contributorForm" action="contributor" method="POST" enctype="multipart/form-data">
+                    <form id="contributorForm" name="contributorForm" action="contributor" method="POST" enctype="multipart/form-data">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title"><b>Add contributor</b></h5>
@@ -810,13 +810,14 @@ $attributes = ['id' => 'submission', 'name' => 'submission', 'onsubmit' => 'retu
 
                             <div class="modal-footer">
                                 <!-- Toogle to second dialog -->
-                                <button type="submit" class="btn btn-primary waves-effect waves-light me-1">
-                                    Save
+                                <button data-bs-dismiss="modal" class="btn btn-danger waves-effect" style="float: right;">
+                                    Cancel
                                 </button>
                                 &nbsp; &nbsp; &nbsp;
                                 <!-- type="reset" -->
-                                <button data-bs-dismiss="modal" class="btn btn-danger waves-effect" style="float: right;">
-                                    Cancel
+
+                                <button type="submit" class="btn btn-primary waves-effect waves-light me-1">
+                                    Save
                                 </button>
 
                             </div>
@@ -844,13 +845,13 @@ $attributes = ['id' => 'submission', 'name' => 'submission', 'onsubmit' => 'retu
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="authorForm" action="authorTempUpload" method="POST" enctype="multipart/form-data">
+                <form id="authorForm" name="authorForm" action="authorTempUpload" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="c-country" class="col-form-label">Article component </label>
 
                         <select class="form-select" name="article_type" id="article_type">
-                            <option>Select article component</option>
 
+                            <option value="" disabled selected>Select article component</option>
                             <option value="Reasearch Instrument">Research Instrument</option>
                             <option value="Research Materials">Research Materials</option>
                             <option value="Research Results">Research Results</option>

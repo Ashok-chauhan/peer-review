@@ -46,7 +46,8 @@ class User extends BaseController
             $body =  view('user/resetpass_email', $data);
             $this->email->setMessage($body);
             $sent = $this->email->send();
-            if ($this->email->send()) {
+            $sent = $this->email->send();
+            if ($sent) {
                 //die('get here' . $sent);
                 return redirect()->to('user/resetfeedback');
             } else {
@@ -64,21 +65,30 @@ class User extends BaseController
     public function resetlink()
     {
         $data = [];
+
         if ($this->request->getMethod() == 'post') {
-            $password = password_hash($this->request->getVar('password'), PASSWORD_DEFAULT);
+            $password = $this->request->getVar('password');
+            $confirmPassword = $this->request->getVar('confirmPassword');
+            if ($password !== $confirmPassword) {
+                $this->session->setTempdata('error', 'Password did not match', 3);
+                return redirect()->to(current_url());
+            }
+            $hashPassword = password_hash($password, PASSWORD_DEFAULT);
             $uniid = $this->request->getVar('uniid');
-            if ($this->userModel->updatePassword($uniid, $password)) {
+            if ($this->userModel->updatePassword($uniid, $hashPassword)) {
                 $this->session->setTempdata('success', 'Password reset successfully!', 3);
                 return redirect()->to('/');
             } else {
                 $this->session->setTempdata('error', 'Something went worng try again to reset password', 3);
             }
         }
+
         $uri = $this->request->getUri();
         $uniid = $uri->getSegment(3);
         $time = $uri->getSegment(4);
         $currentTime = time();
         $data['uniid'] = $uniid;
+
         if ($time > $currentTime) {
             return view('user/newpassword', $data);
         } else {

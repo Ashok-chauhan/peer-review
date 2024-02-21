@@ -195,6 +195,7 @@ class Submission extends BaseController
 
     public function revision()
     {
+
         if ($this->request->getMethod() == 'post' && ($_FILES['revisionFile']['size'] > 0)) {
             $revFileId = '';
             if ($this->request->getVar('updateFileId')) {
@@ -213,12 +214,14 @@ class Submission extends BaseController
                         $submission_content['submissionID'] = $this->request->getVar('submissionID');
                         $submission_content['content'] = $newName;
                         $submission_content['article_component'] = $this->request->getVar('article_type');
+
                         if ($revFileId) {
                             $revision_id = $this->submissionModel->updateSubmissionContent($revFileId, $submission_content);
                         } else {
                             $revision_id = $this->submissionModel->createSubmissionContent($submission_content);
                         }
                     } else {
+
                         echo $file->getErrorString() . " " . $file->getError();
                     }
                 }

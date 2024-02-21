@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }</td>
                     <td  style="width: 7%"><input class="check" type="radio" value="${
                       data.id
-                    }" id="${data.id}" name="primary_contact"></td>
+                    }" id="${data.id}" name="primary_contact" checked></td>
                     <td style="width: 10%">
                     <input type="hidden" name="coauthorName[]" value="${
                       data.title
@@ -130,6 +130,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   replyForm.addEventListener("submit", function (event) {
     event.preventDefault(); // Prevent the form from submitting traditionally
+    const article_type = authorForm.elements["article_type"].value;
+    if (!article_type) {
+      alert("Please select article component");
+      return false;
+    }
 
     const formData = new FormData(replyForm);
     //formData.append("submissionID", subId);
@@ -289,6 +294,7 @@ function validateSForm() {
   const textFile = document.getElementById("articleTextfile").value;
   const file = document.getElementById("articlefile").value;
   const agreement = document.getElementById("data");
+  const contributor = document.getElementById("c-email").value;
   // const terms1 = document.getElementById("terms1");
   // alert(terms1);
   // document.getElementById("editor_comment").value;
@@ -337,7 +343,10 @@ function validateSForm() {
     document.getElementById("abstract").focus();
     return false;
   }
-
+  if (!contributor) {
+    alert("Please add atleast one contributor to proceed");
+    return false;
+  }
   if (!language.length) {
     alert("Please enter a valid language");
     document.getElementById("language").focus();
