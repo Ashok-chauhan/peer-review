@@ -61,6 +61,7 @@ class Registration extends Controller
                     'interests' => $this->request->getVar('interests', FILTER_SANITIZE_STRING),
                     'roleID' => $this->request->getVar('roleID'),
                 ];
+
                 if ($this->registrationModel->createUsers($userdata)) {
                     //send activation email. 
                     $mailData = [];
@@ -76,16 +77,9 @@ class Registration extends Controller
                     $this->email->setSubject($subject);
                     $body =  view('activation_email', $mailData);
                     $this->email->setMessage($body);
-                    $this->email->send();
-                    if ($this->email->send()) {
-                        $this->session->setTempdata("success", "Account created successfully, Please activate your account.", 3);
-                        return redirect()->to('registration/thankyou'); //redirect()->to(current_url());
-                    } else {
-                        //                       $errorData = $this->email->printDebugger(['headers']);
-                        //                       print($errorData);
-                        $this->session->setTempdata('error', 'Account created successfully. Sorry! unable to send activation link. Contact Admin');
-                        return redirect()->to(current_url());
-                    }
+                    $sent = $this->email->send();
+                    $this->session->setTempdata("success", "Account created successfully, Please activate your account.", 3);
+                    return redirect()->to('registration/thankyou');
                 } else {
                     //send error.
                     $this->session->setTempdata("error", "Sorry! Unable to crate an account, try again", 3);
@@ -125,9 +119,11 @@ class Registration extends Controller
                         $this->email->setMessage($credBody);
                         $this->email->send();
 
-                        if (!$this->email->send()) {
-                            $data['error'] = 'Sorry!, we are unable to find your account';
-                        }
+                        // if (!$this->email->send()) {
+                        //     $data['error'] = 'Sorry!, we are unable to find your account';
+                        // }
+                    } else {
+                        $data['error'] = 'Sorry!, we are unable to find your account';
                     }
                 } else {
                     $data['success'] = 'Your account is alredy activated';

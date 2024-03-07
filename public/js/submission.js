@@ -8,6 +8,11 @@ document.addEventListener("DOMContentLoaded", function () {
   replyForm.addEventListener("submit", function (event) {
     event.preventDefault(); // Prevent the form from submitting traditionally
     if (!contributorFormCheck()) return;
+
+    if (!validateEmail(document.getElementById("c-email").value)) {
+      alert("Please enter a valid email");
+      return false;
+    }
     const formData = new FormData(replyForm);
     //formData.append("submissionID", subId);
 
@@ -38,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }</td>
                     <td  style="width: 7%"><input class="check" type="radio" value="${
                       data.id
-                    }" id="${data.id}" name="primary_contact" checked></td>
+                    }" id="${data.id}" name="primary_contact" ></td>
                     <td style="width: 10%">
                     <input type="hidden" name="coauthorName[]" value="${
                       data.title
@@ -50,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     
                     <span class="btn1 btn-danger"> <i class="fa fa-trash" onClick="del(${
                       data.id
-                    },'deleteTempFile');" aria-hidden="true"></i></span>
+                    },'contributorForm','deleteTempFile');" aria-hidden="true"></i></span>
                     </td>
                     </tr>
                     `;
@@ -75,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // POST method implementation:
 async function del(id, frm, method) {
-  if (frm == null || frm !== undefined) {
+  if (frm == null || (frm !== undefined && frm !== "contributorForm")) {
     document.getElementById(frm).reset();
   }
   const formData = new FormData();
@@ -130,6 +135,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   replyForm.addEventListener("submit", function (event) {
     event.preventDefault(); // Prevent the form from submitting traditionally
+
+    if (Filevalidation("articlefile") > 100000) {
+      alert("File too Big, please select a file less than 100mb");
+      return false;
+    }
+
     const article_type = authorForm.elements["article_type"].value;
     if (!article_type) {
       alert("Please select article component");
@@ -181,6 +192,10 @@ document.addEventListener("DOMContentLoaded", function () {
   /// Title page upload bof
   titleForm.addEventListener("submit", function (event) {
     event.preventDefault(); // Prevent the form from submitting traditionally
+    if (Filevalidation("articlePagefile") > 100000) {
+      alert("File too Big, please select a file less than 100mb");
+      return false;
+    }
 
     const titleformData = new FormData(titleForm);
     //formData.append("submissionID", subId);
@@ -226,6 +241,10 @@ document.addEventListener("DOMContentLoaded", function () {
   articleForm.addEventListener("submit", function (event) {
     event.preventDefault(); // Prevent the form from submitting traditionally
 
+    if (Filevalidation("articleTextfile") > 100000) {
+      alert("File too Big, please select a file less than 100mb");
+      return false;
+    }
     const ArticleFormData = new FormData(articleForm);
     //formData.append("submissionID", subId);
 
@@ -327,6 +346,12 @@ function validateSForm() {
     alert("Please upload Article page file");
     return false;
   }
+  if (Filevalidation("articlePagefile") >= 4096) {
+    alert("File too Big, please select a file less than 4mb");
+    return false;
+  }
+  //return false;
+
   if (!textFile) {
     alert("Please upload Article text file");
     return false;
@@ -347,6 +372,21 @@ function validateSForm() {
     alert("Please add atleast one contributor to proceed");
     return false;
   }
+
+  var primaryContact = document.getElementsByName("primary_contact");
+  var ischecked = false;
+  for (var i = 0; i < primaryContact.length; i++) {
+    if (primaryContact[i].checked) {
+      ischecked = true;
+      break;
+    }
+  }
+  if (!ischecked) {
+    //payment method button is not checked
+    alert("Please choose Contributor.");
+    return false;
+  }
+
   if (!language.length) {
     alert("Please enter a valid language");
     document.getElementById("language").focus();
@@ -390,6 +430,30 @@ function contributorFormCheck() {
     return false;
   }
 }
+
+const validateEmail = (email) => {
+  return email.match(
+    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  );
+};
+
+const Filevalidation = (file) => {
+  const fi = document.getElementById(file);
+  if (fi.files.length > 0) {
+    for (const i = 0; i <= fi.files.length - 1; i++) {
+      const fsize = fi.files.item(i).size;
+      const file = Math.round(fsize / 1024);
+      // The size of the file.
+      /*
+      if (file >= 4096) {
+        alert("File too Big, please select a file less than 4mb");
+        return false;
+      }
+      */
+      return file;
+    }
+  }
+};
 
 tinymce.init({
   selector: "tinymce-editor",

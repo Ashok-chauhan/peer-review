@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
   replyForm.addEventListener("submit", function (e) {
     e.preventDefault(); // Prevent the form from submitting traditionally
 
-    const article = document.getElementById("article_type").value;
+    const article = document.getElementById("articleType").value;
     if (!article) {
       alert("Please select article component");
       return false;
@@ -33,9 +33,9 @@ document.addEventListener("DOMContentLoaded", function () {
       body: formData,
     })
       .then(function (response) {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
+        // if (!response.ok) {
+        //   throw new Error("Network response was not ok");
+        // }
         return response.text();
       })
       .then(function (data) {
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // You can update the modal or perform any other actions here
         setTimeout(function () {
           location.reload();
-        }, 1000);
+        }, 500);
       })
       .catch(function (error) {
         console.error("Error:", error);

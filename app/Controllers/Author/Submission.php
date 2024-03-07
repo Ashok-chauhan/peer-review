@@ -17,7 +17,7 @@ class Submission extends BaseController
     public $email;
     public function __construct()
     {
-        helper(['url', 'form']);
+        helper(['url', 'form', 'role']);
         $this->email = \Config\Services::email();
         $this->submissionModel = new SubmissionModel();
     }
@@ -29,9 +29,7 @@ class Submission extends BaseController
         $coAuthors = $this->submissionModel->getCoAuthor(session()->get('userID'));
         $data['coAuthors'] = $coAuthors;
         if ($this->request->getMethod() == 'post') {
-            // print '<pre>';
-            // print_r($_POST);
-            // exit;
+
             $rules = [
                 'title' => 'required',
                 'keyword' => 'required',
@@ -90,13 +88,9 @@ class Submission extends BaseController
                 ];
 
                 $submissionID = $this->submissionModel->createSubmission($submission);
-
-
                 $tempFie = $this->submissionModel->getAllTempUploads(session()->get("userID"));
                 if ($tempFie) {
-
                     $dataSet = [];
-
                     foreach ($tempFie as $k => $val) {
 
                         $dataSet['content'] = $val->content;
@@ -128,6 +122,14 @@ class Submission extends BaseController
                     }
                     $fullName = session()->get("title") . ' ' . session()->get("username") . ' ' . session()->get("middle_name") . ' ' . session()->get("last_name");
                     $mailSent = $this->sendEmail(session()->get("logged_user"), $title, $fullName, $coa_names, $submissionID, $coauthorEmails);
+                    //to editor
+                    $editors = $this->submissionModel->getEditors();
+                    $primaryContact = $this->submissionModel->getCoauthorbyId($coauthor_primaryContact);
+                    if ($editors) {
+                        foreach ($editors as $editor) {
+                            $this->mailToEditor($editor->email, $title, $fullName, $coa_names, $submissionID, $coauthorEmails, $primaryContact->email);
+                        }
+                    }
                     //sending email eof
                     return redirect()->to('author/submissionComplete');
                 } else {
@@ -210,7 +212,7 @@ class Submission extends BaseController
                 if ($file->isValid() && !$file->hasMoved()) {
                     $newName = $file->getRandomName() . '_' . $file->getClientName();
                     if ($file->move(WRITEPATH . 'uploads/', $newName)) {
-                        echo '<p>Uploaded successfully</p>';
+                        //  echo '<p>Uploaded successfully</p>';
                         $submission_content['submissionID'] = $this->request->getVar('submissionID');
                         $submission_content['content'] = $newName;
                         $submission_content['article_component'] = $this->request->getVar('article_type');
@@ -225,6 +227,29 @@ class Submission extends BaseController
                         echo $file->getErrorString() . " " . $file->getError();
                     }
                 }
+                //email bof
+                $subid = $this->request->getVar('submissionID');
+                $submission = $this->submissionModel->getById($subid);
+                $subtitle = $submission->title;
+                $subid = $submission->submissionID;
+                $subDate = $submission->submission_date;
+                $jornal = 'Orthopedic'; //$this->request->getVar('jornal');
+                if (isset($jornal)) {
+                    $jornal = $jornal;
+                }
+                $subjectTitle = $this->request->getVar('subject-title');
+                $message = $this->request->getVar('message-text');
+                if (isset($newName)) {
+                    $revfile = $newName;
+                }
+                $editors = $this->submissionModel->getEditors();
+
+                foreach ($editors as $editor) {
+                    $editorFullName = $editor->title . ' ' . $editor->username . ' ' . $editor->middle_name . ' ' . $editor->last_name;
+                    $response = $this->revisionMail($editor->email, $editorFullName, $subtitle, $subid, $subDate, $subjectTitle, $message, $jornal, $revfile);
+                }
+                // email eof
+
             } else {
                 $data['validation'] = $this->validator;
             }
@@ -236,7 +261,18 @@ class Submission extends BaseController
 
     public function reply()
     {
+        $Submission = $this->submissionModel->getById($this->request->getVar('submission'));
+        $user = $this->submissionModel->getUser($this->request->getVar('recipient_id'));
+        $primary = $this->submissionModel->getCoauthorSubid($this->request->getVar('submission'));
+        $pContact = $primary->title . ' ' . $primary->name . ' ' . $primary->m_name . ' ' . $primary->l_name;
+        $submissionDate = $Submission->submission_date;
+        $fullName = $user->title . ' ' . $user->username . ' ' . $user->middle_name . ' .' . $user->last_name;
         if ($this->request->getMethod() == 'post' && ($_FILES['revisionFile']['size'] > 0)) {
+            $revFileId = '';
+            if ($this->request->getVar('updateFileId')) {
+                $revFileId = $this->request->getVar('updateFileId');
+            }
+
             $submission_content = [];
             $notification = [];
             $rules = [
@@ -247,24 +283,35 @@ class Submission extends BaseController
                 if ($file->isValid() && !$file->hasMoved()) {
                     $newName = $file->getRandomName() . '_' . $file->getClientName();
                     if ($file->move(WRITEPATH . 'uploads/', $newName)) {
-                        echo '<p>Uploaded successfully</p>';
-                        $submission_content['submissionID'] = $this->request->getVar('submission');
-                        $submission_content['content'] = $newName;
-                        $submission_content['article_component'] = $this->request->getVar('article_type');
-                        $revision_id = $this->submissionModel->createSubmissionContent($submission_content);
-                        $notification['sender'] = session()->get('username');
+
+                        $notification['sender'] = session()->get('fullName');
                         $notification['sender_email'] = session()->get('logged_user');
                         $notification['sender_id'] = session()->get('userID');
                         $notification['recipient'] = $this->request->getVar('recipient');
                         $notification['recipient_id'] = $this->request->getVar('recipient_id');
                         $notification['submissionID'] = $this->request->getVar('submission');
-                        $notification['content_id'] = $revision_id;
+                        // $notification['content_id'] = $revision_id;
+                        $notification['article_component'] = $this->request->getVar('article_type');
                         $notification['title'] = $this->request->getVar('subject-title');
                         $notification['message'] = $this->request->getVar('message-text');
+                        $notification['file'] = $newName;
 
                         $note = $this->submissionModel->discussion($notification);
-                        print_r($submission_content);
-                        print_r($notification);
+
+                        $submission_content['submissionID'] = $this->request->getVar('submission');
+                        $submission_content['content'] = $newName;
+                        $submission_content['article_component'] = $this->request->getVar('article_type');
+
+                        if ($revFileId) {
+                            $revision_id = $this->submissionModel->updateSubmissionContent($revFileId, $submission_content);
+                        } else {
+                            $revision_id = $this->submissionModel->createSubmissionContent($submission_content);
+                        }
+
+                        // $mail = $this->notificationEmail($this->request->getVar('recipient'), $this->request->getVar('subject-title'), $this->request->getVar('message-text'), $newName);
+                        echo '<p>Uploaded successfully+++</p>';
+
+                        $this->disscusionMailtoEditor($this->request->getVar('recipient'), $Submission->submissionID, $Submission->title, $submissionDate, $this->request->getVar('subject-title'), $this->request->getVar('message-text'), $fullName, $pContact, $newName);
                     } else {
                         echo $file->getErrorString() . " " . $file->getError();
                     }
@@ -274,7 +321,7 @@ class Submission extends BaseController
             }
         } elseif ($this->request->getMethod() == 'post') {
 
-            $notification['sender'] = session()->get('username');
+            $notification['sender'] = session()->get('fullName');
             $notification['sender_email'] = session()->get('logged_user');
             $notification['sender_id'] = session()->get('userID');
             $notification['recipient'] = $this->request->getVar('recipient');
@@ -284,8 +331,12 @@ class Submission extends BaseController
             $notification['message'] = $this->request->getVar('message-text');
 
             $note = $this->submissionModel->discussion($notification);
+
+            // $mail = $this->notificationEmail($this->request->getVar('recipient'), $this->request->getVar('subject-title'), $this->request->getVar('message-text'));
+            $this->disscusionMailtoEditor($this->request->getVar('recipient'), $Submission->submissionID, $Submission->title, $submissionDate, $this->request->getVar('subject-title'), $this->request->getVar('message-text'), $fullName, $pContact);
             echo '<p>successfully replied</p>';
         }
+
         //return view('author/reply');
     }
 
@@ -413,11 +464,19 @@ class Submission extends BaseController
         $submission_content = $this->submissionModel->getBySubmissionId($submission_id);
         $coauthor = $this->submissionModel->coauthorBySubmission(session()->get("userID"), $submission_id);
         $user = $this->submissionModel->getUser($submission->authorID);
-
+        $discussions = $this->submissionModel->getNotice(session()->get('userID'), $submission_id);
+        if ($discussions) {
+            foreach ($discussions as $key => $discussion) {
+                $sender = $this->submissionModel->getUser($discussion->sender_id);
+                $discussions[$key]->sender_role = $sender->roleID;
+            }
+        }
+        $data['discussions'] = $discussions;
         $data['submission'] = $submission;
         $data['submission_content'] = $submission_content;
         $data['coauthor'] = $coauthor;
         $data['user'] = $user;
+        //$data['sentMessages'] = $this->submissionModel->getSentDiscussion(session()->get('userID'), $submission_id);
 
         return view('author/detailview', $data);
     }
@@ -440,8 +499,123 @@ class Submission extends BaseController
         $this->email->setSubject($subject);
         $body =  view('submission_email', $mailData);
         $this->email->setMessage($body);
-        $this->email->send();
+        // $this->email->send();
         if ($this->email->send()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function mailToEditor($to, $title, $fullName, $coauthor, $id, $coEmails, $p_contact, $journal = 'Orthopedic')
+    {
+        $mailData = [];
+        $mailData['title'] = $title;
+        $mailData['fullName'] = $fullName;
+        $mailData['coauthors'] = $coauthor;
+        //$mailData['coauthorEmails'] = $coEmails;
+        $mailData['journal'] = $journal;
+        $mailData['id'] = $id;
+        $mailData['primary_contact'] = $p_contact;
+        $subject = 'A new submission titled [Article :' . $id . ' ' . $title . '] by [' . $p_contact . '] ';
+        $subject = $subject;
+        $this->email->setMailType('html');
+        $this->email->setTo($to);
+        $this->email->setCC($coEmails);
+        $this->email->setBCC('creativeplus92@gmail.com');
+        $this->email->setSubject($subject);
+        $body =  view('mails/submissionMailToEditor', $mailData);
+        $this->email->setMessage($body);
+        // $this->email->send();
+        if ($this->email->send()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function notificationEmail($to, $title, $message, $file = null)
+    {
+        //NOT IN USE , ABANDONED.
+        $mailData = [];
+        $mailData['title'] = $title;
+        $mailData['message'] = $message;
+        if ($file) {
+            $link = base_url() . '/author/downloads/' . $file;
+            $mailData['link'] = $link;
+        }
+
+        $subject = $title;
+        $this->email->setMailType('html');
+        $this->email->setTo($to);
+        $this->email->setBCC('creativeplus92@gmail.com');
+        $this->email->setSubject($subject);
+        $body =  view('mails/notification', $mailData);
+        $this->email->setMessage($body);
+        //$sent = $this->email->send();
+        if ($this->email->send()) {
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function disscusionMailtoEditor($to, $id, $title, $date, $sbjtitle, $message, $fullName, $p_contact, $file = null)
+    {
+        $mailData = [];
+        $mailData['title'] = $title;
+        $mailData['sbjtitle'] = $sbjtitle;
+        $mailData['primaryContact'] = $p_contact;
+        $mailData['journal'] = 'Ortopedic';
+        $mailData['message'] = $message;
+        $mailData['date'] = date("l jS \of F Y h:i:s A", strtotime($date));
+        $mailData['fullName'] = $fullName;
+        if ($file) {
+            $link = base_url() . '/author/downloads/' . $file;
+            $mailData['link'] = $link;
+        }
+
+        $subject = 'An update on Submission for[' . $id . ' ' . $title . ']';
+        $this->email->setMailType('html');
+        $this->email->setTo($to);
+        $this->email->setBCC('creativeplus92@gmail.com');
+        $this->email->setSubject($subject);
+        $body =  view('mails/disscussionMailToEditor', $mailData);
+        $this->email->setMessage($body);
+        //$sent = $this->email->send();
+        if ($this->email->send()) {
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function revisionMail($to, $editorName, $subtitle, $subid, $subdate, $title,  $message, $jornal = 'Orthopedic', $file = null)
+    {
+        $mailData = [];
+        $mailData['title'] = $title;
+        $mailData['jornal'] = trim($jornal);
+        $mailData['editorName'] = $editorName;
+        $mailData['subid'] = $subid;
+        $mailData['subTitle'] = $subtitle;
+        $mailData['date'] = date("l jS \of F Y h:i:s A", strtotime($subdate));
+        $mailData['message'] = $message;
+        if ($file) {
+            $link = base_url() . '/author/downloads/' . $file;
+            $mailData['link'] = $link;
+        }
+        $subject = 'An update on Submission for [Article ID: ' . $subid . ' Article ' . $subtitle . ']';
+        $this->email->setMailType('html');
+        $this->email->setTo($to);
+        $this->email->setBCC('creativeplus92@gmail.com');
+        $this->email->setSubject($subject);
+        $body =  view('mails/revisionFromAuthor', $mailData);
+        $this->email->setMessage($body);
+        $sent = $this->email->send();
+        if ($this->email->send()) {
+
             return true;
         } else {
             return false;

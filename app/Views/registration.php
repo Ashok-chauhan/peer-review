@@ -78,7 +78,7 @@
                         <div class="form-group mb-3 row">
                             <div class="col-12">
 
-                                <input name="middle_name" value="<?= set_value('middle_name'); ?>" id="middle_name" class="form-control" placeholder="Middle name" type="text" required>
+                                <input name="middle_name" value="<?= set_value('middle_name'); ?>" id="middle_name" class="form-control" placeholder="Middle name" type="text">
                             </div>
                         </div>
 

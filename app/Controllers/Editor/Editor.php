@@ -6,11 +6,22 @@ use App\Controllers\BaseController;
 use App\Models\EditorModel;
 use App\Models\UserModel;
 
+
 /**
  * Description of Editor
  *
  * @author Ashok
+ * Submissions:
+ *1 = Sent to peer
+ *2 = Accepted , under review
+ *3 = Review completed
+ *4 = Rejected
+ *Editorial Decision:
+ *1 = sent to copy-editor
+ *2 = Accepted , under copy-editor
+
  */
+
 class Editor extends BaseController
 {
 
@@ -19,9 +30,10 @@ class Editor extends BaseController
     public $email;
     public $user;
 
+
     public function __construct()
     {
-        helper(['url', 'form']);
+        helper(['url', 'form', 'role']);
         $this->editorModel = new EditorModel();
         $this->user = new UserModel();
         $this->session = \Config\Services::session();
@@ -31,26 +43,70 @@ class Editor extends BaseController
     public function index()
     {
         $data = [];
-        $underReviw = [];
-        $editorialDecision = [];
+
         $revData = [];
-        $status = 0;
+        $status = '0,1,2';
+        $complete_status = '3,4';
         $submissions = $this->editorModel->allActive($status);
+        $completed = $this->editorModel->allActive($complete_status);
 
         if ($submissions) {
+
             foreach ($submissions as $key => $submission) {
-                $underReviw[] = $this->editorModel->reviewStatus($submission->submissionID);
-                $editorialDecision[] = $this->editorModel->getEditoriealStatus($submission->submissionID);
+                $submission_content = $this->editorModel->getBySubmissionId('submission_content', $submission->submissionID);
+                $underReviw = $this->editorModel->reviewStatus($submission->submissionID);
+                $editorialDecision = $this->editorModel->getEditoriealStatus($submission->submissionID);
+                $submissions[$key]->reviewStatus = $underReviw;
+                $submissions[$key]->editorialDecision = $editorialDecision;
+
+                $submissions[$key]->submission_content = $submission_content;
+
+                $user = $this->editorModel->getUser($submission->authorID);
+                if (isset($user->email)) {
+                    $mail = $user->email;
+                    $title = $user->title . ' ' . $user->username . ' ' . $user->middle_name . ' ' . $user->last_name;
+                }
+                $submissions[$key]->author_email = $mail;
+                $submissions[$key]->author = $title;
+                $coauthor = $this->editorModel->coauthorBySubmission($submission->submissionID);
+                $preReview = $this->editorModel->preReview($submission->submissionID);
+                $submissions[$key]->preReview = '';
+                if ($preReview) {
+                    $submissions[$key]->preReview = $preReview;
+                }
+                if ($coauthor) {
+                    $submissions[$key]->coauthor = $coauthor; //$coauthor[0]->name;
+                }
+                $note = $this->editorModel->getNoticeCount(session()->get("userID"), $submission->submissionID);
+                if ($note) {
+                    $submissions[$key]->notification = $note;
+                }
             }
         }
-        //        print '<pre>';
-        //        print_r($underReviw);
-        //        print_r($editorialDecision);
-        //        exit;
+        if (is_array($completed)) {
+            foreach ($completed as $key => $submission) {
+                $submission_content = $this->editorModel->getBySubmissionId('submission_content', $submission->submissionID);
+                $coauthor = $this->editorModel->coauthorBySubmission($submission->submissionID);
+                $user = $this->editorModel->getUser($submission->authorID);
+                $completed[$key]->author = $user->title . ' ' . $user->username . ' ' . $user->middle_name . ' ' . $user->last_name;
+                $completed[$key]->author_email = $user->email;
+                $completed[$key]->submission_content = $submission_content;
+                if ($coauthor) {
+                    $completed[$key]->coauthor = $coauthor;
+                }
+                $note = $this->editorModel->getNoticeCount(session()->get("userID"), $submission->submissionID);
+                if ($note) {
+                    $completed[$key]->notification = $note;
+                }
+            }
+        }
 
-        $data['submissions'] = $submissions;
-        $data['editorialDecision'] = $editorialDecision;
-        $data['reviewStatus'] = $underReviw; //$revData;
+        if ($submissions) {
+            $data['list'] = $submissions;
+        } else {
+            $data['list'] = [];
+        }
+        $data['completed'] = $completed;
 
         return view('editor/index', $data);
     }
@@ -61,20 +117,29 @@ class Editor extends BaseController
         $data = [];
         $uri = $this->request->getUri();
         $submissionID = $uri->getSegment(3);
+        $coauthor = $this->editorModel->coauthorBySubmission($submissionID);
+        $revisionFile = $this->editorModel->getRevisionFile($submissionID);
         $submissionTitle = $this->editorModel->getBySubmissionId('submission', $submissionID);
         $editorialDecision = $this->editorModel->getEditorialUploadsBySubId($submissionID);
         $editorial_decision = $this->editorModel->getCopyeditorNote(session()->get('userID'), $submissionID);
         $user = $this->editorModel->getAutor($submissionTitle[0]->authorID);
-        $data['authorName'] = $user->username;
+        $data['authorName'] = $user->title . ' ' . $user->username . ' ' . $user->middle_name . ' ' . $user->middle_name . ' ' . $user->last_name;
         $data['authorEmail'] = $user->email;
         $data['userid'] = $user->userID;
+        $data['role'] = $user->roleID;
         $data['title'] = $submissionTitle[0]->title;
         $data['contents'] = $this->editorModel->getBySubmissionId('submission_content', $submissionID);
-        $data['discussions'] = $this->editorModel->getDiscussion(session()->get('userID'), $submissionID);
+        $data['discussions'] = $this->editorModel->getDiscussion($submissionID);
+        $data['revisionFile'] = $revisionFile;
         $data['peerDiscussions'] = $this->editorModel->getPeerDiscussion(session()->get('userID'), $submissionID);
         $data['editorialDecision'] = $editorialDecision;
         $data['submission_id'] = $submissionID;
         $data['editorial_decision'] = $editorial_decision;
+        $data['submission'] = $submissionTitle[0];
+        $data['submission']->contributor = $coauthor;
+        $data['sentMessages'] = $this->editorModel->getSentDiscussion(session()->get('userID'), $submissionID);
+
+
         return view('editor/byauthor', $data);
     }
 
@@ -87,40 +152,86 @@ class Editor extends BaseController
 
     public function notify()
     {
-        if ($this->request->getMethod() == 'post') {
-            $uri = $this->request->getUri();
-            $autorId = $uri->getSegment(3);
-            $submissionid = $uri->getSegment(4);
-            $user = $this->editorModel->getAutor($autorId);
-            $title = $this->request->getPost('title');
-            $message = $this->request->getPost('message');
 
-            $data = [
-                'sender' => session()->get("username"),
-                'sender_email' => session()->get("logged_user"),
-                'recipient' => $user->email,
-                'sender_id' => session()->get("userID"),
-                'recipient_id' => $user->userID,
-                'submissionID' => $submissionid,
-                'title' => $title,
-                'message' => $message,
-            ];
-            if ($this->editorModel->discussion($data)) {
-                //send mail  
-                $this->email->setTo($user->email);
-                $this->email->setFrom('ashok@whizti.com', 'Info');
-                $this->email->setSubject($title);
-                $this->email->setMessage($message);
-                if ($this->email->send()) {
-                    $this->session->setTempdata("success", "Notification sent successfully.", 3);
-                    return redirect()->to('editor/byauthor/' . $submissionid);
-                } else {
-                    $this->session->setTempdata("error", "Something happen wrong!", 3);
-                }
+
+        $submissionTitle = $this->editorModel->getBySubmissionId('submission', $this->request->getVar('submissionID'));
+        $author = $this->user->getUser($this->request->getVar('recipient_id'));
+        $fullName = $author->title . ' ' . $author->username . ' ' . $author->middle_name . ' ' . $author->last_name;
+        $sub_title = $submissionTitle[0]->title;
+        $mailData['fullName']  = $fullName;
+        $mailData['sub_title'] = $sub_title;
+        $mailData['sub_id'] = $submissionTitle[0]->submissionID;
+
+
+        if ($this->request->getMethod() == 'post' && ($_FILES['revisionFile']['size'] > 0)) {
+
+            $revFileId = '';
+            if ($this->request->getVar('updateFileId')) {
+                $revFileId = $this->request->getVar('updateFileId');
             }
+            $submission_content = [];
+
+            $notification = [];
+            $rules = [
+                'revisionFile' => 'uploaded[revisionFile]|ext_in[revisionFile,png,jpg,gif,doc,docx,pdf,jpeg]',
+            ];
+            if ($this->validate($rules)) {
+                $file = $this->request->getFile('revisionFile');
+                if ($file->isValid() && !$file->hasMoved()) {
+                    $newName = $file->getRandomName() . '_' . $file->getClientName();
+                    if ($file->move(WRITEPATH . 'uploads/', $newName)) {
+                        echo '<p>Uploaded successfully</p>';
+                        $notification['sender'] = session()->get('fullName');
+                        $notification['sender_email'] = session()->get('logged_user');
+                        $notification['sender_id'] = session()->get('userID');
+                        $notification['recipient'] = $this->request->getVar('recipient');
+                        $notification['recipient_id'] = $this->request->getVar('recipient_id');
+                        $notification['submissionID'] = $this->request->getVar('submissionID');
+                        // $notification['content_id'] = $revision_id;
+                        $notification['article_component'] = $this->request->getVar('article_type');
+                        $notification['title'] = $this->request->getVar('subject-title');
+                        $notification['message'] = $this->request->getVar('message-text');
+                        $notification['file'] = $newName;
+                        $note = $this->editorModel->discussion($notification);
+                        $submission_content['submissionID'] = $this->request->getVar('submissionID');
+                        $submission_content['content'] = $newName;
+                        $submission_content['article_component'] = $this->request->getVar('article_type');
+
+                        if ($revFileId) {
+                            $revision_id = $this->editorModel->updateSubmissionContent($revFileId, $submission_content);
+                        } else {
+                            $revision_id = $this->editorModel->createSubmissionContent($submission_content);
+                        }
+
+                        if ($note) {
+                            $mail = $this->notificationEmail($this->request->getVar('recipient'), $this->request->getVar('subject-title'), $this->request->getVar('message-text'), $mailData, $newName);
+                        }
+                    } else {
+                        echo $file->getErrorString() . " " . $file->getError();
+                    }
+                }
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        } elseif ($this->request->getMethod() == 'post') {
+
+            $notification['sender'] = session()->get('fullName');
+            $notification['sender_email'] = session()->get('logged_user');
+            $notification['sender_id'] = session()->get('userID');
+            $notification['recipient'] = $this->request->getVar('recipient');
+            $notification['recipient_id'] = $this->request->getVar('recipient_id');
+            $notification['submissionID'] = $this->request->getVar('submissionID');
+            $notification['title'] = $this->request->getVar('subject-title');
+            $notification['message'] = $this->request->getVar('message-text');
+
+            $note = $this->editorModel->discussion($notification);
+            if ($note) {
+                $mail = $this->notificationEmail($this->request->getVar('recipient'), $this->request->getVar('subject-title'), $this->request->getVar('message-text'), $mailData);
+            }
+            echo '<p>successfully replied</p>';
         }
-        //show template.
-        return view('editor/notify');
+
+        //#return view('editor/notify');
     }
 
     function getRevisionFile()
@@ -150,10 +261,11 @@ class Editor extends BaseController
         $subContents = $this->editorModel->getBySubmissionId('submission_content', $subid);
 
         $peer = [];
-        foreach ($reviewer as $review) {
-            $peer[$review->userID] = $review->username;
+        if (is_array($reviewer)) {
+            foreach ($reviewer as $review) {
+                $peer[$review->userID] = $review->username;
+            }
         }
-
         $data['peers'] = $reviewer;
         $data['peer'] = $peer;
         $data['title'] = $title;
@@ -208,12 +320,17 @@ class Editor extends BaseController
                     $this->email->setFrom(session()->get('logged_user'), 'Info');
                     $this->email->setSubject($this->request->getVar('title'));
                     $this->email->setMessage($body);
+                    $this->email->send();
+                    $this->session->setTempdata("success", "Notification sent successfully to the Reviewer.", 3);
+                    return redirect()->to('editor/byauthor/' . $this->request->getVar('submissionid'));
+                    /*
                     if ($this->email->send()) {
                         $this->session->setTempdata("success", "Notification sent successfully to the Reviewer.", 3);
                         return redirect()->to('editor/byauthor/' . $this->request->getVar('submissionid'));
                     } else {
                         $this->session->setTempdata("error", "Something happen wrong!", 3);
                     }
+                    */
                 }
             } else {
                 $this->session->setTempdata("error", "Alredy sent to this reviewer!", 3);
@@ -333,12 +450,15 @@ class Editor extends BaseController
                 $this->email->setFrom(session()->get('logged_user'), 'Info');
                 $this->email->setSubject($this->request->getVar('title'));
                 $this->email->setMessage($body);
+                $this->email->send();
+                $this->session->setTempdata("success", "Notification sent successfully to the Editor.", 3);
+                /*
                 if ($this->email->send()) {
                     $this->session->setTempdata("success", "Notification sent successfully to the Editor.", 3);
-                    //return redirect()->to('peer');
                 } else {
                     $this->session->setTempdata("error", "Something happen wrong!", 3);
                 }
+                */
             }
         }
     }
@@ -389,12 +509,15 @@ class Editor extends BaseController
                 $this->email->setFrom(session()->get('logged_user'), 'Info');
                 $this->email->setSubject($this->request->getVar('title'));
                 $this->email->setMessage($body);
+                $this->email->send();
+                $this->session->setTempdata("success", "Notification sent successfully to the Editor.", 3);
+                /*
                 if ($this->email->send()) {
                     $this->session->setTempdata("success", "Notification sent successfully to the Editor.", 3);
-                    //return redirect()->to('peer');
                 } else {
                     $this->session->setTempdata("error", "Something happen wrong!", 3);
                 }
+                */
             }
         }
     }
@@ -470,12 +593,17 @@ class Editor extends BaseController
                             $this->email->setFrom(session()->get('logged_user'), 'Info');
                             $this->email->setSubject($this->request->getVar('title'));
                             $this->email->setMessage($body);
+                            $this->email->send();
+                            $this->session->setTempdata("success", "Notification sent successfully to the Copy Editor.", 3);
+                            return redirect()->to('editor/byauthor/' . $this->request->getVar('submission_id'));
+                            /*
                             if ($this->email->send()) {
                                 $this->session->setTempdata("success", "Notification sent successfully to the Copy Editor.", 3);
                                 return redirect()->to('editor/byauthor/' . $this->request->getVar('submission_id'));
                             } else {
                                 $this->session->setTempdata("error", "Something happen wrong!", 3);
                             }
+                            */
                         }
                     } else {
                         echo $file->getErrorString() . " " . $file->getError();
@@ -485,5 +613,92 @@ class Editor extends BaseController
                 $data['validation'] = $this->validator;
             }
         }
+    }
+
+    public function downloadZip()
+    {
+        $uri = $this->request->getUri();
+        $submissionID = $uri->getSegment(3);
+        $submission_content = $this->editorModel->getBySubmissionId('submission_content', $submissionID);
+        if (!$submission_content) return false;
+        $zip = new \ZipArchive();
+        $zipFilename = '/tmp/article.zip';
+        if ($zip->open($zipFilename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+            // Add files to the zip (replace with your actual file paths)
+            if ($submission_content) {
+                foreach ($submission_content as $content) {
+                    $zip->addFile(WRITEPATH . 'uploads/' . $content->content, $content->content);
+                }
+            }
+            // Close the zip file
+            $zip->close();
+            // Force download the zip file
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename="' . $zipFilename . '"');
+            header('Content-Length: ' . filesize($zipFilename));
+            header('Pragma: no-cache');
+            header('Expires: 0');
+            readfile($zipFilename);
+            // Delete the zip file after download (optional)
+            unlink($zipFilename);
+            exit;
+        } else {
+            echo 'Failed to create zip file';
+        }
+    }
+
+
+    public function notificationEmail($to, $title, $message, $mail, $file = null, $journal = null)
+    {
+        $mailData = [];
+        if (is_array($mail)) {
+            $mailData['sub_id'] = $mail['sub_id'];
+            $mailData['fullName'] = $mail['fullName'];
+            $mailData['sub_title'] = $mail['sub_title'];
+        }
+        if ($journal) {
+            $mailData['journal'] = $journal;
+        } else {
+            $mailData['journal'] = 'Arthopedics';
+        }
+        $mailData['title'] = $title;
+        $mailData['message'] = $message;
+        if ($file) {
+            $link = base_url() . '/author/downloads/' . $file;
+            $mailData['link'] = $link;
+        }
+
+        $subject = 'Update Required for Your Article Submission titled "' . $mail['sub_title'] . '(Manuscript ' . $mail['sub_id'] . ')"';
+        $this->email->setMailType('html');
+        $this->email->setTo($to);
+        $this->email->setBCC('creativeplus92@gmail.com');
+        $this->email->setSubject($subject);
+        $body =  view('mails/toauthor', $mailData);
+        $this->email->setMessage($body);
+        //$sent = $this->email->send();
+        if ($this->email->send()) {
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function bellnotification()
+    {
+        $data = [];
+
+        $notifications = $this->editorModel->getBellNotification(session()->get('userID'));
+        if ($notifications) {
+            foreach ($notifications as $key => $notification) {
+                $user = $this->editorModel->getUser($notification->sender_id);
+                if (array_key_exists($user->roleID, roles())) {
+                    $notifications[$key]->role =  roles()[$user->roleID];
+                }
+            }
+        }
+        $updated = $this->editorModel->updateBellNotifications(session()->get('userID'));
+        $data['notifications'] = $notifications;
+        return view('editor/bellnotification', $data);
     }
 }

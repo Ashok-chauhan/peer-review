@@ -134,7 +134,7 @@ $attributes = ['id' => 'submission', 'name' => 'submission', 'onsubmit' => 'retu
                                         <table class="table table-bordered mb-0 table-registration">
                                             <tbody>
                                                 <tr>
-                                                    <td width="50%">Article Page *</td>
+                                                    <td width="50%">Title Page *</td>
                                                     <td>
                                                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#titleModal">
                                                             Upload article page
@@ -464,7 +464,7 @@ $attributes = ['id' => 'submission', 'name' => 'submission', 'onsubmit' => 'retu
                                             <div class="row">
                                                 <div class="col-lg-12">
                                                     <div class="mb-3">
-                                                        <input type="text" class="form-control" id="c-email" name="c-email" required>
+                                                        <input type="email" class="form-control" id="c-email" name="c-email" required>
                                                         <label class="form-label font-size-13" for="c-email">Email <span style="color:#ff0000">*</span></label>
                                                     </div>
                                                 </div>
@@ -952,6 +952,7 @@ $attributes = ['id' => 'submission', 'name' => 'submission', 'onsubmit' => 'retu
 
 <?= $this->section('javascript'); ?>
 <script type="text/javascript" src="<?= base_url(); ?>js/submission.js"></script>
+
 
 <?= $this->endSection(); ?>
 

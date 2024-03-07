@@ -41,6 +41,7 @@ class Login extends Controller
                 if ($userdata) {
                     if (password_verify($password, $userdata['password'])) {
                         if ($userdata['status'] == 'active') {
+                            $fullname = $userdata['title'] . ' ' . $userdata['username'] . ' ' . $userdata['middle_name'] . ' ' . $userdata['last_name'];
                             $this->session->set('logged_user', $userdata['email']);
                             $this->session->set('userID', $userdata['userID']);
                             $this->session->set('role', $userdata['roleID']);
@@ -48,6 +49,9 @@ class Login extends Controller
                             $this->session->set('username', $userdata['username']);
                             $this->session->set('middle_name', $userdata['middle_name']);
                             $this->session->set('last_name', $userdata['last_name']);
+                            $this->session->set('fullName', $fullname);
+
+
                             /*
                         switch ($userdata['roleID']){
                             case 1: //admin

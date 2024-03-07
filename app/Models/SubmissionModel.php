@@ -111,7 +111,8 @@ class SubmissionModel extends Model
 
     public function getNotice($recipientid, $submissionID)
     {
-        $query = $this->db->query('select * from notifications where recipient_id=' . $recipientid . ' and submissionID=' . $submissionID);
+        // $query = $this->db->query('select * from notifications where recipient_id=' . $recipientid . ' and submissionID=' . $submissionID . ' order by date_created desc');
+        $query = $this->db->query('select * from notifications where submissionID=' . $submissionID . ' order by date_created desc');
         $result = $query->getResult();
         if ($result) {
             return $result;
@@ -125,6 +126,20 @@ class SubmissionModel extends Model
         $Q = $this->db->table('notifications');
         if ($Q->insert($data)) {
             return $this->db->insertID();
+        } else {
+            return false;
+        }
+    }
+
+    public function getSentDiscussion($sender_id, $submissionID)
+    {
+        $Q = $this->db->table('notifications');
+        $Q->where('sender_id', $sender_id);
+        $Q->where('submissionID', $submissionID);
+        $Q->orderBy('date_created', 'DESC');
+        $query = $Q->get()->getResult();
+        if ($query) {
+            return $query;
         } else {
             return false;
         }
@@ -270,6 +285,78 @@ class SubmissionModel extends Model
         $user = $Q->get()->getRow();
         if ($user) {
             return $user;
+        } else {
+            return false;
+        }
+    }
+    public function getCoauthorbyId($id)
+    {
+        $Q = $this->db->table('coauthor');
+        $Q->where('id', $id);
+        $user = $Q->get()->getRow();
+        if ($user) {
+            return $user;
+        } else {
+            return false;
+        }
+    }
+
+    public function getCoauthorSubid($id)
+    {
+        $Q = $this->db->table('coauthor');
+        $Q->where('submission_id', $id);
+        $Q->where('primary_contact', 1);
+        $user = $Q->get()->getRow();
+        if ($user) {
+            return $user;
+        } else {
+            return false;
+        }
+    }
+    public function getEditors()
+    {
+        $Q = $this->db->table('users');
+        $Q->where('roleID', 2);
+        $user = $Q->get()->getResult();
+        if ($user) {
+            return $user;
+        } else {
+            return false;
+        }
+    }
+
+    public function preReview($subid)
+    {
+        $q = $this->db->query("SELECT id FROM notifications where submissionID=" . $subid . " LIMIT 1");
+        $row   = $q->getRow();
+        if ($row) {
+            return $row->id;
+        } else {
+            return false;
+        }
+    }
+
+    public function updateNotifications($id)
+    {
+
+        $builder = $this->db->table('notifications');
+        $builder->where('recipient_id', $id);
+        $builder->update(['status' => 1]);
+        if ($this->db->affectedRows()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function getBellNotification($recipeint_id)
+    {
+        $Q = $this->db->table('notifications');
+        $Q->where('recipient_id', $recipeint_id);
+        $Q->orderBy('date_created', 'DESC');
+        $query = $Q->get()->getResult();
+        if ($query) {
+            return $query;
         } else {
             return false;
         }

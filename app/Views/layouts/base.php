@@ -27,6 +27,7 @@
     <!-- App Css-->
     <link href="<?= base_url(); ?>assets/css/spinner.css" rel="stylesheet" type="text/css" />
     <link href="<?= base_url(); ?>assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@tinymce/tinymce-webcomponent@2/dist/tinymce-webcomponent.min.js"></script>
     <script src="<?= base_url(); ?>js/tinymce/tinymce.min.js"></script>
 </head>
@@ -206,7 +207,9 @@
                     <div class="dropdown d-inline-block">
                         <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="ri-notification-3-line"></i>
-                            <span class="noti-dot"></span>
+                            <?php if (notifications()) : ?>
+                                <span class="noti-dot"></span>
+                            <?php endif; ?>
                         </button>
                         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
                             <div class="p-3">
@@ -214,75 +217,60 @@
                                     <div class="col">
                                         <h6 class="m-0"> Notifications </h6>
                                     </div>
+
                                     <div class="col-auto">
-                                        <a href="#!" class="small"> View All</a>
+                                        <?php if (session()->get('role') == 3) : ?>
+                                            <a href="<?= base_url(); ?>author/bellnotification" class="small"> View All</a>
+                                        <?php elseif (session()->get('role') == 2) : ?>
+                                            <a href="<?= base_url(); ?>editor/bellnotification" class="small"> View All</a>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
                             <div data-simplebar style="max-height: 230px;">
-                                <a href="" class="text-reset notification-item">
-                                    <div class="d-flex">
-                                        <div class="avatar-xs me-3">
-                                            <span class="avatar-title bg-primary rounded-circle font-size-16">
-                                                <i class="ri-shopping-cart-line"></i>
-                                            </span>
-                                        </div>
-                                        <div class="flex-1">
-                                            <h6 class="mb-1">Your order is placed</h6>
-                                            <div class="font-size-12 text-muted">
-                                                <p class="mb-1">If several languages coalesce the grammar</p>
-                                                <p class="mb-0"><i class="mdi mdi-clock-outline"></i> 3 min ago</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="" class="text-reset notification-item">
-                                    <div class="d-flex">
-                                        <img src="<?= base_url(); ?>assets/images/users/avatar-3.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
-                                        <div class="flex-1">
-                                            <h6 class="mb-1">James Lemire</h6>
-                                            <div class="font-size-12 text-muted">
-                                                <p class="mb-1">It will seem like simplified English.</p>
-                                                <p class="mb-0"><i class="mdi mdi-clock-outline"></i> 1 hours ago</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="" class="text-reset notification-item">
-                                    <div class="d-flex">
-                                        <div class="avatar-xs me-3">
-                                            <span class="avatar-title bg-success rounded-circle font-size-16">
-                                                <i class="ri-checkbox-circle-line"></i>
-                                            </span>
-                                        </div>
-                                        <div class="flex-1">
-                                            <h6 class="mb-1">Your item is shipped</h6>
-                                            <div class="font-size-12 text-muted">
-                                                <p class="mb-1">If several languages coalesce the grammar</p>
-                                                <p class="mb-0"><i class="mdi mdi-clock-outline"></i> 3 min ago</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
 
-                                <a href="" class="text-reset notification-item">
-                                    <div class="d-flex">
-                                        <img src="<?= base_url(); ?>assets/images/users/avatar-4.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
-                                        <div class="flex-1">
-                                            <h6 class="mb-1">Salena Layfield</h6>
-                                            <div class="font-size-12 text-muted">
-                                                <p class="mb-1">As a skeptical Cambridge friend of mine occidental.</p>
-                                                <p class="mb-0"><i class="mdi mdi-clock-outline"></i> 1 hours ago</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
+                                <?php if (notifications()) : ?>
+                                    <?php foreach (notifications() as $key => $discussion) : ?>
+                                        <?php
+                                        $notification = (strlen($discussion->message) > 13) ? substr($discussion->message, 0, 100) . '...' : $discussion->message;
+                                        ?>
+                                        <?php if (session()->get('role') == 3) : ?>
+                                            <a href="<?= base_url(); ?>author/bellnotification" class="text-reset notification-item">
+                                            <?php elseif (session()->get('role') == 2) : ?>
+                                                <a href="<?= base_url(); ?>editor/bellnotification" class="text-reset notification-item">
+                                                <?php endif; ?>
+                                                <div class="d-flex">
+                                                    <div class="avatar-xs me-3">
+                                                        <span class="avatar-title bg-primary rounded-circle font-size-16">
+                                                            <i class="ri-checkbox-circle-line"></i>
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="flex-1">
+                                                        <h6 class="mb-1"><?= $discussion->title; ?></h6>
+                                                        <div class="font-size-12 text-muted">
+                                                            <p class="mb-1"><?= $notification; ?></p>
+                                                            <p class="mb-0"><i class="mdi mdi-clock-outline"></i> <?= date("l jS \of F Y h:i:s A", strtotime($discussion->date_created)); ?></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+
+
                             </div>
                             <div class="p-2 border-top">
                                 <div class="d-grid">
-                                    <a class="btn btn-sm btn-link font-size-14 text-center" href="javascript:void(0)">
-                                        <i class="mdi mdi-arrow-right-circle me-1"></i> View More..
-                                    </a>
+                                    <?php if (session()->get('role') == 3) : ?>
+                                        <a class="btn btn-sm btn-link font-size-14 text-center" href="<?= base_url(); ?>author/bellnotification">
+                                            <i class="mdi mdi-arrow-right-circle me-1"></i> View More..
+                                        </a>
+                                    <?php elseif (session()->get('role') == 2) : ?>
+                                        <a class="btn btn-sm btn-link font-size-14 text-center" href="<?= base_url(); ?>editor/bellnotification">
+                                            <i class="mdi mdi-arrow-right-circle me-1"></i> View More..
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

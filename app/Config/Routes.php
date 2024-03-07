@@ -33,6 +33,7 @@ $routes->group('user', static function ($routes) {
 $routes->group('author', static function ($routes) {
 
     $routes->get('profile', 'Author\Profile::index', ['filter' => 'auth']);
+    $routes->get('bellnotification', 'Author\Profile::bellnotification', ['filter' => 'auth']);
     $routes->get('logout', 'Author\Profile::logout');
     $routes->get('submission', 'Author\Submission::index', ['filter' => 'auth']);
     $routes->post('submission', 'Author\Submission::index', ['filter' => 'auth']);
@@ -56,8 +57,12 @@ $routes->group('editor', static function ($routes) {
     $routes->get('', 'Editor\Editor::index', ['filter' => 'auth']);
     $routes->get('byauthor/(:segment)', 'Editor\Editor::byAuthor', ['filter' => 'auth']);
     $routes->get('downloads/(:segment)', 'Editor\Editor::downloads');
-    $routes->get('notify/(:num)/(:num)', 'Editor\Editor::notify/$1/$2', ['filter' => 'auth']);
-    $routes->post('notify/(:num)/(:num)', 'Editor\Editor::notify/$1/$2', ['filter' => 'auth']);
+    $routes->get('downloadZip/(:segment)', 'Editor\Editor::downloadZip');
+    // $routes->get('notify/(:num)/(:num)', 'Editor\Editor::notify/$1/$2', ['filter' => 'auth']);
+    // $routes->post('notify/(:num)/(:num)', 'Editor\Editor::notify/$1/$2', ['filter' => 'auth']);
+    $routes->get('bellnotification', 'Editor\Editor::bellnotification', ['filter' => 'auth']);
+    $routes->get('notify', 'Editor\Editor::notify', ['filter' => 'auth']);
+    $routes->post('notify', 'Editor\Editor::notify', ['filter' => 'auth']);
     $routes->get('getRevisionFile/(:segment)', 'Editor\Editor::getRevisionFile', ['filter' => 'auth']);
     $routes->post('toreview/', 'Editor\Editor::toReview', ['filter' => 'auth']);
     $routes->post('sendtopeer/', 'Editor\Editor::sendtopeer', ['filter' => 'auth']);

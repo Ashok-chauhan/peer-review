@@ -6,7 +6,7 @@ use CodeIgniter\Config\BaseConfig;
 
 class Email extends BaseConfig
 {
-    public string $fromEmail  = 'support@orthotvprime.com';
+    public string $fromEmail  = 'ashok@whizti.com'; //'scripture-2024@outlook.com';
     public string $fromName   = 'Scripture';
     public string $recipients = '';
 
@@ -28,22 +28,22 @@ class Email extends BaseConfig
     /**
      * SMTP Server Address
      */
-    public string $SMTPHost = 'mail.orthotvprime.com';
+    public string $SMTPHost = 'smtp.gmail.com'; //'smtp-mail.outlook.com'; //'smtp-mail.outlook.com'; //'smtp.gmail.com'; //'mail.orthotvprime.com';
 
     /**
      * SMTP Username
      */
-    public string $SMTPUser = 'support@orthotvprime.com';
+    public string $SMTPUser = 'ashok@whizti.com'; //'scripture-2024@outlook.com'; //'support@orthotvprime.com'; //'scripture-2024@outlook.com'; //'ashok@whizti.com'; //'support@orthotvprime.com';
 
     /**
      * SMTP Password
      */
-    public string $SMTPPass = 'Rajesh@2024';
+    public string $SMTPPass = 'Machine9'; //'password2024'; //'password2024'; //'Machine9'; //'Rajesh@2024';
 
     /**
      * SMTP Port
      */
-    public int $SMTPPort = 465; //587; //465;
+    public int $SMTPPort = 587; // 465; //587; //465;
 
     /**
      * SMTP Timeout (in seconds)
@@ -62,7 +62,7 @@ class Email extends BaseConfig
      *             to the server. 'ssl' means implicit SSL. Connection on port
      *             465 should set this to ''.
      */
-    public string $SMTPCrypto = 'ssl';
+    public string $SMTPCrypto = 'tls';
 
     /**
      * Enable word-wrap
@@ -117,5 +117,5 @@ class Email extends BaseConfig
     /**
      * Enable notify message from server
      */
-    public bool $DSN = false;
+    public bool $DSN = true;
 }

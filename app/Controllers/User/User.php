@@ -46,14 +46,8 @@ class User extends BaseController
             $body =  view('user/resetpass_email', $data);
             $this->email->setMessage($body);
             $sent = $this->email->send();
-            $sent = $this->email->send();
-            if ($sent) {
-                //die('get here' . $sent);
-                return redirect()->to('user/resetfeedback');
-            } else {
-                //die('false' . $sent);
-                return false;
-            }
+
+            return redirect()->to('user/resetfeedback');
         }
         return view('user/resetpass', $data);
         //return 'Got it';

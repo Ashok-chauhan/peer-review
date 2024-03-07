@@ -63,33 +63,69 @@ Dashboard
 
                                                             <!-- style="font-size:12px;color:red" -->
                                                             <h4 class="card-title font-size-20 mb-2"><?= $row->title; ?> <sup style="font-size:12px;"><i class="fa fa-bell" aria-hidden="true"></i></sup></h4>
+
+
                                                             <div>
-                                                                <h4 class="card-title1 font-size-14 mb-2"><?= $row->author; ?></h4>
+                                                                <p class="card-title1 font-size-14 mb-2">Submitted by: <?= $row->author; ?></p>
 
                                                                 <?php if ($row->coauthor) : ?>
-                                                                    <?php foreach ($row->coauthor as $coauthor) : ?>
-                                                                        <?= $coauthor->title . ' ' . $coauthor->name . ' ' . $coauthor->m_name . ' ' . $coauthor->l_name . ', '; ?>
+                                                                    <?php $number = count($row->coauthor); ?>
+                                                                    <?php foreach ($row->coauthor as $key => $coauthor) : ?>
+                                                                        <?php if ($coauthor->primary_contact) : ?>
+                                                                            <span class="font-size-14 fw-bolder mb-2">
+                                                                                <?php $pname = $coauthor->title . ' ' . $coauthor->name . ' ' . $coauthor->m_name . ' ' . $coauthor->l_name;
+                                                                                if ($key == $number - 1) {
+                                                                                    echo $pname;
+                                                                                } else {
+                                                                                    echo $pname . ', ';
+                                                                                }
+                                                                                ?>
+                                                                            </span>
+                                                                        <?php else : ?>
+                                                                            <?php $name = $coauthor->title . ' ' . $coauthor->name . ' ' . $coauthor->m_name . ' ' . $coauthor->l_name;
+                                                                            if ($key == $number - 1) {
+                                                                                echo $name;
+                                                                            } else {
+                                                                                echo $name . ', ';
+                                                                            }
+                                                                            ?>
+
+                                                                        <?php endif; ?>
                                                                     <?php endforeach; ?>
                                                                 <?php endif; ?>
-                                                                <!-- </h4> -->
+
                                                             </div>
                                                             <button type="button" class="btn2 btn-outline-primary waves-effect waves-light mb-2">Submitted on: <?= $row->submission_date; ?></button>
                                                         </td>
 
                                                         <td width="15%">
-                                                            <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2">
-                                                                <?php if ($row->status_id == 0) : ?>
+                                                            <!-- <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2"> -->
+                                                            <?php if ($row->status_id == 0 && isset($row->notification) < 1) : ?>
+                                                                <span class="btn-primary " style="padding: 0.6rem 58px;border-radius: 50px;">
+                                                                    <i class="fa fa-send-o"></i>
                                                                     Submitted
-                                                                <?php elseif ($row->status_id >= 1 && $row->status_id < 3) : ?>
-                                                                    Under reviw
-                                                                <?php elseif ($row->status_id == 3) : ?>
-                                                                    Completed
-                                                                <?php elseif ($row->status_id == 4) : ?>
-                                                                    Rejectd
-                                                                <?php endif; ?>
+                                                                </span>
+                                                            <?php elseif (isset($row->notification) && $row->status_id == 0) : ?>
+                                                                <span class="btn-warning  waves-light" style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-search"></i>&nbsp; Pre-Review Discussions
+                                                                </span>
+                                                            <?php elseif ($row->status_id >= 1 && $row->status_id < 3) : ?>
+                                                                <span class="btn-danger  waves-light" style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-comments"></i>&nbsp; In Review
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 3) : ?>
+                                                                <span class="btn-success waves-light" style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-area-chart"></i>&nbsp; Completed
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 4) : ?>
+                                                                <span class="btn-danger  waves-light" style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-comments"></i>&nbsp; Rejectd
+                                                                </span>
+                                                            <?php endif; ?>
 
-                                                            </button>
 
+                                                            <!-- </button> -->
+                                                            <p></p>
                                                             <?php if (isset($row->notification)) : ?>
                                                                 <p><i class='far fa-comment'></i><?= $row->notification; ?></p>
                                                             <?php else : ?>
@@ -144,19 +180,21 @@ Dashboard
                                                         </td>
 
                                                         <td width="15%">
-                                                            <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2">
-                                                                <?php if ($row->status_id == 0) : ?>
-                                                                    Submitted
-                                                                <?php elseif ($row->status_id >= 1 && $row->status_id < 3) : ?>
-                                                                    Under reviw
-                                                                <?php elseif ($row->status_id == 3) : ?>
-                                                                    Completed
-                                                                <?php elseif ($row->status_id == 4) : ?>
-                                                                    Rejectd
-                                                                <?php endif; ?>
+                                                            <!-- <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2"> -->
+                                                            <?php if ($row->status_id == 0) : ?>
+                                                                Submitted
+                                                            <?php elseif ($row->status_id >= 1 && $row->status_id < 3) : ?>
+                                                                Under reviw
+                                                            <?php elseif ($row->status_id == 3) : ?>
+                                                                <span class="btn-success waves-light" style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-area-chart"></i>&nbsp; Completed
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 4) : ?>
+                                                                Rejectd
+                                                            <?php endif; ?>
 
-                                                            </button>
-
+                                                            <!-- </button> -->
+                                                            <p></p>
                                                             <?php if (isset($row->notification)) : ?>
                                                                 <p><i class='far fa-comment'></i><?= $row->notification; ?></p>
                                                             <?php else : ?>
