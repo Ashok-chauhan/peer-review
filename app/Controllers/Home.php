@@ -8,6 +8,7 @@ class Home extends BaseController
     public $email;
     public function __construct()
     {
+        helper(['url', 'form', 'role']);
         $this->email = \Config\Services::email();
     }
     public function index()
@@ -19,8 +20,10 @@ class Home extends BaseController
 
     public function about()
     {
-        //$data['title'] = 'About us page';
-        //return view('home/about', $data);
+        $data['title'] = 'About us page';
+        return view('home/about', $data);
+
+        /*
         $to = 'ashok975@gmail.com';
         $sent = $this->notificationEmail($to);
         if ($sent) {
@@ -29,6 +32,7 @@ class Home extends BaseController
         } else {
             return $sent;
         }
+        */
     }
 
     public function notificationEmail($to)

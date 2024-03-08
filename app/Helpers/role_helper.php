@@ -24,7 +24,7 @@ function notifications()
     if ($result) {
         return $result;
     } else {
-        return false;
+        return null; //false;
     }
 }
 
