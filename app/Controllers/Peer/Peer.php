@@ -25,7 +25,7 @@ class Peer extends BaseController
 
     public function __construct()
     {
-        helper(['url', 'form']);
+        helper(['url', 'form', 'role']);
         $this->peerModel = new PeerModel();
         $this->userModel = new UserModel();
         $this->editorModel = new EditorModel;
@@ -39,6 +39,9 @@ class Peer extends BaseController
         $data = [];
         $uid = session()->get('userID');
         $reviews = $this->peerModel->getReviewRequest($uid);
+        // print '<pre>';
+        // print_r($reviews);
+        // exit;
         /*
         if ($reviews)
 
@@ -65,22 +68,42 @@ class Peer extends BaseController
             $data['editorPeerContent'] = array_filter($editorPeerContent);
         return view('peer/index', $data);
     }
+    public function detailview()
+    {
+        // $uri = $this->request->getUri();
+        // $submission_id = $uri->getSegment(3);
+        //update status
+        $status = $this->request->getVar('consent');
+        $rev_id = $this->request->getVar('rev_id');
+        $this->peerModel->updateReview($rev_id, $status);
+        $submission_id = $this->request->getVar('submission_id');
+        $data = [];
+        $data['details'] = $this->peerModel->getReviewDetailBySubid($submission_id);
+        // print '<pre>';
+        // print_r($data);
+        return view('peer/detailview', $data);
+    }
 
     public function accept()
     {
+        /*
         if ($this->request->getMethod() == 'post') {
             $status = $this->request->getVar('consent');
             $rev_id = $this->request->getVar('rev_id');
             $this->peerModel->updateReview($rev_id, $status);
             return redirect()->to('peer');
         } else {
-            $uri = $this->request->getUri();
-            $submission_id = $uri->getSegment(3);
-            $revId = $uri->getSegment(4);
-            $data['submission_id'] = $submission_id;
-            $data['rev_id'] = $revId;
-            return view('peer/accept', $data);
-        }
+*/
+        $uri = $this->request->getUri();
+        $submission_id = $uri->getSegment(3);
+        $revId = $uri->getSegment(4);
+        $reviewRow = $this->peerModel->getReviewRow($submission_id);
+        $data['completion_date'] = $reviewRow->completion_date;
+        $data['submission_id'] = $submission_id;
+        $data['rev_id'] = $revId;
+
+        return view('peer/accept', $data);
+        // }
     }
 
     public function discussion()

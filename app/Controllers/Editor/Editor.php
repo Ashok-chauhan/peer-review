@@ -278,10 +278,12 @@ class Editor extends BaseController
     public function sendtopeer()
     {
         if ($this->request->getMethod() == 'post') {
+
             if (!$this->editorModel->checkPeer($this->request->getVar('peer'), $this->request->getVar('submissionid'))) {
                 $data_reviews['submissionID'] = $this->request->getVar('submissionid');
                 $data_reviews['reviewerID'] = $this->request->getVar('peer');
                 $data_reviews['editor_id'] = session()->get('userID');
+                $data_reviews['completion_date'] = $this->request->getVar('completion_date');
                 $reviewId = $this->editorModel->insertReview($data_reviews);
                 $review_content['submission_id'] = $this->request->getVar('submissionid');
                 $review_content['peer_id'] = $this->request->getVar('peer');

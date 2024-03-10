@@ -87,6 +87,8 @@ $routes->group('peer', static function ($routes) {
     $routes->post('updateReview', 'Peer\Peer::updateReview');
     $routes->get('accept/(:num)/(:num)', 'Peer\Peer::accept/$1/$2', ['filter' => 'auth']);
     $routes->post('accept/(:num)/(:num)', 'Peer\Peer::accept/$1/$2', ['filter' => 'auth']);
+    $routes->get('detailview/(:segment)', 'Peer\Peer::detailview', ['filter' => 'auth']);
+    $routes->post('detailview', 'Peer\Peer::detailview', ['filter' => 'auth']);
 });
 
 $routes->group('editcopy', static function ($routes) {

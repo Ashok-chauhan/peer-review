@@ -43,6 +43,7 @@
     <link href="<?= base_url(); ?>assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet">
 
     <!-- to reviewer eof -->
+    <script src="<?= base_url(); ?>assets/libs/jquery/jquery.min.js"></script>
 </head>
 
 <body data-topbar="dark">
@@ -363,7 +364,8 @@
     <div class="rightbar-overlay"></div>
 
     <!-- JAVASCRIPT -->
-    <script src="<?= base_url(); ?>assets/libs/jquery/jquery.min.js"></script>
+    <!-- <script src="<? //= base_url(); 
+                        ?>assets/libs/jquery/jquery.min.js"></script> -->
     <script src="<?= base_url(); ?>assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="<?= base_url(); ?>assets/libs/metismenu/metisMenu.min.js"></script>
     <script src="<?= base_url(); ?>assets/libs/simplebar/simplebar.min.js"></script>

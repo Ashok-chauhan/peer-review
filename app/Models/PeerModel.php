@@ -40,6 +40,35 @@ class PeerModel extends Model
         }
     }
 
+    public function getReviewDetailBySubid($id)
+    {
+
+        $builder = $this->db->table('submission');
+        $builder->select('*');
+        $builder->join('reviews', 'reviews.submissionID = submission.submissionID');
+        $builder->where('submission.submissionID', $id);
+        $query = $builder->get()->getRow();
+
+        if (isset($query->reviewerID)) {
+            $q = $this->db->table('review_content');
+            $q->select('*');
+            $q->join('submission_content', 'review_content.submission_content_id= submission_content.id');
+            $q->where('peer_id', $query->reviewerID);
+            $revContents = $q->get()->getResult();
+            foreach ($revContents as $revContent) {
+                if ($query->submissionID == $revContent->submissionID) {
+                    $query->reviewContents[] = $revContent;
+                }
+            }
+        }
+
+        if ($query) {
+            return $query;
+        } else {
+            return false;
+        }
+    }
+
     public function uploadPeerResponseToEditor($data)
     {
         $builder = $this->db->table('editor_peer_notifications');
@@ -66,6 +95,18 @@ class PeerModel extends Model
     public function getEditoriealUploads($sid)
     {
         $q = $this->db->table('editor_uploads');
+        $q->where('submissionID', $sid);
+        $data = $q->get()->getRow();
+        if ($data) {
+            return $data;
+        } else {
+            return false;
+        }
+    }
+
+    public function getReviewRow($sid)
+    {
+        $q = $this->db->table('reviews');
         $q->where('submissionID', $sid);
         $data = $q->get()->getRow();
         if ($data) {
