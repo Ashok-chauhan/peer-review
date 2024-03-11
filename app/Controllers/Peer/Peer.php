@@ -38,10 +38,10 @@ class Peer extends BaseController
     {
         $data = [];
         $uid = session()->get('userID');
+
         $reviews = $this->peerModel->getReviewRequest($uid);
-        // print '<pre>';
-        // print_r($reviews);
-        // exit;
+
+        ///////////
         /*
         if ($reviews)
 
@@ -53,6 +53,7 @@ class Peer extends BaseController
         if (isset($editorPeerContent))
             $data['editorPeerContent'] = $editorPeerContent;
         */
+        //////
         if ($reviews) {
             foreach ($reviews as $review) {
                 $editorPeerContent[] = $this->peerModel->getEditoriealUploads($review->submissionID);

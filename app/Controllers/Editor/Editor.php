@@ -280,6 +280,7 @@ class Editor extends BaseController
         if ($this->request->getMethod() == 'post') {
 
             if (!$this->editorModel->checkPeer($this->request->getVar('peer'), $this->request->getVar('submissionid'))) {
+                $submision = $this->editorModel->getBySubmissionId('submission', $this->request->getVar('submissionid'));
                 $data_reviews['submissionID'] = $this->request->getVar('submissionid');
                 $data_reviews['reviewerID'] = $this->request->getVar('peer');
                 $data_reviews['editor_id'] = session()->get('userID');
@@ -315,24 +316,14 @@ class Editor extends BaseController
                             $mailContent .= '<p><a href=' . base_url() . 'editor/downloads/' . $editorFile->upload_content . '>' . $editorFile->upload_content . '</a></p>';
                         }
                     }
+                    $subMissionTitle = $submision[0]->title;
+                    $sbjTitle = $this->request->getVar('title');
                     $mailMsg = $this->request->getVar('message');
                     $body = $mailMsg . $mailContent;
-
-                    $this->email->setTo($peer->email);
-                    $this->email->setFrom(session()->get('logged_user'), 'Info');
-                    $this->email->setSubject($this->request->getVar('title'));
-                    $this->email->setMessage($body);
-                    $this->email->send();
+                    $completion_date = $this->request->getVar('completion_date');
+                    $this->mailToPeer($peer->email, $sbjTitle, $subMissionTitle, $completion_date, $body); //, $journal = null
                     $this->session->setTempdata("success", "Notification sent successfully to the Reviewer.", 3);
                     return redirect()->to('editor/byauthor/' . $this->request->getVar('submissionid'));
-                    /*
-                    if ($this->email->send()) {
-                        $this->session->setTempdata("success", "Notification sent successfully to the Reviewer.", 3);
-                        return redirect()->to('editor/byauthor/' . $this->request->getVar('submissionid'));
-                    } else {
-                        $this->session->setTempdata("error", "Something happen wrong!", 3);
-                    }
-                    */
                 }
             } else {
                 $this->session->setTempdata("error", "Alredy sent to this reviewer!", 3);
@@ -686,6 +677,36 @@ class Editor extends BaseController
         }
     }
 
+    public function mailToPeer($to, $title, $submissionTitle, $completion_date, $body, $journal = null)
+    {
+        $mailData = [];
+
+        $mailData['title'] = $title;
+        $mailData['submissionTitle'] = $submissionTitle;
+        if ($journal) {
+            $mailData['journal'] = $journal;
+        } else {
+            $mailData['journal'] = 'Arthopedics';
+        }
+        $mailData['date'] = date("l jS \of F Y h:i:s A", strtotime($completion_date));
+        $mailData['body'] = $body;
+
+
+        $subject = 'Article to be reviewed titled "Manuscript: ' . $submissionTitle . '"';
+        $this->email->setMailType('html');
+        $this->email->setTo($to);
+        $this->email->setBCC('creativeplus92@gmail.com');
+        $this->email->setSubject($subject);
+        $body =  view('mails/toPeer', $mailData);
+        $this->email->setMessage($body);
+        //$sent = $this->email->send();
+        if ($this->email->send()) {
+
+            return true;
+        } else {
+            return false;
+        }
+    }
     public function bellnotification()
     {
         $data = [];
