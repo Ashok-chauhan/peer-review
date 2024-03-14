@@ -139,4 +139,65 @@ class PeerModel extends Model
             return false;
         }
     }
+
+    public function discussion($data)
+    {
+        $Q = $this->db->table('notifications');
+        if ($Q->insert($data)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    public function getBySubmissionId($table, $submissionID)
+    {
+        $Q = $this->db->table($table)->select('*')->where('submissionID', $submissionID);
+        $query    = $Q->get();
+        if ($query) {
+            return $query->getResult();
+        } else {
+            return false;
+        }
+    }
+
+    public function getUser($uid)
+    {
+        $Q = $this->db->table('users');
+        $Q->where('userID', $uid);
+        $user = $Q->get()->getRow();
+        if ($user) {
+            return $user;
+        } else {
+            return false;
+        }
+    }
+
+    public function getDiscussion($submissionID)
+    {
+        $Q = $this->db->table('notifications');
+        //$data = [];
+        $Q->where('submissionID', $submissionID);
+        $Q->where('role', 4);
+        $Q->orderBy('date_created', 'DESC');
+        $query = $Q->get()->getResult();
+        if ($query) {
+            return $query;
+        } else {
+            return false;
+        }
+    }
+
+    public function getJournal($id)
+    {
+        $Q = $this->db->table('journal');
+        $Q->where('id', $id);
+        $query    = $Q->get()->getRow();
+        if ($query) {
+            return $query;
+        } else {
+            return false;
+        }
+    }
 }

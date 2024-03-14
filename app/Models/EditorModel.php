@@ -61,8 +61,45 @@ class EditorModel extends Model
     public function getDiscussion($submissionID)
     {
         $Q = $this->db->table('notifications');
-
+        //$data = [];
         $Q->where('submissionID', $submissionID);
+        $Q->where('role', 3);
+        $Q->orderBy('date_created', 'DESC');
+        $query = $Q->get()->getResult();
+        if ($query) {
+            return $query;
+        } else {
+            return false;
+        }
+
+        /*
+        foreach ($query as $row) {
+            $usr = $this->getUser($row->sender_id);
+            if ($usr->roleID == 2) {
+                $data['editor'][] = $row;
+            } elseif ($usr->roleID == 3) {
+                $data['author'][] = $row;
+            } elseif ($usr->roleID == 4) {
+                $data['peer'][] = $row;
+            } elseif ($usr->roleID == 6) {
+                //6 copy-editor
+                $data['copyeditor'][] = $row;
+            }
+        }
+        if ($data) {
+            return $data;
+        } else {
+            return false;
+        }
+        */
+    }
+
+    public function peerDiscussion($submissionID)
+    {
+        $Q = $this->db->table('notifications');
+        //$data = [];
+        $Q->where('submissionID', $submissionID);
+        $Q->where('role', 4);
         $Q->orderBy('date_created', 'DESC');
         $query = $Q->get()->getResult();
         if ($query) {
@@ -71,7 +108,6 @@ class EditorModel extends Model
             return false;
         }
     }
-
     public function getSentDiscussion($sender_id, $submissionID)
     {
         $Q = $this->db->table('notifications');

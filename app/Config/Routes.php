@@ -89,6 +89,7 @@ $routes->group('peer', static function ($routes) {
     $routes->post('accept/(:num)/(:num)', 'Peer\Peer::accept/$1/$2', ['filter' => 'auth']);
     $routes->get('detailview/(:segment)', 'Peer\Peer::detailview', ['filter' => 'auth']);
     $routes->post('detailview', 'Peer\Peer::detailview', ['filter' => 'auth']);
+    $routes->post('notify', 'Peer\Peer::notify', ['filter' => 'auth']);
 });
 
 $routes->group('editcopy', static function ($routes) {

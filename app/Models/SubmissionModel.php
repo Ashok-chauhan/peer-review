@@ -47,11 +47,24 @@ class SubmissionModel extends Model
         }
     }
 
-    public function getByAutorId($authorID)
+    public function getByAuthorId($authorID)
     {
+        /*
         $Q = $this->db->table('submission')->select('*')->where('authorID', $authorID);
         $Q->orderBy('submissionID', 'DESC');
         $query    = $Q->get();
+        if ($query) {
+            return $query->getResult();
+        } else {
+            return false;
+        }
+        */
+        $builder = $this->db->table('submission');
+        $builder->select('*');
+        $builder->join('journal', 'journal.id = submission.submissionID', 'left');
+        $builder->where('authorID', $authorID);
+        $builder->orderBy('submissionID', 'DESC');
+        $query = $builder->get();
         if ($query) {
             return $query->getResult();
         } else {
@@ -79,6 +92,18 @@ class SubmissionModel extends Model
         $query    = $Q->get()->getRow();
         if ($query) {
             return $query; //->getResult();
+        } else {
+            return false;
+        }
+    }
+
+    public function getJournal($id)
+    {
+        $Q = $this->db->table('journal');
+        $Q->where('id', $id);
+        $query    = $Q->get()->getRow();
+        if ($query) {
+            return $query;
         } else {
             return false;
         }

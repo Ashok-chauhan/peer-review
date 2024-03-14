@@ -71,17 +71,16 @@ class Peer extends BaseController
     }
     public function detailview()
     {
-        // $uri = $this->request->getUri();
-        // $submission_id = $uri->getSegment(3);
-        //update status
+
         $status = $this->request->getVar('consent');
         $rev_id = $this->request->getVar('rev_id');
         $this->peerModel->updateReview($rev_id, $status);
         $submission_id = $this->request->getVar('submission_id');
         $data = [];
         $data['details'] = $this->peerModel->getReviewDetailBySubid($submission_id);
-        // print '<pre>';
-        // print_r($data);
+        $data['discussions'] = $this->peerModel->getDiscussion($submission_id);
+        $data['submission_id'] = $submission_id;
+
         return view('peer/detailview', $data);
     }
 
@@ -107,6 +106,91 @@ class Peer extends BaseController
         // }
     }
 
+
+    public function notify()
+    {
+
+        $submissionTitle = $this->peerModel->getBySubmissionId('submission', $this->request->getVar('submissionID'));
+        $author = $this->peerModel->getUser($this->request->getVar('recipient_id'));
+        $fullName = $author->title . ' ' . $author->username . ' ' . $author->middle_name . ' ' . $author->last_name;
+        $sub_title = $submissionTitle[0]->title;
+        $mailData['fullName']  = $fullName;
+        $mailData['sub_title'] = $sub_title;
+        $mailData['sub_id'] = $submissionTitle[0]->submissionID;
+
+        $journal = $this->peerModel->getJournal($submissionTitle[0]->jid);
+        $journalName = $journal->journal_name;
+
+
+        if ($this->request->getMethod() == 'post' && ($_FILES['revisionFile']['size'] > 0)) {
+
+            $revFileId = '';
+            if ($this->request->getVar('updateFileId')) {
+                $revFileId = $this->request->getVar('updateFileId');
+            }
+            $submission_content = [];
+
+            $notification = [];
+            $rules = [
+                'revisionFile' => 'uploaded[revisionFile]|ext_in[revisionFile,png,jpg,gif,doc,docx,pdf,jpeg]',
+            ];
+            if ($this->validate($rules)) {
+                $file = $this->request->getFile('revisionFile');
+                if ($file->isValid() && !$file->hasMoved()) {
+                    $newName = $file->getRandomName() . '_' . $file->getClientName();
+                    if ($file->move(WRITEPATH . 'uploads/', $newName)) {
+                        echo '<p>Uploaded successfully</p>';
+                        $notification['sender'] = session()->get('fullName');
+                        $notification['sender_email'] = session()->get('logged_user');
+                        $notification['sender_id'] = session()->get('userID');
+                        $notification['role'] = $this->request->getVar('role');
+
+                        $notification['recipient'] = $this->request->getVar('recipient');
+                        $notification['recipient_id'] = $this->request->getVar('recipient_id');
+                        $notification['submissionID'] = $this->request->getVar('submissionID');
+                        // $notification['content_id'] = $revision_id;
+                        $notification['article_component'] = $this->request->getVar('article_type');
+                        $notification['title'] = $this->request->getVar('subject-title');
+                        $notification['message'] = $this->request->getVar('message-text');
+                        $notification['file'] = $newName;
+                        $note = $this->peerModel->discussion($notification);
+
+                        if ($note) {
+                            $mail = $this->notificationEmail($this->request->getVar('recipient'), $this->request->getVar('subject-title'), $this->request->getVar('message-text'), $mailData, $newName, $journalName);
+                        }
+                    } else {
+                        echo $file->getErrorString() . " " . $file->getError();
+                    }
+                }
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        } elseif ($this->request->getMethod() == 'post') {
+
+            $notification['sender'] = session()->get('fullName');
+            $notification['sender_email'] = session()->get('logged_user');
+            $notification['sender_id'] = session()->get('userID');
+            $notification['role'] = $this->request->getVar('role');
+
+            $notification['recipient'] = $this->request->getVar('recipient');
+            $notification['recipient_id'] = $this->request->getVar('recipient_id');
+            $notification['submissionID'] = $this->request->getVar('submissionID');
+            $notification['title'] = $this->request->getVar('subject-title');
+            $notification['message'] = $this->request->getVar('message-text');
+
+            $note = $this->peerModel->discussion($notification);
+            if ($note) {
+                $mail = $this->notificationEmail($this->request->getVar('recipient'), $this->request->getVar('subject-title'), $this->request->getVar('message-text'), $mailData, $journalName);
+            }
+            echo '<p>successfully replied</p>';
+        }
+
+        //#return view('editor/notify');
+    }
+
+    /* --------------------------------
+    * ABENDONED NOT IN USEFUL INSTED USING .. notify()
+    */
     public function discussion()
     {
         $uri = $this->request->getUri();
@@ -199,6 +283,43 @@ table='editor_peer_content'
         } else {
             $error = array('error' => 'Somethng went wrong!');
             return json_encode($error);
+        }
+    }
+
+
+    public function notificationEmail($to, $title, $message, $mail, $file = null, $journal = null)
+    {
+        $mailData = [];
+        if (is_array($mail)) {
+            $mailData['sub_id'] = $mail['sub_id'];
+            $mailData['fullName'] = $mail['fullName'];
+            $mailData['sub_title'] = $mail['sub_title'];
+        }
+        if ($journal) {
+            $mailData['journal'] = $journal;
+        } else {
+            $mailData['journal'] = 'Arthopedics';
+        }
+        $mailData['title'] = $title;
+        $mailData['message'] = $message;
+        if ($file) {
+            $link = base_url() . '/author/downloads/' . $file;
+            $mailData['link'] = $link;
+        }
+
+        $subject = 'Update Required for Your Article Submission titled "' . $mail['sub_title'] . '(Manuscript ' . $mail['sub_id'] . ')"';
+        $this->email->setMailType('html');
+        $this->email->setTo($to);
+        $this->email->setBCC('creativeplus92@gmail.com');
+        $this->email->setSubject($subject);
+        $body =  view('mails/toauthor', $mailData);
+        $this->email->setMessage($body);
+        //$sent = $this->email->send();
+        if ($this->email->send()) {
+
+            return true;
+        } else {
+            return false;
         }
     }
 }

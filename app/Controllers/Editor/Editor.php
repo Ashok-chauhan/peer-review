@@ -130,15 +130,23 @@ class Editor extends BaseController
         $data['title'] = $submissionTitle[0]->title;
         $data['contents'] = $this->editorModel->getBySubmissionId('submission_content', $submissionID);
         $data['discussions'] = $this->editorModel->getDiscussion($submissionID);
+        // $note = $this->editorModel->getDiscussion($submissionID);
+        // if (isset($note['author']) && array_key_exists('author', $note)) $data['discussions'] = $note['author']; //$this->editorModel->getDiscussion($submissionID);
+        // if (isset($note['peer']) && array_key_exists('peer', $note))  $data['peerDiscussions'] = $note['peer'];
+        // if (isset($note['copyeditor']) && array_key_exists('copyeditor', $note))  $data['copyEditor'] = $note['copyeditor'];
+
         $data['revisionFile'] = $revisionFile;
-        $data['peerDiscussions'] = $this->editorModel->getPeerDiscussion(session()->get('userID'), $submissionID);
+        // $data['peerDiscussions'] = $this->editorModel->getPeerDiscussion(session()->get('userID'), $submissionID);
+        $data['peerDiscussions'] = $this->editorModel->peerDiscussion($submissionID);
         $data['editorialDecision'] = $editorialDecision;
         $data['submission_id'] = $submissionID;
         $data['editorial_decision'] = $editorial_decision;
         $data['submission'] = $submissionTitle[0];
         $data['submission']->contributor = $coauthor;
         $data['sentMessages'] = $this->editorModel->getSentDiscussion(session()->get('userID'), $submissionID);
-
+        // print '<pre>';
+        // print_r($data);
+        // exit;
 
         return view('editor/byauthor', $data);
     }
@@ -184,6 +192,8 @@ class Editor extends BaseController
                         $notification['sender'] = session()->get('fullName');
                         $notification['sender_email'] = session()->get('logged_user');
                         $notification['sender_id'] = session()->get('userID');
+                        $notification['role'] = $this->request->getVar('role');
+
                         $notification['recipient'] = $this->request->getVar('recipient');
                         $notification['recipient_id'] = $this->request->getVar('recipient_id');
                         $notification['submissionID'] = $this->request->getVar('submissionID');
@@ -218,6 +228,8 @@ class Editor extends BaseController
             $notification['sender'] = session()->get('fullName');
             $notification['sender_email'] = session()->get('logged_user');
             $notification['sender_id'] = session()->get('userID');
+            $notification['role'] = $this->request->getVar('role');
+
             $notification['recipient'] = $this->request->getVar('recipient');
             $notification['recipient_id'] = $this->request->getVar('recipient_id');
             $notification['submissionID'] = $this->request->getVar('submissionID');

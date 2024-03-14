@@ -66,6 +66,7 @@ class Submission extends BaseController
 
 
                 $submission = [
+                    'jid' => 2,
                     'content' => $editorComment,
                     'consent_contact' => $contactConsent,
                     'consent_store' => $dataConsent,
@@ -86,7 +87,8 @@ class Submission extends BaseController
                     'terms5' => $terms5,
 
                 ];
-
+                $journal = $this->submissionModel->getJournal($submission['jid']);
+                $journalName = $journal->journal_name;
                 $submissionID = $this->submissionModel->createSubmission($submission);
                 $tempFie = $this->submissionModel->getAllTempUploads(session()->get("userID"));
                 if ($tempFie) {
@@ -121,13 +123,13 @@ class Submission extends BaseController
                         }
                     }
                     $fullName = session()->get("title") . ' ' . session()->get("username") . ' ' . session()->get("middle_name") . ' ' . session()->get("last_name");
-                    $mailSent = $this->sendEmail(session()->get("logged_user"), $title, $fullName, $coa_names, $submissionID, $coauthorEmails);
+                    $mailSent = $this->sendEmail(session()->get("logged_user"), $title, $fullName, $coa_names, $submissionID, $coauthorEmails, $journalName);
                     //to editor
                     $editors = $this->submissionModel->getEditors();
                     $primaryContact = $this->submissionModel->getCoauthorbyId($coauthor_primaryContact);
                     if ($editors) {
                         foreach ($editors as $editor) {
-                            $this->mailToEditor($editor->email, $title, $fullName, $coa_names, $submissionID, $coauthorEmails, $primaryContact->email);
+                            $this->mailToEditor($editor->email, $title, $fullName, $coa_names, $submissionID, $coauthorEmails, $primaryContact->email, $journalName);
                         }
                     }
                     //sending email eof
@@ -147,7 +149,7 @@ class Submission extends BaseController
     public function listView()
     {
         $data = [];
-        $submission = $this->submissionModel->getByAutorId(session()->get("userID"));
+        $submission = $this->submissionModel->getByAuthorId(session()->get("userID"));
 
         $completed = $this->submissionModel->getCompleted(session()->get("userID"));
 
