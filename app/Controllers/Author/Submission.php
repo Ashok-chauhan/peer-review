@@ -66,7 +66,7 @@ class Submission extends BaseController
 
 
                 $submission = [
-                    'jid' => 2,
+                    'jid' => 1,
                     'content' => $editorComment,
                     'consent_contact' => $contactConsent,
                     'consent_store' => $dataConsent,
@@ -99,7 +99,8 @@ class Submission extends BaseController
                         $dataSet['article_component'] = $val->component;
                         $dataSet['submissionID'] = $submissionID;
                         $result = $this->submissionModel->createSubmissionContent($dataSet);
-                        if ($result) $this->submissionModel->deleteTempFile($val->id);
+                        if ($result)
+                            $this->submissionModel->deleteTempFile($val->id);
                     }
 
                     if ($result) {
@@ -108,16 +109,17 @@ class Submission extends BaseController
                         $data['validation'] = "Error occured!"; //$doc->getErrorString();
                     }
                     //update coauthor with submission id
-                    if (isset($coauthorIds)) {
+                    if (isset ($coauthorIds)) {
                         foreach ($coauthorIds as $coauthor_id) {
                             $this->submissionModel->updateCoauthor($coauthor_id, $submissionID);
                         }
                     }
                     //updating primary conteact of coauthor.
-                    if (isset($coauthor_primaryContact)) $this->submissionModel->updateCoauthorPrimaryContacct($coauthor_primaryContact);
+                    if (isset ($coauthor_primaryContact))
+                        $this->submissionModel->updateCoauthorPrimaryContacct($coauthor_primaryContact);
                     //sending emails bof
                     $coa_names = '';
-                    if (isset($coauthorNames)) {
+                    if (isset ($coauthorNames)) {
                         foreach ($coauthorNames as $coa) {
                             $coa_names .= $coa . ', ';
                         }
@@ -193,7 +195,8 @@ class Submission extends BaseController
     public function downloads()
     {
         $uri = $this->request->getUri();
-        $name = WRITEPATH . 'uploads/' . $uri->getSegment(3);
+        $name = WRITEPATH . 'uploads/' . urldecode($uri->getSegment(3));
+        // $name = WRITEPATH . 'uploads/' . urlencode($uri->getSegment(3));
         return $this->response->download($name, null);
     }
 
@@ -236,12 +239,12 @@ class Submission extends BaseController
                 $subid = $submission->submissionID;
                 $subDate = $submission->submission_date;
                 $jornal = 'Orthopedic'; //$this->request->getVar('jornal');
-                if (isset($jornal)) {
+                if (isset ($jornal)) {
                     $jornal = $jornal;
                 }
                 $subjectTitle = $this->request->getVar('subject-title');
                 $message = $this->request->getVar('message-text');
-                if (isset($newName)) {
+                if (isset ($newName)) {
                     $revfile = $newName;
                 }
                 $editors = $this->submissionModel->getEditors();
@@ -297,6 +300,7 @@ class Submission extends BaseController
                         $notification['title'] = $this->request->getVar('subject-title');
                         $notification['message'] = $this->request->getVar('message-text');
                         $notification['file'] = $newName;
+                        $notification['role'] = session()->get('role');
 
                         $note = $this->submissionModel->discussion($notification);
 
@@ -331,7 +335,7 @@ class Submission extends BaseController
             $notification['submissionID'] = $this->request->getVar('submission');
             $notification['title'] = $this->request->getVar('subject-title');
             $notification['message'] = $this->request->getVar('message-text');
-
+            $notification['role'] = session()->get('role');
             $note = $this->submissionModel->discussion($notification);
 
             // $mail = $this->notificationEmail($this->request->getVar('recipient'), $this->request->getVar('subject-title'), $this->request->getVar('message-text'));
@@ -499,7 +503,7 @@ class Submission extends BaseController
         $this->email->setCC($coEmails);
         $this->email->setBCC('creativeplus92@gmail.com');
         $this->email->setSubject($subject);
-        $body =  view('submission_email', $mailData);
+        $body = view('submission_email', $mailData);
         $this->email->setMessage($body);
         // $this->email->send();
         if ($this->email->send()) {
@@ -526,7 +530,7 @@ class Submission extends BaseController
         $this->email->setCC($coEmails);
         $this->email->setBCC('creativeplus92@gmail.com');
         $this->email->setSubject($subject);
-        $body =  view('mails/submissionMailToEditor', $mailData);
+        $body = view('mails/submissionMailToEditor', $mailData);
         $this->email->setMessage($body);
         // $this->email->send();
         if ($this->email->send()) {
@@ -552,7 +556,7 @@ class Submission extends BaseController
         $this->email->setTo($to);
         $this->email->setBCC('creativeplus92@gmail.com');
         $this->email->setSubject($subject);
-        $body =  view('mails/notification', $mailData);
+        $body = view('mails/notification', $mailData);
         $this->email->setMessage($body);
         //$sent = $this->email->send();
         if ($this->email->send()) {
@@ -583,7 +587,7 @@ class Submission extends BaseController
         $this->email->setTo($to);
         $this->email->setBCC('creativeplus92@gmail.com');
         $this->email->setSubject($subject);
-        $body =  view('mails/disscussionMailToEditor', $mailData);
+        $body = view('mails/disscussionMailToEditor', $mailData);
         $this->email->setMessage($body);
         //$sent = $this->email->send();
         if ($this->email->send()) {
@@ -594,7 +598,7 @@ class Submission extends BaseController
         }
     }
 
-    public function revisionMail($to, $editorName, $subtitle, $subid, $subdate, $title,  $message, $jornal = 'Orthopedic', $file = null)
+    public function revisionMail($to, $editorName, $subtitle, $subid, $subdate, $title, $message, $jornal = 'Orthopedic', $file = null)
     {
         $mailData = [];
         $mailData['title'] = $title;
@@ -613,7 +617,7 @@ class Submission extends BaseController
         $this->email->setTo($to);
         $this->email->setBCC('creativeplus92@gmail.com');
         $this->email->setSubject($subject);
-        $body =  view('mails/revisionFromAuthor', $mailData);
+        $body = view('mails/revisionFromAuthor', $mailData);
         $this->email->setMessage($body);
         $sent = $this->email->send();
         if ($this->email->send()) {

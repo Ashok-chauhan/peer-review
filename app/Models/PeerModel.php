@@ -19,6 +19,37 @@ class PeerModel extends Model
         $builder->select('*');
         $builder->join('reviews', 'reviews.submissionID = submission.submissionID');
         $builder->where('reviewerID', $reviewerID);
+        $builder->where('status !=', 3);
+        $query = $builder->get()->getResult();
+        foreach ($query as $key => $qry) {
+            $q = $this->db->table('review_content');
+            $q->select('*');
+            $q->join('submission_content', 'review_content.submission_content_id= submission_content.id');
+            $q->where('peer_id', $qry->reviewerID);
+            $revContents = $q->get()->getResult();
+            foreach ($revContents as $revContent) {
+                if ($query[$key]->submissionID == $revContent->submissionID) {
+                    $query[$key]->reviewContents[] = $revContent;
+                }
+            }
+        }
+
+        if ($query) {
+            return $query;
+        } else {
+            return false;
+        }
+    }
+
+
+    public function getReviewCompleted($reviewerID)
+    {
+
+        $builder = $this->db->table('submission');
+        $builder->select('*');
+        $builder->join('reviews', 'reviews.submissionID = submission.submissionID AND submission.status_id=3');
+        $builder->where('reviewerID', $reviewerID);
+
         $query = $builder->get()->getResult();
         foreach ($query as $key => $qry) {
             $q = $this->db->table('review_content');
@@ -49,7 +80,7 @@ class PeerModel extends Model
         $builder->where('submission.submissionID', $id);
         $query = $builder->get()->getRow();
 
-        if (isset($query->reviewerID)) {
+        if (isset ($query->reviewerID)) {
             $q = $this->db->table('review_content');
             $q->select('*');
             $q->join('submission_content', 'review_content.submission_content_id= submission_content.id');
@@ -154,7 +185,7 @@ class PeerModel extends Model
     public function getBySubmissionId($table, $submissionID)
     {
         $Q = $this->db->table($table)->select('*')->where('submissionID', $submissionID);
-        $query    = $Q->get();
+        $query = $Q->get();
         if ($query) {
             return $query->getResult();
         } else {
@@ -193,11 +224,36 @@ class PeerModel extends Model
     {
         $Q = $this->db->table('journal');
         $Q->where('id', $id);
-        $query    = $Q->get()->getRow();
+        $query = $Q->get()->getRow();
         if ($query) {
             return $query;
         } else {
             return false;
         }
     }
+
+    public function checkStatus($reviewid)
+    {
+        $Q = $this->db->table('reviews');
+        $Q->where('reviewID', $reviewid);
+        $qry = $Q->get();
+        $result = $qry->getRow();
+        if ($result) {
+            return $result;
+        } else {
+            return false;
+        }
+    }
+
+    public function updateSubmissionStatus($subid, $status)
+    {
+        $query = $this->db->query("Update submission SET status_id=" . $status . " WHERE submissionID=" . $subid . "");
+
+        if ($this->db->affectedRows()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

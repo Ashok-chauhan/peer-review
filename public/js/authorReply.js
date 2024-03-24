@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then(function (data) {
         // Handle the response from the server
-        //console.log(data);
+        console.log(data);
 
         const msg = document.getElementById("msg");
         msg.innerHTML = `<div class="alert alert-success alert-dismissible  role="alert">
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // You can update the modal or perform any other actions here
         setTimeout(function () {
           location.reload();
-        }, 500);
+        }, 200);
       })
       .catch(function (error) {
         console.error("Error:", error);

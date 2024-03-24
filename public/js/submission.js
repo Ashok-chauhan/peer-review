@@ -213,6 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then(function (success) {
         // Handle the response from the server
+//console.log(success);
 
         const el = document.getElementById("author-file");
         let uploaded = `<tr id ="${success.id}">

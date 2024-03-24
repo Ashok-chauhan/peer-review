@@ -45,10 +45,10 @@ class Editor extends BaseController
         $data = [];
 
         $revData = [];
-        $status = '0,1,2';
-        $complete_status = '3,4';
-        $submissions = $this->editorModel->allActive($status);
-        $completed = $this->editorModel->allActive($complete_status);
+        $status = [0, 1, 2, 3, 4, 5, 6, 7]; //'0,1,2';
+        $complete_status = [6, 7]; //'3,4';
+        $submissions = $this->editorModel->allActive($status, session()->get("userID"));
+        $completed = $this->editorModel->allActive($complete_status, session()->get("userID"));
 
         if ($submissions) {
 
@@ -62,7 +62,7 @@ class Editor extends BaseController
                 $submissions[$key]->submission_content = $submission_content;
 
                 $user = $this->editorModel->getUser($submission->authorID);
-                if (isset($user->email)) {
+                if (isset ($user->email)) {
                     $mail = $user->email;
                     $title = $user->title . ' ' . $user->username . ' ' . $user->middle_name . ' ' . $user->last_name;
                 }
@@ -107,6 +107,8 @@ class Editor extends BaseController
             $data['list'] = [];
         }
         $data['completed'] = $completed;
+        // print '<pre>';
+        // print_r($data);
 
         return view('editor/index', $data);
     }
@@ -144,9 +146,7 @@ class Editor extends BaseController
         $data['submission'] = $submissionTitle[0];
         $data['submission']->contributor = $coauthor;
         $data['sentMessages'] = $this->editorModel->getSentDiscussion(session()->get('userID'), $submissionID);
-        // print '<pre>';
-        // print_r($data);
-        // exit;
+
 
         return view('editor/byauthor', $data);
     }
@@ -166,7 +166,7 @@ class Editor extends BaseController
         $author = $this->user->getUser($this->request->getVar('recipient_id'));
         $fullName = $author->title . ' ' . $author->username . ' ' . $author->middle_name . ' ' . $author->last_name;
         $sub_title = $submissionTitle[0]->title;
-        $mailData['fullName']  = $fullName;
+        $mailData['fullName'] = $fullName;
         $mailData['sub_title'] = $sub_title;
         $mailData['sub_id'] = $submissionTitle[0]->submissionID;
 
@@ -625,7 +625,8 @@ class Editor extends BaseController
         $uri = $this->request->getUri();
         $submissionID = $uri->getSegment(3);
         $submission_content = $this->editorModel->getBySubmissionId('submission_content', $submissionID);
-        if (!$submission_content) return false;
+        if (!$submission_content)
+            return false;
         $zip = new \ZipArchive();
         $zipFilename = '/tmp/article.zip';
         if ($zip->open($zipFilename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
@@ -678,7 +679,7 @@ class Editor extends BaseController
         $this->email->setTo($to);
         $this->email->setBCC('creativeplus92@gmail.com');
         $this->email->setSubject($subject);
-        $body =  view('mails/toauthor', $mailData);
+        $body = view('mails/toauthor', $mailData);
         $this->email->setMessage($body);
         //$sent = $this->email->send();
         if ($this->email->send()) {
@@ -709,7 +710,7 @@ class Editor extends BaseController
         $this->email->setTo($to);
         $this->email->setBCC('creativeplus92@gmail.com');
         $this->email->setSubject($subject);
-        $body =  view('mails/toPeer', $mailData);
+        $body = view('mails/toPeer', $mailData);
         $this->email->setMessage($body);
         //$sent = $this->email->send();
         if ($this->email->send()) {
@@ -728,7 +729,7 @@ class Editor extends BaseController
             foreach ($notifications as $key => $notification) {
                 $user = $this->editorModel->getUser($notification->sender_id);
                 if (array_key_exists($user->roleID, roles())) {
-                    $notifications[$key]->role =  roles()[$user->roleID];
+                    $notifications[$key]->role = roles()[$user->roleID];
                 }
             }
         }

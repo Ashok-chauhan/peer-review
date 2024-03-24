@@ -7,11 +7,90 @@ Reviewer Dashboard
 
 <div class="container-fluid">
 
+    <!-- check consent status -->
+    <?php if (!$status): ?>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#peerConsent").modal("show");
+            });
+        </script>
+
+        <!-- error modal bof -->
+        <div class="modal" tabindex="-1" id="peerConsent" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title ">Term & conditons</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="p-2">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a gravida ex, nec interdum
+                            libero. Quisque dapibus turpis at lorem maximus, vel suscipit metus consequat. Pellentesque
+                            habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam blandit
+                            orci ut mi tincidunt, ac tristique lorem aliquet. Etiam suscipit faucibus lacus a lobortis.
+                            Praesent ac nisi sapien. Etiam maximus diam sed libero luctus hendrerit. Nam suscipit purus sit
+                            amet ornare scelerisque. Phasellus mattis ornare sollicitudin. Morbi vehicula bibendum massa
+                            eget dictum.
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a gravida ex, nec interdum
+                            libero. Quisque dapibus turpis at lorem maximus, vel suscipit metus consequat. Pellentesque
+                            habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam blandit
+                            orci ut mi tincidunt, ac tristique lorem aliquet. Etiam suscipit faucibus lacus a lobortis.
+                            Praesent ac nisi sapien. Etiam maximus diam sed libero luctus hendrerit. Nam suscipit purus sit
+                            amet ornare scelerisque. Phasellus mattis ornare sollicitudin. Morbi vehicula bibendum massa
+                            eget dictum.
+                        </div>
+                        <form id="peerConsentForm" action="../../accept" method="POST" enctype="multipart/form-data">
+
+
+                            <!-- <div class="d-grid gap-2 col-6 mx-auto"> -->
+                            <div class="alert alert-warning">
+
+                                <b>Completion date: </b>
+                                <?= date("l jS \of F Y h:i:s A", strtotime($completion_date)); ?>
+
+                            </div>
+                            <div class="form-check">
+                                <input type="hidden" name="reviewTableId" value="<?= $reviewTableId ?>" />
+                                <input type="hidden" name="submission_id" value="<?= $submission_id ?>" />
+                                <input type="radio" value="2" id="accept" name="consent">
+                                <label class="form-check-label fw-bold" for="accept">
+                                    Accept
+                                </label>
+                            </div>
+                            </br>
+                            <div class="form-check">
+                                <input type="radio" value="7" id="decline" name="consent">
+                                <label class="form-check-label fw-bold" for="decline">
+                                    Decline
+                                </label>
+                            </div>
+                            <!-- </div> -->
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+
+                    </div>
+                    <!-- <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        <!-- error modal eof -->
+    <?php endif; ?>
+
+    <!-- check consent status eof -->
+
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0 font-size-24" style="text-transform: capitalize;"><?= $details->title; ?></h4>
+                <h4 class="mb-sm-0 font-size-24" style="text-transform: capitalize;">
+                    <?= $details->title; ?>
+                </h4>
 
             </div>
         </div>
@@ -26,18 +105,26 @@ Reviewer Dashboard
 
 
                     <h4 class="card-title font-size-14"><b>Prefix</b></h4>
-                    <p><?= $details->prefix; ?></p>
+                    <p>
+                        <?= $details->prefix; ?>
+                    </p>
 
 
                     <h4 class="card-title font-size-14"><b>Subtitle</b></h4>
-                    <p><?= $details->subtitle; ?></p>
+                    <p>
+                        <?= $details->subtitle; ?>
+                    </p>
 
                     <h4 class="card-title font-size-14"><b>Abstract</b></h4>
-                    <p><?= $details->abstract; ?></p>
-                    <?php if (isset($details->showIdentity)) : ?>
+                    <p>
+                        <?= $details->abstract; ?>
+                    </p>
+                    <?php if (isset ($details->showIdentity)): ?>
                         <h4 class="card-title font-size-14"><b>List of Contributors</b></h4>
                         <div class="col-lg-12">
-                            <table id="datatable" class="table table-registration font-size-13 table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <table id="datatable"
+                                class="table table-registration font-size-13 table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
                                         <th>Name</th>
@@ -48,19 +135,23 @@ Reviewer Dashboard
                                 </thead>
 
                                 <tbody>
-                                    <?php if ($submission->contributor) : ?>
-                                        <?php foreach ($submission->contributor as $contributor) : ?>
+                                    <?php if ($submission->contributor): ?>
+                                        <?php foreach ($submission->contributor as $contributor): ?>
                                             <tr>
-                                                <td data-label="Name"><?= $contributor->title . ' ' . $contributor->name . ' ' . $contributor->m_name . ' ' . $contributor->l_name; ?></td>
-                                                <td data-label="Email"><?= $contributor->email; ?></td>
-                                                <?php if ($contributor->role == 3) : ?>
+                                                <td data-label="Name">
+                                                    <?= $contributor->title . ' ' . $contributor->name . ' ' . $contributor->m_name . ' ' . $contributor->l_name; ?>
+                                                </td>
+                                                <td data-label="Email">
+                                                    <?= $contributor->email; ?>
+                                                </td>
+                                                <?php if ($contributor->role == 3): ?>
                                                     <td data-label="Role">Author</td>
-                                                <?php else : ?>
+                                                <?php else: ?>
                                                     <td data-label="Role">Translator</td>
                                                 <?php endif; ?>
-                                                <?php if ($contributor->primary_contact) : ?>
+                                                <?php if ($contributor->primary_contact): ?>
                                                     <td data-label="Primary Contact"><i class="fa fa-check-square-o"></i></td>
-                                                <?php else : ?>
+                                                <?php else: ?>
                                                     <td data-label="Primary Contact"></td>
                                                 <?php endif; ?>
                                             </tr>
@@ -73,19 +164,27 @@ Reviewer Dashboard
 
                     <?php endif; ?>
                     <h4 class="card-title font-size-14"><b>Language</b></h4>
-                    <p><?= $details->language; ?> </p>
+                    <p>
+                        <?= $details->language; ?>
+                    </p>
 
                     <h4 class="card-title font-size-14"><b>Keyword</b></h4>
-                    <p><?= $details->keyword; ?></p>
+                    <p>
+                        <?= $details->keyword; ?>
+                    </p>
 
                     <h4 class="card-title font-size-14"><b>References</b></h4>
-                    <p><?= $details->reference; ?></p>
+                    <p>
+                        <?= $details->reference; ?>
+                    </p>
 
 
 
                     <h4 class="card-title font-size-14"><b>Article Component</b></h4>
                     <div class="col-lg-12">
-                        <table id="datatable" class="table table-registration font-size-13 table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table id="datatable"
+                            class="table table-registration font-size-13 table-bordered dt-responsive nowrap"
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th>Component</th>
@@ -95,12 +194,18 @@ Reviewer Dashboard
                             </thead>
 
                             <tbody>
-                                <?php if ($details->reviewContents) : ?>
-                                    <?php foreach ($details->reviewContents as $content) : ?>
+                                <?php if ($details->reviewContents): ?>
+                                    <?php foreach ($details->reviewContents as $content): ?>
                                         <tr>
-                                            <td data-label="Component"><?= $content->article_component; ?></td>
-                                            <td data-label="Filename"><?= $content->content; ?></td>
-                                            <td data-label="Filename"> <?= anchor('author/downloads/' . $content->content, '<span class="btn1 btn-success">download</span>'); ?></td>
+                                            <td data-label="Component">
+                                                <?= $content->article_component; ?>
+                                            </td>
+                                            <td data-label="Filename">
+                                                <?= $content->content; ?>
+                                            </td>
+                                            <td data-label="Filename">
+                                                <?= anchor('author/downloads/' . $content->content, '<span class="btn1 btn-success">download</span>'); ?>
+                                            </td>
 
                                         </tr>
                                     <?php endforeach; ?>
@@ -132,22 +237,29 @@ Reviewer Dashboard
                 <div class="card-body">
                     <div id="msg"></div>
                     <form id="<?= $details->submissionID; ?>" method="POST" action="updateStatus">
+                        <input type="hidden" name="submissionid" value="<?= $details->submissionID; ?>">
                         <!-- <div class="d-flex justify-content-start"> -->
                         <div class="form-check">
-                            <?php if ($details->status == 2) : ?>
-                                <input class="checkmark" type="radio" value="2" id="accepted" name="radiobtn" onClick="radioCtr(2,<?= $details->reviewID; ?>);" checked>
-                            <?php else : ?>
-                                <input class="checkmark" type="radio" value="2" id="accepted" name="radiobtn" onClick="radioCtr(2,<?= $details->reviewID; ?>);">
+                            <?php if ($details->status == 2): ?>
+                                <input class="checkmark" type="radio" value="2" id="accepted" name="radiobtn"
+                                    onClick="radioCtr(2,<?= $details->reviewID; ?>,<?= $details->submissionID; ?>);"
+                                    checked>
+                            <?php else: ?>
+                                <input class="checkmark" type="radio" value="2" id="accepted" name="radiobtn"
+                                    onClick="radioCtr(2,<?= $details->reviewID; ?>,<?= $details->submissionID; ?>);">
                             <?php endif; ?>
                             <label class="form-check-label" for="radiobtn">
                                 Accepted
                             </label>
                         </div>
                         <div class="form-check">
-                            <?php if ($details->status == 3) : ?>
-                                <input class="checkmark" type="radio" value="3" id="completed" name="radiobtn" onClick="radioCtr(3,<?= $details->reviewID; ?>);" checked>
-                            <?php else : ?>
-                                <input class="checkmark" type="radio" value="3" id="completed" name="radiobtn" onClick="radioCtr(3,<?= $details->reviewID; ?>);">
+                            <?php if ($details->status == 3): ?>
+                                <input class="checkmark" type="radio" value="3" id="completed" name="radiobtn"
+                                    onClick="radioCtr(3,<?= $details->reviewID; ?>,<?= $details->submissionID; ?>);"
+                                    checked>
+                            <?php else: ?>
+                                <input class="checkmark" type="radio" value="3" id="completed" name="radiobtn"
+                                    onClick="radioCtr(3,<?= $details->reviewID; ?>,<?= $details->submissionID; ?>);">
                             <?php endif; ?>
 
                             <label class="form-check-label" for="radiobtn">
@@ -170,29 +282,34 @@ Reviewer Dashboard
         <div class="col-xl-8">
             <div class="card">
                 <div class="card-body">
-                    <?php if (!$discussions) : ?>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#peerModal">
+                    <?php if (!$discussions): ?>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#peerModal"
+                            data-arridx="<?= $editor->userID . '/' . $editor->email . '/' . $submission_id . '/start discussion'; ?>">
                             Start Discussion
                         </button>
                     <?php endif; ?>
 
 
-                    <?php if ($discussions) : ?>
-                        <?php foreach ($discussions as $key => $discussion) : ?>
+                    <?php if ($discussions): ?>
+                        <?php foreach ($discussions as $key => $discussion): ?>
 
 
                             <div class="card-body">
                                 <div class="d-flex mb-4">
-                                    <img class="me-3 rounded-circle avatar-sm" src="<?= base_url(); ?>assets/images/users/avatar-1.jpg" alt="Generic placeholder image">
+                                    <img class="me-3 rounded-circle avatar-sm"
+                                        src="<?= base_url(); ?>assets/images/users/avatar-1.jpg"
+                                        alt="Generic placeholder image">
                                     <div class="flex-1">
-                                        <h5 class="font-size-14 my-1"><?= $discussion->sender; ?></h5>
+                                        <h5 class="font-size-14 my-1">
+                                            <?= $discussion->sender; ?>
+                                        </h5>
                                         <small class="text-muted">
                                             <?php //if (array_key_exists($role, roles())) : 
-                                            ?>
+                                                    ?>
                                             <? //= roles()[$role]; 
-                                            ?>
+                                                    ?>
                                             <?php //endif; 
-                                            ?>
+                                                    ?>
                                             <!-- Editorial Co-ordinator -->
 
                                             <?= date("l jS \of F Y h:i:s A", strtotime($discussion->date_created)); ?>
@@ -201,20 +318,29 @@ Reviewer Dashboard
                                     </div>
                                 </div>
 
-                                <h4 class="font-size-16"><?= $discussion->title; ?></h4>
+                                <h4 class="font-size-16">
+                                    <?= $discussion->title; ?>
+                                </h4>
 
-                                <p><?= $discussion->message; ?></p>
-                                <?php if ($discussion->file) : ?>
+                                <p>
+                                    <?= $discussion->message; ?>
+                                </p>
+                                <?php if ($discussion->file): ?>
                                     <h6>Attachment</h6>
-                                    Article component: <?= $discussion->article_component; ?>
-                                    <p><?= anchor('editor/downloads/' . $discussion->file,  $discussion->file); ?></p>
+                                    Article component:
+                                    <?= $discussion->article_component; ?>
+                                    <p>
+                                        <?= anchor('editor/downloads/' . $discussion->file, $discussion->file); ?>
+                                    </p>
                                 <?php endif; ?>
 
                                 <hr />
 
 
 
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-arridx="<?= $discussion->sender_id . '/' . $discussion->sender_email . '/' . $discussion->submissionID . '/' . $discussion->title; ?>" data-role="3" data-bs-target="#peerModal">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-arridx="<?= $editor->userID . '/' . $editor->email . '/' . $discussion->submissionID . '/' . $discussion->title; ?>"
+                                    data-role="3" data-bs-target="#peerModal">
                                     <i class="mdi mdi-reply"></i>Reply
                                 </button>
                             </div>
@@ -228,7 +354,8 @@ Reviewer Dashboard
     <!-- discussion eof -->
 
     <!-- PEER/ reply Modal bof inserting in to notifications table-->
-    <div class="modal fade" id="peerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="peerModalLabel" aria-hidden="true">
+    <div class="modal fade" id="peerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="peerModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -239,7 +366,7 @@ Reviewer Dashboard
                     <h5>Add revision</h5>
 
                     <div id="editor"></div>
-                    <form id="peerReplyForm" action="notify" method="POST" enctype="multipart/form-data">
+                    <form id="peerReplyForm" action="../../notify" method="POST" enctype="multipart/form-data">
 
 
                         <input type="hidden" name="role" id="role" value="4" />
@@ -252,7 +379,7 @@ Reviewer Dashboard
                             <input type="hidden" name="recipient_id" id="recipient_id" value="">
                             <!-- <input type="hidden" name="authorName" id="authorName" value=""> -->
                             <!-- <input type="hidden" name="role" value="<? //= $role; 
-                                                                            ?>" /> -->
+                            ?>" /> -->
                         </div>
                         <div class="mb-3">
                             <label for="message-text" class="col-form-label">Message:</label>
@@ -268,9 +395,9 @@ Reviewer Dashboard
                                 <?php //foreach ($contents as $content) : 
                                 ?>
                                     <option value="<? //= $content->id; 
-                                                    ?>">Revision of <? //= $content->article_component; 
-                                                                    ?> - (<? //= $content->content; 
-                                                                                                ?>) </option>
+                                    ?>">Revision of <? //= $content->article_component; 
+                                    ?> - (<? //= $content->content; 
+                                     ?>) </option>
                                 <?php //endforeach; 
                                 ?>
                             <?php //endif; 

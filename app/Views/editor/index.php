@@ -41,7 +41,7 @@ Dashboard
 
                     <!-- Tab panes -->
                     <div class="tab-content p-3 text-muted">
-                        <?php if (isset($list)) : ?>
+                        <?php if (isset ($list)): ?>
 
                             <div class="tab-pane active" id="home1" role="tabpanel">
 
@@ -49,24 +49,31 @@ Dashboard
                                     <div class="table-responsive">
                                         <table class="table table-editable table-nowrap align-middle table-edits">
                                             <tbody>
-                                                <?php foreach ($list as $key => $row) : ?>
+                                                <?php foreach ($list as $key => $row): ?>
 
                                                     <?php $revId = $row->submissionID; ?>
 
                                                     <tr>
-                                                        <td width="10%"><?= $row->submissionID; ?></td>
+                                                        <td width="10%">
+                                                            <?= $row->submissionID; ?>
+                                                        </td>
 
                                                         <td width="70%">
 
                                                             <!-- style="font-size:12px;color:red" -->
-                                                            <h4 class="card-title font-size-20 mb-2"><?= $row->title; ?> <sup style="font-size:12px;"><i class="fa fa-bell" aria-hidden="true"></i></sup></h4>
+                                                            <h4 class="card-title font-size-20 mb-2">
+                                                                <?= $row->title; ?> <sup style="font-size:12px;"><i
+                                                                        class="fa fa-bell" aria-hidden="true"></i></sup>
+                                                            </h4>
                                                             <div>
-                                                                <p class="card-title1 font-size-14 mb-2">Submitted by: <?= $row->author; ?></p>
+                                                                <p class="card-title1 font-size-14 mb-2">Submitted by:
+                                                                    <?= $row->author; ?>
+                                                                </p>
 
-                                                                <?php if ($row->coauthor) : ?>
+                                                                <?php if ($row->coauthor): ?>
                                                                     <?php $number = count($row->coauthor); ?>
-                                                                    <?php foreach ($row->coauthor as $key => $coauthor) : ?>
-                                                                        <?php if ($coauthor->primary_contact) : ?>
+                                                                    <?php foreach ($row->coauthor as $key => $coauthor): ?>
+                                                                        <?php if ($coauthor->primary_contact): ?>
                                                                             <span class="font-size-14 fw-bolder mb-2">
                                                                                 <?php $pname = $coauthor->title . ' ' . $coauthor->name . ' ' . $coauthor->m_name . ' ' . $coauthor->l_name;
                                                                                 if ($key == $number - 1) {
@@ -76,7 +83,7 @@ Dashboard
                                                                                 }
                                                                                 ?>
                                                                             </span>
-                                                                        <?php else : ?>
+                                                                        <?php else: ?>
                                                                             <?php $name = $coauthor->title . ' ' . $coauthor->name . ' ' . $coauthor->m_name . ' ' . $coauthor->l_name;
                                                                             if ($key == $number - 1) {
                                                                                 echo $name;
@@ -90,48 +97,75 @@ Dashboard
                                                                 <?php endif; ?>
 
                                                             </div>
-                                                            <button type="button" class="btn2 btn-outline-primary waves-effect waves-light mb-2">Submitted on: <?= $row->submission_date; ?></button>
+                                                            <button type="button"
+                                                                class="btn2 btn-outline-primary waves-effect waves-light mb-2">Submitted
+                                                                on:
+                                                                <?= $row->submission_date; ?>
+                                                            </button>
                                                         </td>
 
                                                         <td width="15%">
                                                             <!-- <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2"> -->
-                                                            <?php if ($row->status_id == 0 && $row->preReview == '') : ?>
-                                                                <span class="btn-primary " style="padding: 0.6rem 58px;border-radius: 50px;">
+                                                            <?php if ($row->status_id == 0 && $row->preReview == ''): ?>
+                                                                <span class="btn-primary "
+                                                                    style="padding: 0.6rem 58px;border-radius: 50px;">
                                                                     <i class="fa fa-send-o"></i>
                                                                     Submitted
                                                                 </span>
-                                                            <?php elseif ($row->preReview && $row->status_id == 0) : ?>
+                                                            <?php elseif ($row->preReview && $row->status_id == 0): ?>
 
-                                                                <span class="btn-warning  waves-light" style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                <span class="btn-warning  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fa fa-search"></i>&nbsp; Pre-Review Discussions
                                                                 </span>
-                                                            <?php elseif ($row->status_id >= 1 && $row->status_id < 3) : ?>
+                                                            <?php elseif ($row->status_id >= 1 && $row->status_id < 3): ?>
 
-                                                                <span class="btn-danger  waves-light" style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                <span class="btn-danger  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fa fa-comments"></i>&nbsp; In Review
                                                                 </span>
-                                                            <?php elseif ($row->status_id == 3) : ?>
-                                                                <span class="btn-success waves-light" style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fa fa-area-chart"></i>&nbsp; Completed
+                                                            <?php elseif ($row->status_id == 3): ?>
+                                                                <span class="btn-success waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <!-- <i class="fa fa-area-chart"></i>&nbsp; Completed -->
+                                                                    <i class="fa fa-comments"></i>&nbsp; Completed
                                                                 </span>
-                                                            <?php elseif ($row->status_id == 4) : ?>
-                                                                <span class="btn-danger  waves-light" style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                            <?php elseif ($row->status_id == 4): ?>
+                                                                <span class="btn-dark  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-comments"></i>&nbsp; Send Copy Editing
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 5): ?>
+                                                                <span class="btn-danger  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fas fa-edit"></i>&nbsp; Under Copy Editing
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 6): ?>
+                                                                <span class="btn-success  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fas fa-edit"></i>&nbsp; Copy Editing completed
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 7): ?>
+                                                                <span class="btn-danger  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fa fa-comments"></i>&nbsp; Rejectd
                                                                 </span>
                                                             <?php endif; ?>
 
                                                             <!-- </button> -->
                                                             <p></p>
-                                                            <?php if (isset($row->notification)) : ?>
-                                                                <p><i class='far fa-comment'></i><?= $row->notification; ?></p>
-                                                            <?php else : ?>
+                                                            <?php if (isset ($row->notification)): ?>
+                                                                <p><i class='far fa-comment'></i>
+                                                                    <?= $row->notification; ?>
+                                                                </p>
+                                                            <?php else: ?>
                                                                 <p><i class='far fa-comment'></i>0</p>
                                                             <?php endif; ?>
                                                         </td>
 
                                                         <!-- <td width="5%"><button class="btn1 btn-success" data-bs-toggle="modal" data-bs-target=".bs-example-modal-lg<? //= $key; 
-                                                                                                                                                                        ?>"> <i class="fa fa-eye"></i> <? //= $row->submissionID; 
-                                                                                                                                                                                                        ?></button></td> -->
+                                                                ?>"> <i class="fa fa-eye"></i> <? //= $row->submissionID; 
+                                                                        ?></button></td> -->
                                                         <td width="5%">
                                                             <?= anchor('editor/byauthor/' . $row->submissionID, '<span class="btn1 btn-success"><i class="fa fa-eye"></i></span>'); ?>
 
@@ -149,59 +183,80 @@ Dashboard
                             </div>
                         <?php endif; ?>
                         <div class="tab-pane" id="profile1" role="tabpanel">
-                            <?php if ($completed) : ?>
+                            <?php if ($completed): ?>
                                 <div class="col-lg-12">
                                     <div class="table-responsive">
                                         <table class="table table-editable table-nowrap align-middle table-edits">
 
                                             <tbody>
-                                                <?php foreach ($completed as $key => $row) : ?>
+                                                <?php foreach ($completed as $key => $row): ?>
                                                     <?php $revId = $row->submissionID; ?>
 
                                                     <tr>
-                                                        <td width="10%"><?= $row->submissionID; ?></td>
+                                                        <td width="10%">
+                                                            <?= $row->submissionID; ?>
+                                                        </td>
 
                                                         <td width="70%">
-                                                            <h4 class="card-title font-size-20 mb-2"><?= $row->title; ?> <sup style="font-size:12px;"><i class="fa fa-bell" aria-hidden="true"></i></sup></h4>
+                                                            <h4 class="card-title font-size-20 mb-2">
+                                                                <?= $row->title; ?> <sup style="font-size:12px;"><i
+                                                                        class="fa fa-bell" aria-hidden="true"></i></sup>
+                                                            </h4>
                                                             <div>
-                                                                <h4 class="card-title1 font-size-14 mb-2"><?= $row->author; ?></h4>
-                                                                <?php if ($row->coauthor) : ?>
-                                                                    <?php foreach ($row->coauthor as $coauthor) : ?>
+                                                                <h4 class="card-title1 font-size-14 mb-2">
+                                                                    <?= $row->author; ?>
+                                                                </h4>
+                                                                <?php if ($row->coauthor): ?>
+                                                                    <?php foreach ($row->coauthor as $coauthor): ?>
                                                                         <?= $coauthor->title . ' ' . $coauthor->name . ' ' . $coauthor->m_name . ' ' . $coauthor->l_name . ', '; ?>
                                                                     <?php endforeach; ?>
                                                                 <?php endif; ?>
                                                             </div>
                                                             <!-- </h4> -->
-                                                            <button type="button" class="btn2 btn-outline-primary waves-effect waves-light mb-2">Submitted on: <?= $row->submission_date; ?></button>
+                                                            <button type="button"
+                                                                class="btn2 btn-outline-primary waves-effect waves-light mb-2">Submitted
+                                                                on:
+                                                                <?= $row->submission_date; ?>
+                                                            </button>
                                                         </td>
 
                                                         <td width="15%">
                                                             <!-- <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2"> -->
-                                                            <?php if ($row->status_id == 0) : ?>
+                                                            <?php if ($row->status_id == 0): ?>
                                                                 Submitted
-                                                            <?php elseif ($row->status_id >= 1 && $row->status_id < 3) : ?>
+                                                            <?php elseif ($row->status_id >= 1 && $row->status_id < 3): ?>
                                                                 Under reviw
-                                                            <?php elseif ($row->status_id == 3) : ?>
-                                                                <span class="btn-success waves-light" style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                            <?php elseif ($row->status_id == 3): ?>
+                                                                <span class="btn-success waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fa fa-area-chart"></i>&nbsp; Completed
                                                                 </span>
-                                                            <?php elseif ($row->status_id == 4) : ?>
+                                                            <?php elseif ($row->status_id == 6): ?>
+                                                                <span class="btn-success waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fas fa-edit"></i>&nbsp; Copy Editing completed
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 4): ?>
                                                                 Rejectd
                                                             <?php endif; ?>
 
                                                             <!-- </button> -->
                                                             <p></p>
 
-                                                            <?php if (isset($row->notification)) : ?>
-                                                                <p><i class='far fa-comment'></i><?= $row->notification; ?></p>
-                                                            <?php else : ?>
+                                                            <?php if (isset ($row->notification)): ?>
+                                                                <p><i class='far fa-comment'></i>
+                                                                    <?= $row->notification; ?>
+                                                                </p>
+                                                            <?php else: ?>
                                                                 <p><i class='far fa-comment'></i>0</p>
                                                             <?php endif; ?>
                                                         </td>
 
                                                         <!-- <td width="5%"><button class="btn1 btn-success" data-bs-toggle="modal" data-bs-target=".bs-example-modal-lg<? //= $key; 
-                                                                                                                                                                        ?>"> <i class="fa fa-eye"></i> ++</button></td> -->
-                                                        <td width="5%"> <?= anchor('author/detailview/' . $row->submissionID, '<span class="btn1 btn-success"><i class="fa fa-eye"></i></span>'); ?></td>
+                                                                ?>"> <i class="fa fa-eye"></i> ++</button></td> -->
+                                                        <td width="5%">
+                                                            <?= anchor('editor/byauthor/' . $row->submissionID, '<span class="btn1 btn-success"><i class="fa fa-eye"></i></span>'); ?>
+                                                        </td>
                                                     </tr>
                                                 <?php endforeach; ?>
 
@@ -226,7 +281,8 @@ Dashboard
 
 
 <!-- Modal -->
-<div class="modal fade" id="revisionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="revisionModalLabel" aria-hidden="true">
+<div class="modal fade" id="revisionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="revisionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">

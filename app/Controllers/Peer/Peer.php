@@ -40,45 +40,45 @@ class Peer extends BaseController
         $uid = session()->get('userID');
 
         $reviews = $this->peerModel->getReviewRequest($uid);
+        $completed = $this->peerModel->getReviewCompleted($uid);
 
-        ///////////
-        /*
-        if ($reviews)
-
-            $editorPeerContent = $this->peerModel->getEditoriealUploads($reviews[0]->submissionID);
-        $noteCount = $this->peerModel->noteCount($uid);
-
-        $data['reviews'] = $reviews;
-        $data['noteCount'] = ($noteCount) ? $noteCount : 0;
-        if (isset($editorPeerContent))
-            $data['editorPeerContent'] = $editorPeerContent;
-        */
-        //////
         if ($reviews) {
             foreach ($reviews as $review) {
                 $editorPeerContent[] = $this->peerModel->getEditoriealUploads($review->submissionID);
                 $noteCount[] = $this->peerModel->noteCount($uid, $review->submissionID);
             }
         }
-
-        $data['reviews'] = $reviews;
-        if (isset($noteCount)) {
+        // $data['reviews'] = $reviews;
+        $data['completed'] = $completed;
+        $data['list'] = $reviews;
+        if (isset ($noteCount)) {
             $data['noteCount'] = $noteCount;
         }
-        if (isset($editorPeerContent))
+        if (isset ($editorPeerContent))
             $data['editorPeerContent'] = array_filter($editorPeerContent);
+
         return view('peer/index', $data);
     }
     public function detailview()
     {
 
-        $status = $this->request->getVar('consent');
-        $rev_id = $this->request->getVar('rev_id');
-        $this->peerModel->updateReview($rev_id, $status);
-        $submission_id = $this->request->getVar('submission_id');
+        $uri = $this->request->getUri();
+        $submission_id = $uri->getSegment(3);
+        $reviewTableId = $uri->getSegment(4); //to update review table
         $data = [];
+        $data['reviewTableId'] = $reviewTableId;
+        $result = $this->peerModel->checkStatus($reviewTableId);
+        if ($result->status > 1 && $result->status < 6) {
+            $data['status'] = true;
+        } else if ($result->status == '7') {
+            return redirect()->to('peer');
+        } else {
+            $data['status'] = false;
+        }
+        $data['completion_date'] = $result->completion_date;
         $data['details'] = $this->peerModel->getReviewDetailBySubid($submission_id);
         $data['discussions'] = $this->peerModel->getDiscussion($submission_id);
+        $data['editor'] = $this->peerModel->getUser($data['details']->editor_id);
         $data['submission_id'] = $submission_id;
 
         return view('peer/detailview', $data);
@@ -86,24 +86,16 @@ class Peer extends BaseController
 
     public function accept()
     {
-        /*
+
         if ($this->request->getMethod() == 'post') {
             $status = $this->request->getVar('consent');
-            $rev_id = $this->request->getVar('rev_id');
+            $rev_id = $this->request->getVar('reviewTableId');
             $this->peerModel->updateReview($rev_id, $status);
-            return redirect()->to('peer');
-        } else {
-*/
-        $uri = $this->request->getUri();
-        $submission_id = $uri->getSegment(3);
-        $revId = $uri->getSegment(4);
-        $reviewRow = $this->peerModel->getReviewRow($submission_id);
-        $data['completion_date'] = $reviewRow->completion_date;
-        $data['submission_id'] = $submission_id;
-        $data['rev_id'] = $revId;
+            $this->peerModel->updateSubmissionStatus($this->request->getVar('submission_id'), $status);
 
-        return view('peer/accept', $data);
-        // }
+            echo 'consent updated.';
+        }
+
     }
 
 
@@ -114,7 +106,7 @@ class Peer extends BaseController
         $author = $this->peerModel->getUser($this->request->getVar('recipient_id'));
         $fullName = $author->title . ' ' . $author->username . ' ' . $author->middle_name . ' ' . $author->last_name;
         $sub_title = $submissionTitle[0]->title;
-        $mailData['fullName']  = $fullName;
+        $mailData['fullName'] = $fullName;
         $mailData['sub_title'] = $sub_title;
         $mailData['sub_id'] = $submissionTitle[0]->submissionID;
 
@@ -180,7 +172,7 @@ class Peer extends BaseController
 
             $note = $this->peerModel->discussion($notification);
             if ($note) {
-                $mail = $this->notificationEmail($this->request->getVar('recipient'), $this->request->getVar('subject-title'), $this->request->getVar('message-text'), $mailData, $journalName);
+                $mail = $this->notificationEmail($this->request->getVar('recipient'), $this->request->getVar('subject-title'), $this->request->getVar('message-text'), $mailData, null, $journalName);
             }
             echo '<p>successfully replied</p>';
         }
@@ -189,8 +181,8 @@ class Peer extends BaseController
     }
 
     /* --------------------------------
-    * ABENDONED NOT IN USEFUL INSTED USING .. notify()
-    */
+     * ABENDONED NOT IN USEFUL INSTED USING .. notify()
+     */
     public function discussion()
     {
         $uri = $this->request->getUri();
@@ -239,7 +231,6 @@ table='editor_peer_content'
 
                         if ($note) {
                             //send email
-                            //print $note;
 
                             $mailContent = '';
                             $editorData = $this->peerModel->getEditorPeerContent($note); //$revision_id or $note
@@ -271,11 +262,14 @@ table='editor_peer_content'
     }
     public function updateReview()
     {
+
         $uid = session()->get('userID');
 
         $revId = $this->request->getVar('reviewID');
         $status = $this->request->getVar('status');
+        $submissionid = $this->request->getVar('submissionid');
         $q = $this->peerModel->updateReview($revId, $status);
+        $this->peerModel->updateSubmissionStatus($submissionid, $status);
 
         if ($q) {
             $success = array('success' => 'Review status has been updated successfully!');
@@ -312,7 +306,7 @@ table='editor_peer_content'
         $this->email->setTo($to);
         $this->email->setBCC('creativeplus92@gmail.com');
         $this->email->setSubject($subject);
-        $body =  view('mails/toauthor', $mailData);
+        $body = view('mails/toauthor', $mailData);
         $this->email->setMessage($body);
         //$sent = $this->email->send();
         if ($this->email->send()) {

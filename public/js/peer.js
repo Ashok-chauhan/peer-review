@@ -1,9 +1,11 @@
-function radioCtr(status, revId) {
+function radioCtr(status, revId, subid) {
   const proto = window.location.protocol;
   const host = proto + "//" + window.location.hostname + "/peer/updateReview";
   const formData = new FormData();
   formData.append("status", status);
   formData.append("reviewID", revId);
+  formData.append("submissionid", subid);
+ 
 
   fetch(host, {
     method: "POST",
@@ -70,9 +72,9 @@ peerForm.addEventListener("submit", function (event) {
            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>`;
       // You can update the modal or perform any other actions here
-      //   setTimeout(function () {
-      //     location.reload();
-      //   }, 500);
+        setTimeout(function () {
+          location.reload();
+        },200);
     })
     .catch(function (error) {
       console.error("Error:", error);
@@ -102,4 +104,47 @@ $("#peerModal").on("show.bs.modal", function (event) {
   modal.find("#submission").val(subid);
   modal.find("#recipient_id").val(recipient_id);
   modal.find("#subject-title").val(title);
+});
+
+
+const peerConsentForm = document.getElementById("peerConsentForm");
+var peerConsent_modal = document.getElementById("peerConsent");
+var peerConsentModal = new bootstrap.Modal(peerConsent_modal);
+peerConsentForm.addEventListener("submit", function (event) {
+  event.preventDefault(); //
+  const formData = new FormData(peerConsentForm);
+  // Perform AJAX request
+  fetch(peerConsentForm.action, {
+    method: "POST",
+    body: formData,
+  })
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.text();
+    })
+    .then(function (data) {
+      // Handle the response from the server
+     console.log(data);
+      const msg = document.getElementById("msg");
+      msg.innerHTML = `<div class="alert alert-success alert-dismissible  role="alert">
+                      Consent status updated sucessfully!
+           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`;
+      // You can update the modal or perform any other actions here
+        setTimeout(function () {
+          location.reload();
+        }, 200);
+      
+    })
+    .catch(function (error) {
+      console.error("Error:", error);
+      const msg = document.getElementById("msg");
+      msg.innerHTML = `<div class="alert alert-danger" role="alert">
+                      Error: ${error}!
+                    </div>`;
+    });
+  // Close the modal
+  peerConsentModal.hide();
 });

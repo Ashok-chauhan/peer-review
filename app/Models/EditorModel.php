@@ -11,16 +11,26 @@ use CodeIgniter\Model;
  */
 class EditorModel extends Model
 {
-    public function allActive($status)
+    public function allActive($status, $editor_id)
     {
-        //$q = $this->db->table('submission');
-
-        //$query =  $q->getWhere(['status_id' => $status]);
+        /*
         $q = $this->db->query("select * from submission where status_id in($status) order by submissionID desc");
-
         $data = $q->getResult();
         if ($data) {
             return $data;
+        } else {
+            return false;
+        }
+        */
+        $builder = $this->db->table('submission');
+        $builder->select('*');
+        $builder->join('journal', 'journal.id = submission.jid', 'left');
+        $builder->where('editor_id', $editor_id);
+        $builder->whereIn('status_id', $status);
+        $builder->orderBy('submissionID', 'DESC');
+        $query = $builder->get();
+        if ($query) {
+            return $query->getResult();
         } else {
             return false;
         }
@@ -42,7 +52,7 @@ class EditorModel extends Model
     public function getBySubmissionId($table, $submissionID)
     {
         $Q = $this->db->table($table)->select('*')->where('submissionID', $submissionID);
-        $query    = $Q->get();
+        $query = $Q->get();
         if ($query) {
             return $query->getResult();
         } else {
@@ -429,7 +439,7 @@ class EditorModel extends Model
     {
         $Q = $this->db->table('coauthor');
         $Q->where('submission_id', $subid);
-        $query    = $Q->get();
+        $query = $Q->get();
         if ($query) {
             return $query->getResult();
         } else {
@@ -439,7 +449,7 @@ class EditorModel extends Model
     public function preReview($subid)
     {
         $q = $this->db->query("SELECT id FROM notifications where submissionID=" . $subid . " LIMIT 1");
-        $row   = $q->getRow();
+        $row = $q->getRow();
         if ($row) {
             return $row->id;
         } else {
