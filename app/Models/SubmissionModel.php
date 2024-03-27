@@ -77,7 +77,7 @@ class SubmissionModel extends Model
         $Q->orderBy('submissionID', 'DESC');
         $Q->where('authorID', $authorID);
         $Q->where('status_id', 3);
-        $query    = $Q->get();
+        $query = $Q->get();
         if ($query) {
             return $query->getResult();
         } else {
@@ -89,7 +89,7 @@ class SubmissionModel extends Model
     {
         $Q = $this->db->table('submission');
         $Q->where('submissionID', $submissionID);
-        $query    = $Q->get()->getRow();
+        $query = $Q->get()->getRow();
         if ($query) {
             return $query; //->getResult();
         } else {
@@ -101,7 +101,7 @@ class SubmissionModel extends Model
     {
         $Q = $this->db->table('journal');
         $Q->where('id', $id);
-        $query    = $Q->get()->getRow();
+        $query = $Q->get()->getRow();
         if ($query) {
             return $query;
         } else {
@@ -112,7 +112,7 @@ class SubmissionModel extends Model
     public function getBySubmissionId($submissionID)
     {
         $Q = $this->db->table('submission_content')->select('*')->where('submissionID', $submissionID);
-        $query    = $Q->get();
+        $query = $Q->get();
         if ($query) {
             return $query->getResult();
         } else {
@@ -136,8 +136,8 @@ class SubmissionModel extends Model
 
     public function getNotice($recipientid, $submissionID)
     {
-        // $query = $this->db->query('select * from notifications where recipient_id=' . $recipientid . ' and submissionID=' . $submissionID . ' order by date_created desc');
-        $query = $this->db->query('select * from notifications where submissionID=' . $submissionID . ' order by date_created desc');
+        $query = $this->db->query('select * from notifications where recipient_id=' . $recipientid . ' and submissionID=' . $submissionID . ' order by date_created desc');
+        // $query = $this->db->query('select * from notifications where submissionID=' . $submissionID . ' order by date_created desc');
         $result = $query->getResult();
         if ($result) {
             return $result;
@@ -203,7 +203,7 @@ class SubmissionModel extends Model
     public function getCoauthor($author_id)
     {
         $Q = $this->db->table('coauthor')->select('*')->where('author_id', $author_id);
-        $query    = $Q->get();
+        $query = $Q->get();
         if ($query) {
             return $query->getResult();
         } else {
@@ -216,7 +216,7 @@ class SubmissionModel extends Model
         $Q->where('author_id', $author_id);
         $Q->where('submission_id', $subid);
 
-        $query    = $Q->get();
+        $query = $Q->get();
         if ($query) {
             return $query->getResult();
         } else {
@@ -353,7 +353,7 @@ class SubmissionModel extends Model
     public function preReview($subid)
     {
         $q = $this->db->query("SELECT id FROM notifications where submissionID=" . $subid . " LIMIT 1");
-        $row   = $q->getRow();
+        $row = $q->getRow();
         if ($row) {
             return $row->id;
         } else {

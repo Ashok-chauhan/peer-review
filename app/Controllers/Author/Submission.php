@@ -348,6 +348,7 @@ class Submission extends BaseController
 
     public function discussion()
     {
+        //Abandoned.
         $uri = $this->request->getUri();
         $submissionid = $uri->getSegment(3);
         $notice = $this->submissionModel->getNotice(session()->get("userID"), $submissionid);
@@ -483,7 +484,6 @@ class Submission extends BaseController
         $data['coauthor'] = $coauthor;
         $data['user'] = $user;
         //$data['sentMessages'] = $this->submissionModel->getSentDiscussion(session()->get('userID'), $submission_id);
-
         return view('author/detailview', $data);
     }
 

@@ -256,4 +256,30 @@ class PeerModel extends Model
         }
     }
 
+    public function updateNotifications($id)
+    {
+
+        $builder = $this->db->table('notifications');
+        $builder->where('recipient_id', $id);
+        $builder->update(['status' => 1]);
+        if ($this->db->affectedRows()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function getBellNotification($recipeint_id)
+    {
+        $Q = $this->db->table('notifications');
+        $Q->where('recipient_id', $recipeint_id);
+        $Q->orderBy('date_created', 'DESC');
+        $query = $Q->get()->getResult();
+        if ($query) {
+            return $query;
+        } else {
+            return false;
+        }
+    }
+
 }

@@ -82,6 +82,7 @@ $routes->group('admin', static function ($routes) {
 $routes->group('peer', static function ($routes) {
     $routes->get('', 'Peer\Peer::index', ['filter' => 'auth']);
     $routes->post('', 'Peer\Peer::index', ['filter' => 'auth']);
+    $routes->get('bellnotification', 'Peer\Peer::bellnotification', ['filter' => 'auth']);
     $routes->get('discussion/(:num)/(:num)', 'Peer\Peer::discussion/$1/$2', ['filter' => 'auth']);
     $routes->post('discussion/(:num)/(:num)', 'Peer\Peer::discussion/$1/$2', ['filter' => 'auth']);
     $routes->post('updateReview', 'Peer\Peer::updateReview');

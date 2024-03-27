@@ -119,6 +119,10 @@ class Editor extends BaseController
         $data = [];
         $uri = $this->request->getUri();
         $submissionID = $uri->getSegment(3);
+        $peerData = $this->editorModel->getReviewsBySubId($submissionID);
+        if ($peerData) {
+            $data['peer'] = $this->user->getUser($peerData->reviewerID);
+        }
         $coauthor = $this->editorModel->coauthorBySubmission($submissionID);
         $revisionFile = $this->editorModel->getRevisionFile($submissionID);
         $submissionTitle = $this->editorModel->getBySubmissionId('submission', $submissionID);
@@ -146,6 +150,8 @@ class Editor extends BaseController
         $data['submission'] = $submissionTitle[0];
         $data['submission']->contributor = $coauthor;
         $data['sentMessages'] = $this->editorModel->getSentDiscussion(session()->get('userID'), $submissionID);
+        // print '<pre>';
+        // print_r($data);
 
 
         return view('editor/byauthor', $data);
@@ -154,7 +160,7 @@ class Editor extends BaseController
     public function downloads()
     {
         $uri = $this->request->getUri();
-        $name = WRITEPATH . 'uploads/' . $uri->getSegment(3);
+        $name = WRITEPATH . 'uploads/' . urldecode($uri->getSegment(3));
         return $this->response->download($name, null);
     }
 

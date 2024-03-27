@@ -46,7 +46,7 @@
             elementpath: false
         });
     </script>
-    <!-- <script src="<?//= base_url();           ?>js/tinymce/tinymce.min.js"></script> -->
+    <!-- <script src="<?//= base_url();                ?>js/tinymce/tinymce.min.js"></script> -->
 
 
     <!-- toreviewr bof -->
@@ -266,6 +266,8 @@
                                             <a href="<?= base_url(); ?>author/bellnotification" class="small"> View All</a>
                                         <?php elseif (session()->get('role') == 2): ?>
                                             <a href="<?= base_url(); ?>editor/bellnotification" class="small"> View All</a>
+                                        <?php elseif (session()->get('role') == 4): ?>
+                                            <a href="<?= base_url(); ?>peer/bellnotification" class="small"> View All</a>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -283,31 +285,34 @@
                                             <?php elseif (session()->get('role') == 2): ?>
                                                 <a href="<?= base_url(); ?>editor/bellnotification"
                                                     class="text-reset notification-item">
-                                                <?php endif; ?>
-                                                <div class="d-flex">
-                                                    <div class="avatar-xs me-3">
-                                                        <span class="avatar-title bg-primary rounded-circle font-size-16">
-                                                            <i class="ri-checkbox-circle-line"></i>
-                                                        </span>
-                                                    </div>
+                                                <?php elseif (session()->get('role') == 4): ?>
+                                                    <a href="<?= base_url(); ?>peer/bellnotification"
+                                                        class="text-reset notification-item">
+                                                    <?php endif; ?>
+                                                    <div class="d-flex">
+                                                        <div class="avatar-xs me-3">
+                                                            <span class="avatar-title bg-primary rounded-circle font-size-16">
+                                                                <i class="ri-checkbox-circle-line"></i>
+                                                            </span>
+                                                        </div>
 
-                                                    <div class="flex-1">
-                                                        <h6 class="mb-1">
-                                                            <?= $discussion->title; ?>
-                                                        </h6>
-                                                        <div class="font-size-12 text-muted">
-                                                            <p class="mb-1">
-                                                                <?= $notification; ?>
-                                                            </p>
-                                                            <p class="mb-0"><i class="mdi mdi-clock-outline"></i>
-                                                                <?= date("l jS \of F Y h:i:s A", strtotime($discussion->date_created)); ?>
-                                                            </p>
+                                                        <div class="flex-1">
+                                                            <h6 class="mb-1">
+                                                                <?= $discussion->title; ?>
+                                                            </h6>
+                                                            <div class="font-size-12 text-muted">
+                                                                <p class="mb-1">
+                                                                    <?= $notification; ?>
+                                                                </p>
+                                                                <p class="mb-0"><i class="mdi mdi-clock-outline"></i>
+                                                                    <?= date("l jS \of F Y h:i:s A", strtotime($discussion->date_created)); ?>
+                                                                </p>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </a>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
 
 
                             </div>
@@ -321,6 +326,11 @@
                                     <?php elseif (session()->get('role') == 2): ?>
                                         <a class="btn btn-sm btn-link font-size-14 text-center"
                                             href="<?= base_url(); ?>editor/bellnotification">
+                                            <i class="mdi mdi-arrow-right-circle me-1"></i> View More..
+                                        </a>
+                                    <?php elseif (session()->get('role') == 4): ?>
+                                        <a class="btn btn-sm btn-link font-size-14 text-center"
+                                            href="<?= base_url(); ?>peer/bellnotification">
                                             <i class="mdi mdi-arrow-right-circle me-1"></i> View More..
                                         </a>
                                     <?php endif; ?>

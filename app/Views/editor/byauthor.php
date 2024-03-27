@@ -525,10 +525,12 @@ $STATUS = [
                                             <label for="subject-title" class="col-form-label">Subject:*</label>
                                             <input type="text" class="form-control" id="subject-title"
                                                 name="subject-title" required>
+
                                             <input type="hidden" name="submissionID" value="<?= $submission_id; ?>" />
-                                            <input type="hidden" name="recipient" value="<?= $authorEmail; ?>" />
-                                            <input type="hidden" name="recipient_id" value="<?= $userid; ?>" />
-                                            <input type="hidden" name="authorName" value="<?= $authorName; ?>" />
+                                            <input type="hidden" name="recipient" value="<?= $peer->email; ?>" />
+                                            <input type="hidden" name="recipient_id" value="<?= $peer->userID; ?>" />
+                                            <input type="hidden" name="authorName"
+                                                value="<?= $peer->title . ' ' . $peer->middle_name . ' ' . $peer->last_name; ?>" />
                                             <!-- <input type="hidden" name="role" value="<? //= $role; 
                                             ?>" /> -->
                                         </div>

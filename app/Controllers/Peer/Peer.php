@@ -316,4 +316,13 @@ table='editor_peer_content'
             return false;
         }
     }
+
+
+    public function bellnotification()
+    {
+        $data = [];
+        $data['notifications'] = $this->submissionModel->getBellNotification(session()->get('userID'));
+        $updated = $this->submissionModel->updateNotifications(session()->get('userID'));
+        return view('peer/notification', $data);
+    }
 }
