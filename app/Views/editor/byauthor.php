@@ -23,7 +23,7 @@ $STATUS = [
         <div class="col-12">
 
             <!-- validation bof -->
-            <?php if (isset ($validation)): ?>
+            <?php if (isset($validation)): ?>
                 <div class="alert alert-danger">
                     <?= $validation->listErrors(); ?>
                 </div>
@@ -264,6 +264,10 @@ $STATUS = [
 
                                 </span>
                             </div>
+
+                            <div class="list-group-item" role="alert">
+                                <?= anchor('editor/accepted/' . $submission->submissionID . '/' . 4, '<span class="btn-dark waves-light" style="padding: 0.47rem 34px; border-radius: 5px;"><i class="fa fa-comments"></i>&nbsp; Accept & proceed</span>'); ?>
+                            </div>
                         <?php endif; ?>
 
 
@@ -277,10 +281,22 @@ $STATUS = [
                             </div>
                         <?php endif; ?>
                         <?php if ($submission->status_id == 4): ?>
-                            <div class="list-group-item" role="alert">
+                            <!-- <div class="list-group-item" role="alert">
                                 <span class=" btn-dark waves-light" style="padding: 0.47rem 31px; border-radius: 5px;">
                                     <i class="fas fa-edit"></i>&nbsp; Send Copy Editing
                                 </span>
+                            </div> -->
+
+                            <div class="list-group-item" role="alert">
+                                <form method="POST" action="../tocopyedit">
+                                    <input type="hidden" name="submissionid" value="<?= $submission->submissionID; ?>" />
+                                    <input type="hidden" name="title" value="<?= $submission->title; ?>" />
+
+                                    <button class="btn btn-dark waves-effect waves-light" submit="button"
+                                        style="padding: 0.47rem 23px;">
+                                        <i class="fa fa-search"></i>&nbsp;Send To Copy Editing
+                                    </button>
+                                </form>
                             </div>
                         <?php endif; ?>
                         <?php if ($submission->status_id == 5): ?>
@@ -525,14 +541,15 @@ $STATUS = [
                                             <label for="subject-title" class="col-form-label">Subject:*</label>
                                             <input type="text" class="form-control" id="subject-title"
                                                 name="subject-title" required>
-
-                                            <input type="hidden" name="submissionID" value="<?= $submission_id; ?>" />
-                                            <input type="hidden" name="recipient" value="<?= $peer->email; ?>" />
-                                            <input type="hidden" name="recipient_id" value="<?= $peer->userID; ?>" />
-                                            <input type="hidden" name="authorName"
-                                                value="<?= $peer->title . ' ' . $peer->middle_name . ' ' . $peer->last_name; ?>" />
-                                            <!-- <input type="hidden" name="role" value="<? //= $role; 
-                                            ?>" /> -->
+                                            <?php if ($peer): ?>
+                                                <input type="hidden" name="submissionID" value="<?= $submission_id; ?>" />
+                                                <input type="hidden" name="recipient" value="<?= $peer->email; ?>" />
+                                                <input type="hidden" name="recipient_id" value="<?= $peer->userID; ?>" />
+                                                <input type="hidden" name="authorName"
+                                                    value="<?= $peer->title . ' ' . $peer->middle_name . ' ' . $peer->last_name; ?>" />
+                                                <!-- <input type="hidden" name="role" value="<? //= $role; 
+                                                    ?>" /> -->
+                                            <?php endif; ?>
                                         </div>
                                         <div class="mb-3">
                                             <label for="message-text" class="col-form-label">Message:</label>

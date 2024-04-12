@@ -469,4 +469,16 @@ class EditorModel extends Model
             return false;
         }
     }
+
+    public function accepted($submissionID, $status)
+    {
+        $Q = $this->db->table('submission');
+        $Q->where('submissionId', $submissionID);
+        $Q->update(['status_id' => $status]);
+        if ($this->db->affectedRows() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

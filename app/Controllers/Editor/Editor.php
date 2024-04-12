@@ -45,8 +45,8 @@ class Editor extends BaseController
         $data = [];
 
         $revData = [];
-        $status = [0, 1, 2, 3, 4, 5, 6, 7]; //'0,1,2';
-        $complete_status = [6, 7]; //'3,4';
+        $status = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; //'0,1,2';
+        $complete_status = [6, 8, 9]; //'3,4';
         $submissions = $this->editorModel->allActive($status, session()->get("userID"));
         $completed = $this->editorModel->allActive($complete_status, session()->get("userID"));
 
@@ -62,7 +62,7 @@ class Editor extends BaseController
                 $submissions[$key]->submission_content = $submission_content;
 
                 $user = $this->editorModel->getUser($submission->authorID);
-                if (isset ($user->email)) {
+                if (isset($user->email)) {
                     $mail = $user->email;
                     $title = $user->title . ' ' . $user->username . ' ' . $user->middle_name . ' ' . $user->last_name;
                 }
@@ -122,6 +122,8 @@ class Editor extends BaseController
         $peerData = $this->editorModel->getReviewsBySubId($submissionID);
         if ($peerData) {
             $data['peer'] = $this->user->getUser($peerData->reviewerID);
+        } else {
+            $data['peer'] = '';
         }
         $coauthor = $this->editorModel->coauthorBySubmission($submissionID);
         $revisionFile = $this->editorModel->getRevisionFile($submissionID);
@@ -350,6 +352,30 @@ class Editor extends BaseController
         }
     }
 
+    public function tocopyedit()
+    {
+        $reviewer = $this->editorModel->getCopyeditor();
+        $subid = $this->request->getVar('submissionid');
+        $title = $this->request->getVar('title');
+        $editorContent = $this->editorModel->getEditorialUploadsBySubId($subid);
+        $subContents = $this->editorModel->getBySubmissionId('submission_content', $subid);
+
+        $peer = [];
+        if (is_array($reviewer)) {
+            foreach ($reviewer as $review) {
+                $peer[$review->userID] = $review->username;
+            }
+        }
+        $data['peers'] = $reviewer;
+        $data['peer'] = $peer;
+        $data['title'] = $title;
+        $data['submissionid'] = $subid;
+        $data['subContents'] = $subContents;
+        $data['editorContent'] = $editorContent;
+        print '<pre>';
+        print_r($data);
+        // return view('editor/tocopyedit', $data);
+    }
     public function editorUpload()
     {
         //        if($this->request->getMethod()=='post'){
@@ -742,5 +768,16 @@ class Editor extends BaseController
         $updated = $this->editorModel->updateBellNotifications(session()->get('userID'));
         $data['notifications'] = $notifications;
         return view('editor/bellnotification', $data);
+    }
+
+    public function accepted()
+    {
+        $uri = $this->request->getUri();
+        $submissionID = $uri->getSegment(3);
+        $status_id = $uri->getSegment(4);
+        $status = $this->editorModel->accepted($submissionID, $status_id);
+        if ($status) {
+            return redirect()->to('editor/byauthor/' . $submissionID);
+        }
     }
 }

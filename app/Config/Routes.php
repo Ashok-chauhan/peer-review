@@ -58,18 +58,23 @@ $routes->group('editor', static function ($routes) {
     $routes->get('byauthor/(:segment)', 'Editor\Editor::byAuthor', ['filter' => 'auth']);
     $routes->get('downloads/(:segment)', 'Editor\Editor::downloads');
     $routes->get('downloadZip/(:segment)', 'Editor\Editor::downloadZip');
-    // $routes->get('notify/(:num)/(:num)', 'Editor\Editor::notify/$1/$2', ['filter' => 'auth']);
+    $routes->get('accepted/(:num)/(:num)', 'Editor\Editor::accepted/$1/$2', ['filter' => 'auth']);
     // $routes->post('notify/(:num)/(:num)', 'Editor\Editor::notify/$1/$2', ['filter' => 'auth']);
     $routes->get('bellnotification', 'Editor\Editor::bellnotification', ['filter' => 'auth']);
     $routes->get('notify', 'Editor\Editor::notify', ['filter' => 'auth']);
     $routes->post('notify', 'Editor\Editor::notify', ['filter' => 'auth']);
     $routes->get('getRevisionFile/(:segment)', 'Editor\Editor::getRevisionFile', ['filter' => 'auth']);
     $routes->post('toreview/', 'Editor\Editor::toReview', ['filter' => 'auth']);
+    ///
+    $routes->post('tocopyedit/', 'Editor\Editor::tocopyedit', ['filter' => 'auth']);
+    //tocopyedit may be not required
     $routes->post('sendtopeer/', 'Editor\Editor::sendtopeer', ['filter' => 'auth']);
     $routes->post('editorUpload/', 'Editor\Editor::editorUpload');
     $routes->get('deleteEditorUpload/(:num)/(:num)', 'Editor\Editor::deleteEditorUpload/$1/$2', ['filter' => 'auth']);
     $routes->post('peerDiscussion/', 'Editor\Editor::peerDiscussion');
-    $routes->post('tocpeditor/', 'Editor\Editor::tocpeditor');
+    //$routes->post('tocpeditor/', 'Editor\Editor::tocpeditor');
+    /////$routes->post('tocopyedit/', 'Editor\Editor::tocpeditor');
+
     $routes->post('sendCopyEditor/', 'Editor\Editor::sendCopyEditor', ['filter' => 'auth']);
     $routes->post('copyeditorDiscussion/', 'Editor\Editor::copyeditorDiscussion', ['filter' => 'auth']);
 });
