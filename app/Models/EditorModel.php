@@ -35,7 +35,18 @@ class EditorModel extends Model
             return false;
         }
     }
+    public function getJournal($id)
+    {
+        $builder = $this->db->table('journal');
+        $builder->where('id', $id);
+        $row = $builder->get()->getRow();
+        if ($row) {
+            return $row;
+        } else {
+            return false;
+        }
 
+    }
 
     public function getAutor($authorID)
     {

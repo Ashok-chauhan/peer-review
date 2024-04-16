@@ -51,10 +51,10 @@ class Peer extends BaseController
         // $data['reviews'] = $reviews;
         $data['completed'] = $completed;
         $data['list'] = $reviews;
-        if (isset ($noteCount)) {
+        if (isset($noteCount)) {
             $data['noteCount'] = $noteCount;
         }
-        if (isset ($editorPeerContent))
+        if (isset($editorPeerContent))
             $data['editorPeerContent'] = array_filter($editorPeerContent);
 
         return view('peer/index', $data);
@@ -268,15 +268,28 @@ table='editor_peer_content'
         $revId = $this->request->getVar('reviewID');
         $status = $this->request->getVar('status');
         $submissionid = $this->request->getVar('submissionid');
+        $sub = $this->peerModel->getSubmission($submissionid);
+        if ($sub) {
+            $journal = $this->peerModel->getJournal($sub->jid);
+            $editor = $this->peerModel->getUser($journal->editor_id);
+        }
+        $mailData['subtitle'] = $sub->title;
+        $mailData['journal'] = $journal->journal_name;
+        $to = $editor->email;
         $q = $this->peerModel->updateReview($revId, $status);
         $this->peerModel->updateSubmissionStatus($submissionid, $status);
-
         if ($q) {
             $success = array('success' => 'Review status has been updated successfully!');
-            return json_encode($success);
+            //return json_encode($success);
+            echo json_encode($success);
         } else {
             $error = array('error' => 'Somethng went wrong!');
-            return json_encode($error);
+            //return json_encode($error);
+            echo json_encode($error);
+        }
+        if ($status == 3) {
+            //send mail to editor
+            $this->mailToEditor($to, $mailData);
         }
     }
 
@@ -294,6 +307,7 @@ table='editor_peer_content'
         } else {
             $mailData['journal'] = 'Arthopedics';
         }
+        $mailData['peerName'] = session()->get('fullName');
         $mailData['title'] = $title;
         $mailData['message'] = $message;
         if ($file) {
@@ -301,20 +315,47 @@ table='editor_peer_content'
             $mailData['link'] = $link;
         }
 
-        $subject = 'Update Required for Your Article Submission titled "' . $mail['sub_title'] . '(Manuscript ' . $mail['sub_id'] . ')"';
+        $subject = 'You have received a new comment from ' . session()->get('fullName') . ' for ' . $mail['sub_title'];
         $this->email->setMailType('html');
         $this->email->setTo($to);
         $this->email->setBCC('creativeplus92@gmail.com');
         $this->email->setSubject($subject);
-        $body = view('mails/toauthor', $mailData);
+        // $body = view('mails/toauthor', $mailData);
+        $body = view('mails/letter_from_reviewer_to_editor_comment', $mailData);
         $this->email->setMessage($body);
-        //$sent = $this->email->send();
+
         if ($this->email->send()) {
 
             return true;
         } else {
             return false;
         }
+    }
+
+    public function mailToEditor($to, $mail)
+    {
+        if (is_array($mail)) {
+            $mailData['title'] = $mail['subtitle'];
+            $mailData['journal'] = $mail['journal'];
+        }
+        $mailData['fullName'] = session()->get('fullName');
+        $subject = session()->get('fullName') . ' has completed reviewing ' . $mail['subtitle'];
+        $this->email->setMailType('html');
+        $this->email->setTo($to);
+        $this->email->setBCC('creativeplus92@gmail.com');
+        $this->email->setSubject($subject);
+
+        $body = view('mails/letter_to_editor_after_reviewer_finish_review', $mailData);
+        $this->email->setMessage($body);
+
+        if ($this->email->send()) {
+
+            return true;
+        } else {
+            return false;
+        }
+
+
     }
 
 

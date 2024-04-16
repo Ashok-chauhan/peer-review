@@ -109,17 +109,17 @@ class Submission extends BaseController
                         $data['validation'] = "Error occured!"; //$doc->getErrorString();
                     }
                     //update coauthor with submission id
-                    if (isset ($coauthorIds)) {
+                    if (isset($coauthorIds)) {
                         foreach ($coauthorIds as $coauthor_id) {
                             $this->submissionModel->updateCoauthor($coauthor_id, $submissionID);
                         }
                     }
                     //updating primary conteact of coauthor.
-                    if (isset ($coauthor_primaryContact))
+                    if (isset($coauthor_primaryContact))
                         $this->submissionModel->updateCoauthorPrimaryContacct($coauthor_primaryContact);
                     //sending emails bof
                     $coa_names = '';
-                    if (isset ($coauthorNames)) {
+                    if (isset($coauthorNames)) {
                         foreach ($coauthorNames as $coa) {
                             $coa_names .= $coa . ', ';
                         }
@@ -239,12 +239,12 @@ class Submission extends BaseController
                 $subid = $submission->submissionID;
                 $subDate = $submission->submission_date;
                 $jornal = 'Orthopedic'; //$this->request->getVar('jornal');
-                if (isset ($jornal)) {
+                if (isset($jornal)) {
                     $jornal = $jornal;
                 }
                 $subjectTitle = $this->request->getVar('subject-title');
                 $message = $this->request->getVar('message-text');
-                if (isset ($newName)) {
+                if (isset($newName)) {
                     $revfile = $newName;
                 }
                 $editors = $this->submissionModel->getEditors();
@@ -493,11 +493,9 @@ class Submission extends BaseController
         $mailData['title'] = $title;
         $mailData['fullName'] = $fullName;
         $mailData['coauthors'] = $coauthor;
-        //$mailData['coauthorEmails'] = $coEmails;
         $mailData['journal'] = $journal;
         $mailData['id'] = $id;
         $subject = 'Confirmation of Manuscript Submission of ' . $journal . ' ' . $title;
-        $subject = $subject;
         $this->email->setMailType('html');
         $this->email->setTo($to);
         $this->email->setCC($coEmails);
@@ -519,20 +517,18 @@ class Submission extends BaseController
         $mailData['title'] = $title;
         $mailData['fullName'] = $fullName;
         $mailData['coauthors'] = $coauthor;
-        //$mailData['coauthorEmails'] = $coEmails;
         $mailData['journal'] = $journal;
         $mailData['id'] = $id;
         $mailData['primary_contact'] = $p_contact;
-        $subject = 'A new submission titled [Article :' . $id . ' ' . $title . '] by [' . $p_contact . '] ';
-        $subject = $subject;
+        $subject = 'A new submission titled Article :' . $id . ' ' . $title . ' by ' . $p_contact;
         $this->email->setMailType('html');
         $this->email->setTo($to);
-        $this->email->setCC($coEmails);
+        // $this->email->setCC($coEmails);
         $this->email->setBCC('creativeplus92@gmail.com');
         $this->email->setSubject($subject);
         $body = view('mails/submissionMailToEditor', $mailData);
         $this->email->setMessage($body);
-        // $this->email->send();
+
         if ($this->email->send()) {
             return true;
         } else {

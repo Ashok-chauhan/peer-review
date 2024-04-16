@@ -71,6 +71,7 @@ Dashboard
 
                                 <?php if ($coauthor): ?>
                                     <?php foreach ($coauthor as $contributor): ?>
+
                                         <tr>
                                             <td data-label="Name">
                                                 <?= $contributor->title . ' ' . $contributor->name . ' ' . $contributor->m_name . ' ' . $contributor->l_name; ?>

@@ -283,7 +283,7 @@ class Editor extends BaseController
         $peer = [];
         if (is_array($reviewer)) {
             foreach ($reviewer as $review) {
-                $peer[$review->userID] = $review->username;
+                $peer[$review->userID] = $review->title . ' ' . $review->username . ' ' . $review->middle_name . ' ' . $review->last_name;
             }
         }
         $data['peers'] = $reviewer;
@@ -301,6 +301,7 @@ class Editor extends BaseController
 
             if (!$this->editorModel->checkPeer($this->request->getVar('peer'), $this->request->getVar('submissionid'))) {
                 $submision = $this->editorModel->getBySubmissionId('submission', $this->request->getVar('submissionid'));
+                $journal = $this->editorModel->getJournal($submision[0]->jid);
                 $data_reviews['submissionID'] = $this->request->getVar('submissionid');
                 $data_reviews['reviewerID'] = $this->request->getVar('peer');
                 $data_reviews['editor_id'] = session()->get('userID');
@@ -314,6 +315,7 @@ class Editor extends BaseController
                     $revContentId = $this->editorModel->insertReviewContent($review_content);
                 }
                 $peer = $this->editorModel->getAutor($this->request->getVar('peer'));
+                $peerFullName = $peer->title . ' ' . $peer->username . ' ' . $peer->middle_name . ' ' . $peer->last_name;
                 $note['sender'] = session()->get('username');
                 $note['sender_email'] = session()->get('logged_user');
                 $note['sender_id'] = session()->get('userID');
@@ -341,7 +343,7 @@ class Editor extends BaseController
                     $mailMsg = $this->request->getVar('message');
                     $body = $mailMsg . $mailContent;
                     $completion_date = $this->request->getVar('completion_date');
-                    $this->mailToPeer($peer->email, $sbjTitle, $subMissionTitle, $completion_date, $body); //, $journal = null
+                    $this->mailToPeer($peer->email, $peerFullName, $sbjTitle, $subMissionTitle, $completion_date, $body, $journal->journal_name); //, $journal = null
                     $this->session->setTempdata("success", "Notification sent successfully to the Reviewer.", 3);
                     return redirect()->to('editor/byauthor/' . $this->request->getVar('submissionid'));
                 }
@@ -706,14 +708,15 @@ class Editor extends BaseController
             $mailData['link'] = $link;
         }
 
-        $subject = 'Update Required for Your Article Submission titled "' . $mail['sub_title'] . '(Manuscript ' . $mail['sub_id'] . ')"';
+        $subject = 'You have received a new comment from Editor for ' . $mail['sub_title'];
         $this->email->setMailType('html');
         $this->email->setTo($to);
         $this->email->setBCC('creativeplus92@gmail.com');
         $this->email->setSubject($subject);
-        $body = view('mails/toauthor', $mailData);
+        //$body = view('mails/toauthor', $mailData);
+        $body = view('mails/letter_editor_reply_reviewer_comment', $mailData);
         $this->email->setMessage($body);
-        //$sent = $this->email->send();
+
         if ($this->email->send()) {
 
             return true;
@@ -722,11 +725,13 @@ class Editor extends BaseController
         }
     }
 
-    public function mailToPeer($to, $title, $submissionTitle, $completion_date, $body, $journal = null)
+    public function mailToPeer($to, $name, $title, $submissionTitle, $completion_date, $body, $journal = null)
     {
         $mailData = [];
-
+        $scheme = $_SERVER['REQUEST_SCHEME'] . '://';
         $mailData['title'] = $title;
+        $mailData['name'] = $name;
+        $mailData['host'] = $scheme . $_SERVER['SERVER_NAME'];
         $mailData['submissionTitle'] = $submissionTitle;
         if ($journal) {
             $mailData['journal'] = $journal;
@@ -737,12 +742,13 @@ class Editor extends BaseController
         $mailData['body'] = $body;
 
 
-        $subject = 'Article to be reviewed titled "Manuscript: ' . $submissionTitle . '"';
+        $subject = 'You have a new article  ' . $submissionTitle . ' to review';
         $this->email->setMailType('html');
         $this->email->setTo($to);
         $this->email->setBCC('creativeplus92@gmail.com');
         $this->email->setSubject($subject);
-        $body = view('mails/toPeer', $mailData);
+        //$body = view('mails/toPeer', $mailData);
+        $body = view('mails/letter_reviewer_assign', $mailData);
         $this->email->setMessage($body);
         //$sent = $this->email->send();
         if ($this->email->send()) {
@@ -774,10 +780,44 @@ class Editor extends BaseController
     {
         $uri = $this->request->getUri();
         $submissionID = $uri->getSegment(3);
+
+        $submission = $this->editorModel->getBySubmissionId('submission', $submissionID);
+        $subtitle = $submission[0]->title;
+        $journal = $this->editorModel->getJournal($submission[0]->jid);
+        $reveData = $this->editorModel->getReviewsBySubId($submission[0]->submissionID);
+        $reviewer = $this->editorModel->getUser($reveData->reviewerID);
+        $peerFullname = $reviewer->title . ' ' . $reviewer->username . ' ' . $reviewer->middle_name . ' ' . $reviewer->last_name;
         $status_id = $uri->getSegment(4);
         $status = $this->editorModel->accepted($submissionID, $status_id);
         if ($status) {
+            $this->thnakyouMailtoPeer($reviewer->email, $subtitle, $peerFullname, $journal->journal_name);
+        }
+        if ($status) {
             return redirect()->to('editor/byauthor/' . $submissionID);
         }
+    }
+
+
+    public function thnakyouMailtoPeer($to, $subtitle, $name, $journalName)
+    {
+        $mailData['subtitle'] = $subtitle;
+        $mailData['journal'] = $journalName;
+        $mailData['name'] = $name;
+
+        $subject = 'Thank you for completing the review of ' . $subtitle;
+        $this->email->setMailType('html');
+        $this->email->setTo($to);
+        $this->email->setBCC('creativeplus92@gmail.com');
+        $this->email->setSubject($subject);
+
+        $body = view('mails/letter_thank_you_reviewer_complete_review', $mailData);
+        $this->email->setMessage($body);
+        if ($this->email->send()) {
+
+            return true;
+        } else {
+            return false;
+        }
+
     }
 }

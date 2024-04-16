@@ -226,7 +226,7 @@ $STATUS = [
                                 </span>
                             </div>
                         <?php endif; ?>
-                        <?php if ($sentMessages): ?>
+                        <?php if ($sentMessages && $submission->status_id == 0): ?>
                             <div class="list-group-item" role="alert">
                                 <span class="btn-warning  waves-light" style="padding: 0.6rem 13px;border-radius: 5px;">
                                     <i class="fa fa-search"></i>&nbsp; Pre-Review Discussions
@@ -281,23 +281,23 @@ $STATUS = [
                             </div>
                         <?php endif; ?>
                         <?php if ($submission->status_id == 4): ?>
-                            <!-- <div class="list-group-item" role="alert">
-                                <span class=" btn-dark waves-light" style="padding: 0.47rem 31px; border-radius: 5px;">
-                                    <i class="fas fa-edit"></i>&nbsp; Send Copy Editing
-                                </span>
-                            </div> -->
-
                             <div class="list-group-item" role="alert">
+                                <span class=" btn-dark waves-light" style="padding: 0.47rem 31px; border-radius: 5px;">
+                                    <i class="fas fa-edit"></i>&nbsp; Send To Copy Editing
+                                </span>
+                            </div>
+
+                            <!-- <div class="list-group-item" role="alert">
                                 <form method="POST" action="../tocopyedit">
-                                    <input type="hidden" name="submissionid" value="<?= $submission->submissionID; ?>" />
-                                    <input type="hidden" name="title" value="<?= $submission->title; ?>" />
+                                    <input type="hidden" name="submissionid" value="<? //= $submission->submissionID;  ?>" />
+                                    <input type="hidden" name="title" value="<? //= $submission->title;  ?>" />
 
                                     <button class="btn btn-dark waves-effect waves-light" submit="button"
                                         style="padding: 0.47rem 23px;">
                                         <i class="fa fa-search"></i>&nbsp;Send To Copy Editing
                                     </button>
                                 </form>
-                            </div>
+                            </div> -->
                         <?php endif; ?>
                         <?php if ($submission->status_id == 5): ?>
                             <div class="list-group-item" role="alert">

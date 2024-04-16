@@ -80,7 +80,7 @@ class PeerModel extends Model
         $builder->where('submission.submissionID', $id);
         $query = $builder->get()->getRow();
 
-        if (isset ($query->reviewerID)) {
+        if (isset($query->reviewerID)) {
             $q = $this->db->table('review_content');
             $q->select('*');
             $q->join('submission_content', 'review_content.submission_content_id= submission_content.id');
@@ -281,5 +281,19 @@ class PeerModel extends Model
             return false;
         }
     }
+
+    public function getSubmission($id)
+    {
+        $Q = $this->db->table('submission');
+        $Q->where('submissionID', $id);
+        $row = $Q->get()->getRow();
+        if ($row) {
+            return $row;
+        } else {
+            return false;
+        }
+
+    }
+
 
 }
