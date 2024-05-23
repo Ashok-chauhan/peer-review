@@ -492,4 +492,46 @@ class EditorModel extends Model
             return false;
         }
     }
+
+    public function requestRevision($submissionID)
+    {
+        $Q = $this->db->table('notifications');
+        //$data = [];
+        $Q->where('submissionID', $submissionID);
+        $Q->where('role', 4);
+        $Q->orderBy('date_created', 'DESC')->limit(3);
+        $query = $Q->get()->getResult();
+        if ($query) {
+            return $query;
+        } else {
+            return false;
+        }
+
+
+    }
+
+    public function getSubmission($submissionID)
+    {
+        $Q = $this->db->table('submission');
+        $Q->where('submissionId', $submissionID);
+        $row = $Q->get()->getRow();
+        if ($row) {
+            return $row;
+        } else {
+            return false;
+        }
+    }
+
+
+    public function editorialDecision($data)
+    {
+        $builder = $this->db->table('editorial_decision');
+        $result = $builder->insert($data);
+        if ($this->db->affectedRows()) {
+            return $this->db->insertID();
+        } else {
+            return false;
+        }
+    }
+
 }

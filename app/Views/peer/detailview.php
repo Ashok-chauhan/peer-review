@@ -119,7 +119,7 @@ Reviewer Dashboard
                     <p>
                         <?= $details->abstract; ?>
                     </p>
-                    <?php if (isset ($details->showIdentity)): ?>
+                    <?php if (isset($details->showIdentity)): ?>
                         <h4 class="card-title font-size-14"><b>List of Contributors</b></h4>
                         <div class="col-lg-12">
                             <table id="datatable"
@@ -321,7 +321,11 @@ Reviewer Dashboard
                                 <h4 class="font-size-16">
                                     <?= $discussion->title; ?>
                                 </h4>
-
+                                <?php if ($discussion->recommondation): ?>
+                                    <h6>
+                                        Recommondation: <?= $discussion->recommondation; ?>
+                                    </h6>
+                                <?php endif; ?>
                                 <p>
                                     <?= $discussion->message; ?>
                                 </p>
@@ -363,12 +367,23 @@ Reviewer Dashboard
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <h5>Add revision</h5>
+
 
                     <div id="editor"></div>
                     <form id="peerReplyForm" action="../../notify" method="POST" enctype="multipart/form-data">
+                        <div>
+                            <div class="fw-bold">Recommondation *</div>
 
-
+                            <select class="form-select" name="recommondation" id="recommondation">
+                                <option selected="true" disabled="disabled">Choose One</option>
+                                <option value="Accept Submission">Accept Submission</option>
+                                <option value="Revisions Required">Revisions Required</option>
+                                <option value="Resubmit for Review">Resubmit for Review</option>
+                                <option value="Resubmit Elsewhere">Resubmit Elsewhere</option>
+                                <option value="Decline Submission">Decline Submission</option>
+                                <option value="See Comments">See Comments</option>
+                            </select>
+                        </div>
                         <input type="hidden" name="role" id="role" value="4" />
 
                         <div class="mb-3">

@@ -25,8 +25,8 @@ Notifications
                 <div class="card-body">
 
 
-                    <?php if ($notifications) : ?>
-                        <?php foreach ($notifications as $key => $notification) : ?>
+                    <?php if ($notifications): ?>
+                        <?php foreach ($notifications as $key => $notification): ?>
                             <!-- <a href="" class="text-reset notification-item"> -->
                             <div class="d-flex">
                                 <div class="avatar-xs me-3">
@@ -37,16 +37,25 @@ Notifications
                                 <div class="flex-1">
                                     <h6 class="mb-1"><?= $notification->title; ?></h6>
                                     <div class="font-size-12 text-muted">
-                                        <p class="mb-1 fw-bold">You have received a new notification from <?= $notification->sender; ?> ( <?= $notification->role; ?> )</p>
+                                        <p class="mb-1 fw-bold">You have received a new notification from
+                                            <?= $notification->sender; ?> ( <?= $notification->role; ?> )
+                                        </p>
+
+                                        <?php if ($notification->recommondation): ?>
+                                            <h6>
+                                                Recommondation: <?= $notification->recommondation; ?>
+                                            </h6>
+                                        <?php endif; ?>
                                         <p class="mb-1"><?= $notification->message; ?></p>
 
-                                        <?php if ($notification->file) : ?>
+                                        <?php if ($notification->file): ?>
                                             <h6>Attachment</h6>
                                             Article component: <?= $notification->article_component; ?>
-                                            <p><?= anchor('editor/downloads/' . $notification->file,  $notification->file); ?></p>
+                                            <p><?= anchor('editor/downloads/' . $notification->file, $notification->file); ?></p>
                                         <?php endif; ?>
 
-                                        <p class="mb-0"><i class="mdi mdi-clock-outline"></i> <?= date("l jS \of F Y h:i:s A", strtotime($notification->date_created)); ?></p>
+                                        <p class="mb-0"><i class="mdi mdi-clock-outline"></i>
+                                            <?= date("l jS \of F Y h:i:s A", strtotime($notification->date_created)); ?></p>
                                         </br>
                                         <hr>
                                     </div>

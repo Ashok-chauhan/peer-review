@@ -143,6 +143,7 @@ class Peer extends BaseController
                         // $notification['content_id'] = $revision_id;
                         $notification['article_component'] = $this->request->getVar('article_type');
                         $notification['title'] = $this->request->getVar('subject-title');
+                        $notification['recommondation'] = $this->request->getVar('recommondation');
                         $notification['message'] = $this->request->getVar('message-text');
                         $notification['file'] = $newName;
                         $note = $this->peerModel->discussion($notification);
@@ -168,6 +169,8 @@ class Peer extends BaseController
             $notification['recipient_id'] = $this->request->getVar('recipient_id');
             $notification['submissionID'] = $this->request->getVar('submissionID');
             $notification['title'] = $this->request->getVar('subject-title');
+            $notification['recommondation'] = $this->request->getVar('recommondation');
+
             $notification['message'] = $this->request->getVar('message-text');
 
             $note = $this->peerModel->discussion($notification);

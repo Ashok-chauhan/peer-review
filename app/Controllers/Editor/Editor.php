@@ -820,4 +820,73 @@ class Editor extends BaseController
         }
 
     }
+
+    public function requestrevision()
+    {
+        $uri = $this->request->getUri();
+        $subid = $uri->getSegment(3);
+        $submission = $this->editorModel->getSubmission($subid);
+        $journal = $this->editorModel->getJournal($submission->jid);
+
+        if ($this->request->getMethod() == 'post') {
+
+            if ($this->request->getVar('new_revision_round')) {
+                $decision = 'Revisions will be subject to a new round of peer reviews';
+            } else {
+                $decision = 'Revisions will not be subject to a new round of peer reviews';
+            }
+            $author = $this->editorModel->getUser($this->request->getVar('authorid'));
+            $message = $this->request->getVar('message');
+            $data = [
+                'submissionID' => $subid,
+                'editorID' => session()->get('userID'),
+                'recipient' => $author->userID,
+                'sender' => session()->get('userID'),
+                'sender_email' => session()->get('logged_user'),
+                'recipient_email' => $author->email,
+                'decision' => $decision,
+                'comments' => $message,
+                'new_revision_round' => $this->request->getVar('new_revision_round'),
+                'send_email' => $this->request->getVar('send_email'),
+
+            ];
+            $Edecision = $this->editorModel->editorialDecision($data);
+            $name = $author->title . ' ' . $author->username . ' ' . $author->middle_name . ' ' . $author->last_name;
+            if ($this->request->getVar('send_email'))
+                $this->requestRevisionMail($author->email, $submission->title, $name, $journal->journal_name, $message);
+            $this->session->setTempdata("success", "Revision requested!", 3);
+            return redirect()->to('editor/byauthor/' . $subid);
+        } else {
+            $data = [];
+            $data['submission'] = $submission;
+            $data['mails'] = $this->editorModel->requestRevision($subid);
+            return view('editor/requestrevision', $data);
+        }
+
+
+    }
+
+    public function requestRevisionMail($to, $subtitle, $name, $journalName, $message)
+    {
+        $mailData['subtitle'] = $subtitle;
+        $mailData['journal'] = $journalName;
+        $mailData['name'] = $name;
+        $mailData['message'] = $message;
+
+        $subject = $subtitle;
+        $this->email->setMailType('html');
+        $this->email->setTo($to);
+        $this->email->setBCC('creativeplus92@gmail.com');
+        $this->email->setSubject($subject);
+
+        $body = view('mails/request_revision', $mailData);
+        $this->email->setMessage($body);
+        if ($this->email->send()) {
+
+            return true;
+        } else {
+            return false;
+        }
+
+    }
 }

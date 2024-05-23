@@ -250,6 +250,13 @@ $STATUS = [
 
                         <?php if ($submission->status_id > 1 && $submission->status_id < 3): ?>
                             <div class="list-group-item" role="alert">
+                                <?= anchor('editor/requestrevision/' . $submission->submissionID, '<span class="btn-dark waves-light" style="padding: 0.47rem 36px; border-radius: 5px;"><i class="fa fa-send-o"></i>&nbsp;Request revision</span>'); ?>
+                            </div>
+                        <?php endif; ?>
+
+
+                        <?php if ($submission->status_id > 1 && $submission->status_id < 3): ?>
+                            <div class="list-group-item" role="alert">
                                 <span class="btn-danger waves-light" style="padding: 0.47rem 56px; border-radius: 5px;">
                                     <i class="fa fa-comments"></i>&nbsp; In Review
 
@@ -439,7 +446,7 @@ $STATUS = [
                                 <button class="accordion-button collapsed fw-bold" type="button"
                                     data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false"
                                     aria-controls="collapseTwo">
-                                    Reviewr Discussion
+                                    Reviewer Discussion
                                 </button>
                             </h2>
                             <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingPeer"
@@ -469,12 +476,7 @@ $STATUS = [
                                                             <?= $discussion->sender; ?>
                                                         </h5>
                                                         <small class="text-muted">
-                                                            <?php //if (array_key_exists($role, roles())) : 
-                                                                    ?>
-                                                            <? //= roles()[$role]; 
-                                                                    ?>
-                                                            <?php //endif; 
-                                                                    ?>
+
                                                             <!-- Editorial Co-ordinator -->
 
                                                             <?= date("l jS \of F Y h:i:s A", strtotime($discussion->date_created)); ?>
@@ -486,7 +488,11 @@ $STATUS = [
                                                 <h4 class="font-size-16">
                                                     <?= $discussion->title; ?>
                                                 </h4>
-
+                                                <?php if ($discussion->recommondation): ?>
+                                                    <h6>
+                                                        Recommondation: <?= $discussion->recommondation; ?>
+                                                    </h6>
+                                                <?php endif; ?>
                                                 <p>
                                                     <?= $discussion->message; ?>
                                                 </p>
