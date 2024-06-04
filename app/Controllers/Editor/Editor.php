@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\EditorModel;
 use App\Models\UserModel;
 
+$pager = \Config\Services::pager();
 
 /**
  * Description of Editor
@@ -35,13 +36,32 @@ class Editor extends BaseController
     {
         helper(['url', 'form', 'role']);
         $this->editorModel = new EditorModel();
+
+
         $this->user = new UserModel();
         $this->session = \Config\Services::session();
         $this->email = \Config\Services::email();
+
+        if (session()->get('role') == 2) {
+        } elseif (isset($_GET['r'])) {
+            session()->set('role', base64_decode($_GET['r']));
+        } elseif (session()->get('role') != 2) {
+
+            session_destroy();
+
+            die('Access denied');
+        }
+        session()->remove('roles'); //multiple role
+
+
     }
 
     public function index()
     {
+
+
+
+
         $data = [];
 
         $revData = [];
@@ -125,10 +145,19 @@ class Editor extends BaseController
         } else {
             $data['peer'] = '';
         }
+        $cpeditorData = $this->editorModel->getCopyeditingBySubId($submissionID);
+        if ($cpeditorData) {
+            $data['copyeditor'] = $this->user->getUser($cpeditorData->copyeditor_id);
+        } else {
+            $data['copyeditor'] = '';
+        }
         $coauthor = $this->editorModel->coauthorBySubmission($submissionID);
         $revisionFile = $this->editorModel->getRevisionFile($submissionID);
         $submissionTitle = $this->editorModel->getBySubmissionId('submission', $submissionID);
-        $editorialDecision = $this->editorModel->getEditorialUploadsBySubId($submissionID);
+        //$editorialDecision = $this->editorModel->getEditorialUploadsBySubId($submissionID);
+
+        $editorialDecision = $this->editorModel->getEditorialDecision_bySubid($submissionID);
+
         $editorial_decision = $this->editorModel->getCopyeditorNote(session()->get('userID'), $submissionID);
         $user = $this->editorModel->getAutor($submissionTitle[0]->authorID);
         $data['authorName'] = $user->title . ' ' . $user->username . ' ' . $user->middle_name . ' ' . $user->middle_name . ' ' . $user->last_name;
@@ -146,6 +175,7 @@ class Editor extends BaseController
         $data['revisionFile'] = $revisionFile;
         // $data['peerDiscussions'] = $this->editorModel->getPeerDiscussion(session()->get('userID'), $submissionID);
         $data['peerDiscussions'] = $this->editorModel->peerDiscussion($submissionID);
+        $data['cpEditorDiscussions'] = $this->editorModel->cpEditorDiscussions($submissionID);
         $data['editorialDecision'] = $editorialDecision;
         $data['submission_id'] = $submissionID;
         $data['editorial_decision'] = $editorial_decision;
@@ -274,7 +304,7 @@ class Editor extends BaseController
 
     public function toReview()
     {
-        $reviewer = $this->editorModel->getReviewer();
+        $reviewer = $this->editorModel->getReviewer(4, session()->get('logged_user')); //param roee, email toexclude
         $subid = $this->request->getVar('submissionid');
         $title = $this->request->getVar('title');
         $editorContent = $this->editorModel->getEditorialUploadsBySubId($subid);
@@ -286,6 +316,7 @@ class Editor extends BaseController
                 $peer[$review->userID] = $review->title . ' ' . $review->username . ' ' . $review->middle_name . ' ' . $review->last_name;
             }
         }
+
         $data['peers'] = $reviewer;
         $data['peer'] = $peer;
         $data['title'] = $title;
@@ -354,8 +385,103 @@ class Editor extends BaseController
         }
     }
 
+    public function send_to_copyeditor()
+    {
+        if ($this->request->getMethod() == 'post') {
+
+
+            if (!$this->editorModel->checkPeer($this->request->getVar('peer'), $this->request->getVar('submissionid'))) {
+
+                $submision = $this->editorModel->getBySubmissionId('submission', $this->request->getVar('submissionid'));
+                $journal = $this->editorModel->getJournal($submision[0]->jid);
+                $data_reviews['submissionID'] = $this->request->getVar('submissionid');
+                $data_reviews['copyeditor_id'] = $this->request->getVar('peer');
+                $data_reviews['editor_id'] = session()->get('userID');
+                $data_reviews['completion_date'] = $this->request->getVar('completion_date');
+
+                $copyediting_id = $this->editorModel->insertCopyediting($data_reviews);
+                $review_content['submission_id'] = $this->request->getVar('submissionid');
+                $review_content['copyeditor_id'] = $this->request->getVar('peer');
+                $review_content['copyediting_id'] = $copyediting_id;
+
+
+                foreach ($this->request->getVar('contentid') as $content) {
+                    $review_content['submission_content_id'] = $content;
+                    $revContentId = $this->editorModel->insertCopyeditingContent($review_content);
+                }
+
+                $cpEditor = $this->editorModel->getAutor($this->request->getVar('peer'));
+                $peerFullName = $cpEditor->title . ' ' . $cpEditor->username . ' ' . $cpEditor->middle_name . ' ' . $cpEditor->last_name;
+                $note['sender'] = session()->get('username');
+                $note['sender_email'] = session()->get('logged_user');
+                $note['sender_id'] = session()->get('userID');
+                $note['submissionID'] = $this->request->getVar('submissionid');
+                $note['recipient'] = $cpEditor->email;
+                $note['recipient_id'] = $this->request->getVar('peer');
+                $note['title'] = $this->request->getVar('title');
+                $note['message'] = $this->request->getVar('message');
+
+
+                $insertNote = $this->editorModel->discussion($note);
+                if ($insertNote) {
+                    //send email
+
+                    $mailContent = '';
+                    foreach ($this->request->getVar('contentid') as $contId) {
+                        $content = $this->editorModel->getRevisionFile($contId);
+                        $editorFile = $this->editorModel->getEditorialUploads($contId);
+                        if ($content) {
+                            $mailContent .= '<p><a href=' . base_url() . 'editor/downloads/' . $content->content . '>' . $content->content . '</a></p>';
+                        } elseif ($editorFile) {
+                            $mailContent .= '<p><a href=' . base_url() . 'editor/downloads/' . $editorFile->upload_content . '>' . $editorFile->upload_content . '</a></p>';
+                        }
+                    }
+                    $subMissionTitle = $submision[0]->title;
+                    $sbjTitle = $this->request->getVar('title');
+                    $mailMsg = $this->request->getVar('message');
+                    $body = $mailMsg . $mailContent;
+                    $completion_date = $this->request->getVar('completion_date');
+                    $this->mailToPeer($cpEditor->email, $peerFullName, $sbjTitle, $subMissionTitle, $completion_date, $body, $journal->journal_name); //, $journal = null
+                    $this->session->setTempdata("success", "Notification sent successfully to the Copy editor.", 3);
+                    return redirect()->to('editor/byauthor/' . $this->request->getVar('submissionid'));
+
+
+                }
+
+            } else {
+
+                $this->session->setTempdata("error", "Alredy sent to this reviewer!", 3);
+                return redirect()->to('editor/byauthor/' . $this->request->getVar('submissionid'));
+
+            }
+        }
+    }
+
     public function tocopyedit()
     {
+
+        $reviewer = $this->editorModel->getReviewer(5, session()->get('logged_user')); //param roee, email toexclude
+        $subid = $this->request->getVar('submissionid');
+        $title = $this->request->getVar('title');
+        $editorContent = $this->editorModel->getEditorialUploadsBySubId($subid);
+        $subContents = $this->editorModel->getBySubmissionId('submission_content', $subid);
+
+        $peer = [];
+        if (is_array($reviewer)) {
+            foreach ($reviewer as $review) {
+                $peer[$review->userID] = $review->title . ' ' . $review->username . ' ' . $review->middle_name . ' ' . $review->last_name;
+            }
+        }
+
+        $data['peers'] = $reviewer;
+        $data['peer'] = $peer;
+        $data['title'] = $title;
+        $data['submissionid'] = $subid;
+        $data['subContents'] = $subContents;
+        $data['editorContent'] = $editorContent;
+
+        return view('editor/tocopyedit', $data);
+        /*
         $reviewer = $this->editorModel->getCopyeditor();
         $subid = $this->request->getVar('submissionid');
         $title = $this->request->getVar('title');
@@ -376,7 +502,9 @@ class Editor extends BaseController
         $data['editorContent'] = $editorContent;
         print '<pre>';
         print_r($data);
-        // return view('editor/tocopyedit', $data);
+        return view('editor/tocopyedit', $data);
+        */
+        // return view('editor/tocpeditor', $data);
     }
     public function editorUpload()
     {
@@ -563,6 +691,7 @@ class Editor extends BaseController
 
     public function tocpeditor()
     {
+
         $cpEditor = $this->editorModel->getCopyeditor();
         $submissionid = $this->request->getVar('submissionid');
         $title = $this->request->getVar('title');
@@ -575,12 +704,13 @@ class Editor extends BaseController
 
         $data['submissionid'] = $submissionid;
         $data['title'] = $title;
+
         return view('editor/tocpeditor', $data);
     }
     public function sendCopyEditor()
     {
-        if ($this->request->getMethod() == 'post' && ($_FILES['cpFile']['size'] > 0)) {
-
+        //if ($this->request->getMethod() == 'post' && ($_FILES['cpFile']['size'] > 0)) {
+        if ($this->request->getMethod() == 'post') {
             $editorieal_decision = [];
             $notification = [];
             $rules = [
@@ -786,13 +916,60 @@ class Editor extends BaseController
         $journal = $this->editorModel->getJournal($submission[0]->jid);
         $reveData = $this->editorModel->getReviewsBySubId($submission[0]->submissionID);
         $reviewer = $this->editorModel->getUser($reveData->reviewerID);
+        $author = $this->editorModel->getUser($submission[0]->authorID);
         $peerFullname = $reviewer->title . ' ' . $reviewer->username . ' ' . $reviewer->middle_name . ' ' . $reviewer->last_name;
         $status_id = $uri->getSegment(4);
         $status = $this->editorModel->accepted($submissionID, $status_id);
         if ($status) {
             $this->thnakyouMailtoPeer($reviewer->email, $subtitle, $peerFullname, $journal->journal_name);
+            //send email to Author
+            $this->thnakyouMailtoAuthor($author->email, $subtitle, $peerFullname, $journal->journal_name);
         }
         if ($status) {
+            return redirect()->to('editor/byauthor/' . $submissionID);
+        }
+    }
+    public function accepted_copyediting()
+    {
+        $uri = $this->request->getUri();
+        $submissionID = $uri->getSegment(3);
+
+        $submission = $this->editorModel->getBySubmissionId('submission', $submissionID);
+        $subtitle = $submission[0]->title;
+        $journal = $this->editorModel->getJournal($submission[0]->jid);
+        $reveData = $this->editorModel->getCopyeditingBySubId($submission[0]->submissionID);
+        $reviewer = $this->editorModel->getUser($reveData->copyeditor_id);
+        $author = $this->editorModel->getUser($submission[0]->authorID);
+        $peerFullname = $reviewer->title . ' ' . $reviewer->username . ' ' . $reviewer->middle_name . ' ' . $reviewer->last_name;
+        $status_id = $uri->getSegment(4);
+
+        $status = $this->editorModel->accepted($submissionID, $status_id);
+        //insert editorial_decision table appropriate data.
+        $data = [
+            'submissionID' => $submissionID,
+            'editorID' => session()->get('userID'),
+            'recipient' => session()->get('userID'),
+            'sender' => session()->get('userID'),
+            'sender_email' => session()->get('logged_user'),
+            'recipient_email' => session()->get('logged_user'),
+            'decision' => 'Accepted copy-editing of submission by Editor',
+            'comments' => 'Accepted copy-editing of submission by Editor',
+            'new_revision_round' => 1,
+            'send_email' => 0,
+            'status' => $submission[0]->status_id,
+
+        ];
+        $Edecision = $this->editorModel->editorialDecision($data);
+        // eof editorial_decision
+
+        if ($Edecision) {
+
+            $this->thnakyouMailtoCopyeditor($reviewer->email, $subtitle, $peerFullname, $journal->journal_name);
+            //send email to Author
+            $this->thnakyouMailtoAuthor($author->email, $subtitle, $peerFullname, $journal->journal_name);
+        }
+        if ($Edecision) {
+
             return redirect()->to('editor/byauthor/' . $submissionID);
         }
     }
@@ -811,6 +988,52 @@ class Editor extends BaseController
         $this->email->setSubject($subject);
 
         $body = view('mails/letter_thank_you_reviewer_complete_review', $mailData);
+        $this->email->setMessage($body);
+        if ($this->email->send()) {
+
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public function thnakyouMailtoCopyeditor($to, $subtitle, $name, $journalName)
+    {
+        $mailData['subtitle'] = $subtitle;
+        $mailData['journal'] = $journalName;
+        $mailData['name'] = $name;
+
+        $subject = 'Thank you for completing the review of ' . $subtitle;
+        $this->email->setMailType('html');
+        $this->email->setTo($to);
+        $this->email->setBCC('creativeplus92@gmail.com');
+        $this->email->setSubject($subject);
+
+        $body = view('mails/letter_thank_you_copyeditor_complete', $mailData);
+        $this->email->setMessage($body);
+        if ($this->email->send()) {
+
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public function thnakyouMailtoAuthor($to, $subtitle, $name, $journalName)
+    {
+        $mailData['subtitle'] = $subtitle;
+        $mailData['journal'] = $journalName;
+        $mailData['name'] = $name;
+
+        $subject = 'Submission has been accepted ' . $subtitle;
+        $this->email->setMailType('html');
+        $this->email->setTo($to);
+        $this->email->setBCC('creativeplus92@gmail.com');
+        $this->email->setSubject($subject);
+
+        $body = view('mails/letter_thank_you_author_accepted', $mailData);
         $this->email->setMessage($body);
         if ($this->email->send()) {
 
@@ -888,5 +1111,17 @@ class Editor extends BaseController
             return false;
         }
 
+    }
+
+    public function editorialHistory()
+    {
+        $model = new \App\Models\NotificationsModel();
+
+        $data = [
+            'notifications' => $model->paginate(20),
+            'pager' => $model->pager,
+        ];
+
+        return view('editorial_history/index', $data);
     }
 }

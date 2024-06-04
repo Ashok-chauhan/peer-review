@@ -114,7 +114,7 @@
                                 </span>
                             </a>
                         <?php elseif (session()->get('role') == 5): ?>
-                            <a href="<?= base_url(); ?>translator" class="logo logo-dark">
+                            <a href="<?= base_url(); ?>editcopy" class="logo logo-dark">
                                 <span class="logo-sm">
                                     <img src="<?= base_url(); ?>assets/images/Scripture-logo.png" alt="logo-sm" height="22">
                                 </span>
@@ -141,7 +141,20 @@
                                 </span>
                             </a>
                         <?php endif; ?>
-                        <?php if (session()->get('role') == 1): ?>
+
+
+                        <?php if (is_array(session()->get('roles')) && count(session()->get('roles')) > 1): ?>
+
+                            <a href="<?= base_url(); ?>dash" class="logo logo-light">
+                                <span class="logo-sm">
+                                    <img src="<?= base_url(); ?>assets/images/Scripture-logo.png" alt="logo-sm-light"
+                                        height="22">
+                                </span>
+                                <span class="logo-lg">
+                                    <img src="<?= base_url(); ?>assets/images/Scripture-logo.png" alt="logo-light">
+                                </span>
+                            </a>
+                        <?php elseif (session()->get('role') == 1): ?>
 
                             <a href="<?= base_url(); ?>admin" class="logo logo-light">
                                 <span class="logo-sm">
@@ -183,7 +196,7 @@
                                 </span>
                             </a>
                         <?php elseif (session()->get('role') == 5): ?>
-                            <a href="<?= base_url(); ?>translator" class="logo logo-light">
+                            <a href="<?= base_url(); ?>editcopy" class="logo logo-light">
                                 <span class="logo-sm">
                                     <img src="<?= base_url(); ?>assets/images/Scripture-logo.png" alt="logo-sm-light"
                                         height="22">
@@ -212,6 +225,7 @@
                                     <img src="<?= base_url(); ?>assets/images/Scripture-logo.png" alt="logo-light">
                                 </span>
                             </a>
+
                         <?php endif; ?>
                     </div>
 
@@ -355,7 +369,7 @@
                             <a class="dropdown-item" href="#"><i class="ri-lock-unlock-line align-middle me-1"></i>
                                 Change Password</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="<?= base_url(); ?>author/logout"><i
+                            <a class="dropdown-item text-danger" href="<?= base_url(); ?>user/logout"><i
                                     class="ri-shut-down-line align-middle me-1 text-danger"></i> Logout</a>
                         </div>
                     </div>

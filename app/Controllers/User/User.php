@@ -43,7 +43,7 @@ class User extends BaseController
             $this->email->setMailType('html');
             $this->email->setTo($user->email);
             $this->email->setSubject($subject);
-            $body =  view('user/resetpass_email', $data);
+            $body = view('user/resetpass_email', $data);
             $this->email->setMessage($body);
             $sent = $this->email->send();
 
@@ -88,5 +88,13 @@ class User extends BaseController
         } else {
             $this->session->setTempdata('error', 'Sorry! Link has been expired , try again', 3);
         }
+    }
+
+
+    public function logout()
+    {
+
+        session()->destroy();
+        return redirect()->to('/');
     }
 }

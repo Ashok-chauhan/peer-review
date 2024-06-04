@@ -129,6 +129,21 @@ class EditorModel extends Model
             return false;
         }
     }
+    public function cpEditorDiscussions($submissionID)
+    {
+        $Q = $this->db->table('notifications');
+        //$data = [];
+        $Q->where('submissionID', $submissionID);
+        $Q->where('role', 5);
+        $Q->orderBy('date_created', 'DESC');
+        $query = $Q->get()->getResult();
+        if ($query) {
+            return $query;
+        } else {
+            return false;
+        }
+    }
+
     public function getSentDiscussion($sender_id, $submissionID)
     {
         $Q = $this->db->table('notifications');
@@ -217,16 +232,27 @@ class EditorModel extends Model
         }
     }
 
-    public function getReviewer()
+    public function getReviewer($role = 4, $email = '')
     {
-        $Q = $this->db->table('users');
-        $Q->where('roleID', 4);
-        $result = $Q->get()->getResult();
-        if ($result) {
-            return $result;
+
+
+        $rows = [];
+        $query = $this->db->query("SELECT * FROM user_roles
+        RIGHT JOIN users ON user_roles.user_id = users.userID
+        WHERE user_roles.role_id=$role AND users.status='active' AND users.email !='$email'");
+
+        // $q = $this->db->getLastQuery();
+        // echo (string) $q;
+        foreach ($query->getResult() as $row) {
+            $rows[] = $row;
+        }
+
+        if ($rows) {
+            return $rows;
         } else {
             return false;
         }
+
     }
 
 
@@ -243,6 +269,25 @@ class EditorModel extends Model
     public function insertReviewContent($data)
     {
         $Q = $this->db->table('review_content');
+        if ($Q->insert($data)) {
+            return $this->db->insertID();
+        } else {
+            return false;
+        }
+    }
+    public function insertCopyediting($data)
+    {
+        $Q = $this->db->table('copyediting');
+        if ($Q->insert($data)) {
+            return $this->db->insertID();
+        } else {
+            return false;
+        }
+    }
+
+    public function insertCopyeditingContent($data)
+    {
+        $Q = $this->db->table('copyediting_content');
         if ($Q->insert($data)) {
             return $this->db->insertID();
         } else {
@@ -329,6 +374,17 @@ class EditorModel extends Model
             return false;
         }
     }
+    public function getCopyeditingBySubId($subId)
+    {
+        $Q = $this->db->table('copyediting');
+        $Q->where('submissionID', $subId);
+        $data = $Q->get()->getRow();
+        if ($data) {
+            return $data;
+        } else {
+            return false;
+        }
+    }
     public function getCopyeditorBySubId($subId)
     {
         $Q = $this->db->table('editorial_decision');
@@ -399,6 +455,18 @@ class EditorModel extends Model
     {
         $q = $this->db->table('editorial_decision');
         $q->where('id', $id);
+        $data = $q->get()->getRow();
+        if ($data) {
+            return $data;
+        } else {
+            return false;
+        }
+    }
+
+    public function getEditorialDecision_bySubid($submissionID)
+    {
+        $q = $this->db->table('editorial_decision');
+        $q->where('submissionID', $submissionID);
         $data = $q->get()->getRow();
         if ($data) {
             return $data;

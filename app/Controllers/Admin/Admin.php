@@ -23,6 +23,10 @@ class Admin extends BaseController
         $this->adminModel = new AdminModel();
         $this->session = \Config\Services::session();
         $this->email = \Config\Services::email();
+        if (session()->get('role') != 1) {
+            print session()->get('role');
+            die('Access denied');
+        }
     }
 
     public function index()
@@ -32,7 +36,7 @@ class Admin extends BaseController
             $role = $this->request->getVar('roleID');
             $status = $this->request->getVar('status');
             $this->adminModel->updateUser($usrid, $role, $status);
-
+            $this->adminModel->updateUserRoles($usrid, $role);
             $jid = $this->request->getVar('jid');
             $editor_id = $this->request->getVar('editor_id');
             if ($jid) {

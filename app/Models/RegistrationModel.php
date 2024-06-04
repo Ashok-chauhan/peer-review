@@ -22,7 +22,7 @@ class RegistrationModel extends Model
         $builder = $this->db->table('users');
         $result = $builder->insert($data);
         if ($this->db->affectedRows()) {
-            return true;
+            return $this->db->insertID();
         } else {
             return false;
         }
@@ -46,6 +46,17 @@ class RegistrationModel extends Model
         $builder->update(['status' => 'active']);
         if ($this->db->affectedRows() == 1) {
             return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function userRoles($data)
+    {
+        $builder = $this->db->table('user_roles');
+        $result = $builder->insert($data);
+        if ($this->db->affectedRows()) {
+            return $this->db->insertID();
         } else {
             return false;
         }

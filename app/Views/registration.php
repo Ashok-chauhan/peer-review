@@ -41,11 +41,11 @@
 
                     <h4 class="text-muted text-center font-size-18"><b>REGISTER</b></h4>
 
-                    <?php if ($page_session->getTempdata("success")) : ?>
+                    <?php if ($page_session->getTempdata("success")): ?>
                         <div class="alert alert-success"><?= $page_session->getTempdata("success"); ?></div>
                     <?php endif; ?>
 
-                    <?php if (isset($validation)) : ?>
+                    <?php if (isset($validation)): ?>
                         <div class="alert alert-danger"><?= $validation->listErrors(); ?></div>
                     <?php endif; ?>
                     <div id="error"></div>
@@ -71,52 +71,60 @@
                         <div class="form-group mb-3 row">
                             <div class="col-12">
                                 <!-- <input class="form-control" type="text" required="" placeholder="First name"> -->
-                                <input name="username" value="<?= set_value('username'); ?>" id="username" class="form-control" placeholder="First name" type="text">
+                                <input name="username" value="<?= set_value('username'); ?>" id="username"
+                                    class="form-control" placeholder="First name" type="text">
                             </div>
                         </div>
 
                         <div class="form-group mb-3 row">
                             <div class="col-12">
 
-                                <input name="middle_name" value="<?= set_value('middle_name'); ?>" id="middle_name" class="form-control" placeholder="Middle name" type="text">
+                                <input name="middle_name" value="<?= set_value('middle_name'); ?>" id="middle_name"
+                                    class="form-control" placeholder="Middle name" type="text">
                             </div>
                         </div>
 
                         <div class="form-group mb-3 row">
                             <div class="col-12">
-                                <input name="last_name" value="<?= set_value('last_name'); ?>" id="last_name" class="form-control" placeholder="Last name" type="text" required>
+                                <input name="last_name" value="<?= set_value('last_name'); ?>" id="last_name"
+                                    class="form-control" placeholder="Last name" type="text" required>
                             </div>
                         </div>
 
                         <div class="form-group mb-3 row">
                             <div class="col-12">
                                 <!-- <input class="form-control" type="email" required="" placeholder="Email"> -->
-                                <input name="email" value="<?= set_value('email'); ?>" id="email" class="form-control" placeholder="Email address" type="email">
+                                <input name="email" value="<?= set_value('email'); ?>" id="email" class="form-control"
+                                    placeholder="Email address" type="email">
                             </div>
                         </div>
 
                         <div class="form-group mb-3 row">
                             <div class="col-12">
                                 <!-- <input class="form-control" type="text" required="" placeholder="Phone number"> -->
-                                <input name="phone" value="<?= set_value('phone'); ?>" id="phone" class="form-control" placeholder="Phone number" type="text">
+                                <input name="phone" value="<?= set_value('phone'); ?>" id="phone" class="form-control"
+                                    placeholder="Phone number" type="text">
                             </div>
                         </div>
 
                         <div class="form-group mb-3 row">
                             <div class="col-12">
-                                <input name="country" value="<?= set_value('country'); ?>" id="country" class="form-control" placeholder="Country" type="text">
+                                <input name="country" value="<?= set_value('country'); ?>" id="country"
+                                    class="form-control" placeholder="Country" type="text">
                             </div>
                         </div>
 
                         <div class="form-group mb-3 row">
                             <div class="col-12">
-                                <input name="password" value="<?= set_value('password'); ?>" id="password" class="form-control" placeholder="Create password" type="password">
+                                <input name="password" value="<?= set_value('password'); ?>" id="password"
+                                    class="form-control" placeholder="Create password" type="password">
                             </div>
                         </div>
 
                         <div class="form-group mb-3 row">
                             <div class="col-12">
-                                <input name="cpass" value="<?= set_value('cpass'); ?>" id="cpass" class="form-control" placeholder="Repeat password" type="password">
+                                <input name="cpass" value="<?= set_value('cpass'); ?>" id="cpass" class="form-control"
+                                    placeholder="Repeat password" type="password">
                                 <input type="hidden" id="roleID" name="roleID" value="3">
                             </div>
                         </div>
@@ -129,23 +137,64 @@
                                         </div>
                                     </div>
                                 </div> -->
+                        <h6 class="alert-warning">You have to select appropriate role to register</h6>
+                        <div class="form-group mb-3 row">
+                            <div class="col-12">
+                                <div class="custom-control custom-checkbox">
+                                    <label class="form-label fw-normal" for="data_consent">
+                                        <input type="checkbox" class="custom-control-input" id="author" name="roles[]"
+                                            value="3"><a href="#" class="text-muted ms-6 ">
+                                            Author</a></label>
+                                </div>
+
+                                <div class="custom-control custom-checkbox">
+                                    <label class="form-label fw-normal" for="notification">
+                                        <input type="checkbox" class="custom-control-input" id="reviewer" name="roles[]"
+                                            value="4"> <a href="#" class="text-muted  ms-6 ">
+                                            Reviewer</a></label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <label class="form-label fw-normal" for="notification">
+                                        <input type="checkbox" class="custom-control-input" id="copy-editor"
+                                            name="roles[]" value="5"> <a href="#" class="text-muted  ms-6 ">
+                                            Copy-editor</a></label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <label class="form-label fw-normal" for="notification">
+                                        <input type="checkbox" class="custom-control-input" id="translator"
+                                            name="roles[]" value="6"> <a href="#" class="text-muted  ms-6 ">
+                                            Translator</a></label>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
 
 
                         <div class="form-group mb-3 row">
                             <div class="col-12">
                                 <div class="custom-control custom-checkbox">
                                     <label class="form-label fw-normal" for="data_consent">
-                                        <input type="checkbox" class="custom-control-input" id="data_consent" name="data_consent" required><a href="#" class="text-muted ms-6 ">Yes, I agree to have my data collected and stored according to the Policy Statement.</a></label>
+                                        <input type="checkbox" class="custom-control-input" id="data_consent"
+                                            name="data_consent" required><a href="#" class="text-muted ms-6 ">Yes, I
+                                            agree to have my data collected and stored according to the Policy
+                                            Statement.</a></label>
                                 </div>
 
                                 <div class="custom-control custom-checkbox">
                                     <label class="form-label fw-normal" for="notification">
-                                        <input type="checkbox" class="custom-control-input" id="notification" name="notification"> <a href="#" class="text-muted  ms-6 ">Yes, I would like to be notified of new publications and announcements.</a></label>
+                                        <input type="checkbox" class="custom-control-input" id="notification"
+                                            name="notification"> <a href="#" class="text-muted  ms-6 ">Yes, I would like
+                                            to be notified of new publications and announcements.</a></label>
                                 </div>
 
                                 <div class="custom-control custom-checkbox">
                                     <label class="form-label fw-normal" for="contact">
-                                        <input type="checkbox" class="custom-control-input" id="contact" name="contact"><a href="#" class="text-muted  ms-6">Yes, I would like to be contacted with requests to review submissions to this journal.</a></label>
+                                        <input type="checkbox" class="custom-control-input" id="contact"
+                                            name="contact"><a href="#" class="text-muted  ms-6">Yes, I would like to be
+                                            contacted with requests to review submissions to this journal.</a></label>
                                 </div>
 
                             </div>
@@ -162,7 +211,8 @@
 
                         <div class="form-group text-center row mt-3 pt-1">
                             <div class="col-12">
-                                <button class="btn btn-info w-100 waves-effect waves-light" type="submit">Register</button>
+                                <button class="btn btn-info w-100 waves-effect waves-light"
+                                    type="submit">Register</button>
                             </div>
                         </div>
 

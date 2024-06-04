@@ -28,4 +28,18 @@ class LoginModel extends Model
             return false;
         }
     }
+
+    public function getRole($user_id)
+    {
+        $role = [];
+        $query = $this->db->query("SELECT r.id
+        FROM role r
+        JOIN user_roles ur ON r.id = ur.role_id
+        WHERE ur.user_id = $user_id");
+
+        foreach ($query->getResult() as $row) {
+            $role[] = $row->id;
+        }
+        return $role;
+    }
 }

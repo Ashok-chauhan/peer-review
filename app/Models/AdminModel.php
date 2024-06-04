@@ -86,6 +86,27 @@ class AdminModel extends Model
         $Q->where('userID', $id);
         $Q->update($data);
     }
+    public function updateUserRoles($id, $role)
+    {
+        $qry = $this->db->table('user_roles');
+        $qry->where('user_id', $id);
+        $result = $qry->get()->getResult();
+        $currentRoles = [];
+        if ($result) {
+            foreach ($result as $row) {
+                $currentRoles[] = $row->role_id;
+            }
+            if (!in_array($role, $currentRoles)) {
+                $data = [
+                    'user_id' => $id,
+                    'role_id' => $role,
+                ];
+                $qry->insert($data);
+            }
+
+        }
+
+    }
 
     public function getAllSubmission()
     {

@@ -10,14 +10,13 @@ Dashboard
         <div class="col-xl-10">
             <div class="card">
                 <div class="card-body">
-                    <form action="sendtopeer" method="POST">
+                    <form action="send_to_copyeditor" method="POST">
                         <div class="row">
                             <div class="list-group col-12">
 
                                 <?php if ($peer): ?>
                                     <div>
-                                        <label for="peer" class="form-label fw-bold">Add reviewer <span
-                                                class="redstar">*</span></label>
+                                        <label for="peer" class="form-label fw-bold">Add Copy-Editor <code>*</code></label>
 
                                         <? //= form_dropdown('peer', $peer, '', 'class="s-example-basic-single"'); ?>
 
@@ -31,20 +30,18 @@ Dashboard
                                 <?php endif; ?>
                                 <input type="hidden" name="submissionid" value="<?= $submissionid; ?>" />
                                 <div>
-                                    <label for="title" class="form-label fw-bold ">Title<span
-                                            class="redstar">*</span></label>
+                                    <label for="title" class="form-label fw-bold ">Title <code>*</code></label>
                                     <input type="text" class="form-control" id="title" name="title" required />
                                 </div>
                                 <div>
-                                    <label for="message" class="form-label fw-bold">Message <span
-                                            class="redstar">*</span></label>
+                                    <label for="message" class="form-label fw-bold">Message <code>*</code></label>
                                     <textarea class="form-control" id="message" name="message" rows="3"
                                         required></textarea>
                                 </div>
                                 <p></p>
                                 <div>
-                                    <label for="completion_date" class="form-label fw-bold ">FINISH REVIEW BEFORE<span>
-                                            *</span></label>
+                                    <label for="completion_date" class="form-label fw-bold ">FINISH COPY-EDITING BEFORE
+                                        <code>*</code></label>
                                     <input type="date" class="form-control" id="completion_date" name="completion_date"
                                         required />
                                 </div>

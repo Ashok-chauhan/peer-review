@@ -23,6 +23,7 @@ $routes->get('/registration/thankyou', 'Registration::thankyou');
 $routes->group('user', static function ($routes) {
 
     $routes->get('resetpass/', 'User\User::resetpass');
+    $routes->get('logout/', 'User\User::logout');
     $routes->post('resetpass/', 'User\User::resetpass');
     $routes->get('resetlink/(:segment)/(:segment)', 'User\User::resetlink/$1/$2');
     $routes->post('resetlink/(:segment)/(:segment)', 'User\User::resetlink/$1/$2');
@@ -54,11 +55,15 @@ $routes->group('author', static function ($routes) {
 
 
 $routes->group('editor', static function ($routes) {
+
     $routes->get('', 'Editor\Editor::index', ['filter' => 'auth']);
     $routes->get('byauthor/(:segment)', 'Editor\Editor::byAuthor', ['filter' => 'auth']);
     $routes->get('downloads/(:segment)', 'Editor\Editor::downloads');
     $routes->get('downloadZip/(:segment)', 'Editor\Editor::downloadZip');
     $routes->get('accepted/(:num)/(:num)', 'Editor\Editor::accepted/$1/$2', ['filter' => 'auth']);
+    $routes->get('accepted_copyediting/(:num)/(:num)', 'Editor\Editor::accepted_copyediting/$1/$2', ['filter' => 'auth']);
+
+
     // $routes->post('notify/(:num)/(:num)', 'Editor\Editor::notify/$1/$2', ['filter' => 'auth']);
     $routes->get('bellnotification', 'Editor\Editor::bellnotification', ['filter' => 'auth']);
     $routes->get('notify', 'Editor\Editor::notify', ['filter' => 'auth']);
@@ -72,13 +77,17 @@ $routes->group('editor', static function ($routes) {
     $routes->post('editorUpload/', 'Editor\Editor::editorUpload');
     $routes->get('deleteEditorUpload/(:num)/(:num)', 'Editor\Editor::deleteEditorUpload/$1/$2', ['filter' => 'auth']);
     $routes->post('peerDiscussion/', 'Editor\Editor::peerDiscussion');
-    //$routes->post('tocpeditor/', 'Editor\Editor::tocpeditor');
-    /////$routes->post('tocopyedit/', 'Editor\Editor::tocpeditor');
+    $routes->post('tocpeditor/', 'Editor\Editor::tocpeditor');
+    // $routes->post('tocopyedit/', 'Editor\Editor::tocpeditor');
+
+    $routes->post('send_to_copyeditor/', 'Editor\Editor::send_to_copyeditor', ['filter' => 'auth']);
 
     $routes->post('sendCopyEditor/', 'Editor\Editor::sendCopyEditor', ['filter' => 'auth']);
     $routes->post('copyeditorDiscussion/', 'Editor\Editor::copyeditorDiscussion', ['filter' => 'auth']);
     $routes->get('requestrevision/(:segment)', 'Editor\Editor::requestrevision', ['filter' => 'auth']);
     $routes->post('requestrevision/(:segment)', 'Editor\Editor::requestrevision', ['filter' => 'auth']);
+    $routes->get('editorialhistory/', 'Editor\Editor::editorialHistory', ['filter' => 'auth']);
+
 });
 
 $routes->group('admin', static function ($routes) {
@@ -103,10 +112,20 @@ $routes->group('peer', static function ($routes) {
 
 $routes->group('editcopy', static function ($routes) {
     $routes->get('', 'Editcopy\Editcopy::index');
+    $routes->get('accept/(:num)/(:num)', 'Editcopy\Editcopy::accept/$1/$2', ['filter' => 'auth']);
+    $routes->post('accept/', 'Editcopy\Editcopy::accept', ['filter' => 'auth']);
+
     $routes->get('discussion/(:num)/(:num)', 'Editcopy\Editcopy::discussion/$1/$2', ['filter' => 'auth']);
     $routes->post('discussion/(:num)/(:num)', 'Editcopy\Editcopy::discussion/$1/$2', ['filter' => 'auth']);
+    $routes->get('detailview/(:num)/(:num)', 'Editcopy\Editcopy::detailview/$1/$2', ['filter' => 'auth']);
+    $routes->post('update_copyediting/', 'Editcopy\Editcopy::update_copyediting', ['filter' => 'auth']);
+    $routes->post('notify', 'Editcopy\Editcopy::notify', ['filter' => 'auth']);
+
     // $routes->get('test', 'Copyediting\Copyediting::test');
 });
 
+$routes->group('dash', static function ($routes) {
+    $routes->get('', 'Dash\Dash::index', ['filter' => 'auth']);
+});
 
 $routes->get('/about', 'Home::about');

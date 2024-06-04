@@ -41,9 +41,11 @@ class Registration extends Controller
                 'cpass' => 'required|matches[password]',
                 'phone' => 'required|exact_length[10]|numeric',
                 'country' => 'required',
+                'roles' => 'required',
             ];
             if ($this->validate($rules)) {
                 $uniid = md5(str_shuffle('abcdefghijklmnopqrstuvwxyz' . time()));
+                $roles = $this->request->getVar('roles');
 
                 $userdata = [
                     'title' => $this->request->getVar('title', FILTER_SANITIZE_STRING),
@@ -59,10 +61,22 @@ class Registration extends Controller
                     'notification' => $this->request->getVar('notification', FILTER_SANITIZE_STRING),
                     'contact' => $this->request->getVar('contact', FILTER_SANITIZE_STRING),
                     'interests' => $this->request->getVar('interests', FILTER_SANITIZE_STRING),
-                    'roleID' => $this->request->getVar('roleID'),
+                    'roleID' => $roles[0], //$this->request->getVar('roleID'),
                 ];
 
-                if ($this->registrationModel->createUsers($userdata)) {
+                $insertID = $this->registrationModel->createUsers($userdata);
+                if ($insertID) {
+                    foreach ($roles as $role) {
+                        $roleData = [
+                            'user_id' => $insertID,
+                            'role_id' => $role,
+                        ];
+                        $this->registrationModel->userRoles($roleData);
+                    }
+                }
+
+                //if ($this->registrationModel->createUsers($userdata)) {
+                if ($insertID) {
                     //send activation email. 
                     $mailData = [];
                     $mailData['title'] = $this->request->getVar('title');
@@ -75,7 +89,7 @@ class Registration extends Controller
                     $this->email->setTo($to);
                     //$this->email->setFrom('support@orthotvprime.com', 'Info');
                     $this->email->setSubject($subject);
-                    $body =  view('activation_email', $mailData);
+                    $body = view('activation_email', $mailData);
                     $this->email->setMessage($body);
                     $sent = $this->email->send();
                     $this->session->setTempdata("success", "Account created successfully, Please activate your account.", 3);

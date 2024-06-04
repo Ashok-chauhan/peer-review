@@ -37,6 +37,7 @@ class Login extends Controller
                 $email = $this->request->getVar('email');
                 $password = $this->request->getVar('password');
                 $userdata = $this->loginModel->verifyEmail($email);
+                $roles = $this->loginModel->getRole($userdata['userID']);
 
                 if ($userdata) {
                     if (password_verify($password, $userdata['password'])) {
@@ -45,6 +46,7 @@ class Login extends Controller
                             $this->session->set('logged_user', $userdata['email']);
                             $this->session->set('userID', $userdata['userID']);
                             $this->session->set('role', $userdata['roleID']);
+                            $this->session->set('roles', $roles);
                             $this->session->set('title', $userdata['title']);
                             $this->session->set('username', $userdata['username']);
                             $this->session->set('middle_name', $userdata['middle_name']);
@@ -52,22 +54,6 @@ class Login extends Controller
                             $this->session->set('fullName', $fullname);
 
 
-                            /*
-                        switch ($userdata['roleID']){
-                            case 1: //admin
-                                echo 'admin';
-                                break;
-                            case 2: //editor || admin
-                                return redirect()->to(base_url().'editor/');
-                                break;
-                            case 3: //author
-                                return redirect()->to(base_url().'author/profile');
-                                break;
-                            case 4: //reader
-                                echo "REader";
-                                break;
-                        }
-                        */
                         } else {
                             $this->session->setTempdata('error', 'Please activate your account. Contact Admin', 3);
                             return redirect()->to(current_url());
@@ -86,4 +72,6 @@ class Login extends Controller
         }
         return view('login_view', $data);
     }
+
+
 }

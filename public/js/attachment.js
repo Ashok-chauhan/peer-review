@@ -159,3 +159,44 @@ document.getElementById("replyForm").addEventListener("submit", function (e) {
   rplModal.hide();
 });
 /** EOF EDITOR TO AUTHOR NOTIFICATION */
+
+// copy-editor bof
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("got it");
+
+  var container = document.getElementById("copyeditorModal");
+  var modal = new bootstrap.Modal(container);
+  var replyForm = document.getElementById("copyEditorReplyForm");
+  ///
+
+  replyForm.addEventListener("submit", function (e) {
+    e.preventDefault(); // Prevent the form from submitting traditionally
+    const formData = new FormData(replyForm);
+    //formData.append("submissionID", subId);
+    console.log(replyForm.action);
+    // body: new FormData(replyForm),
+    // Perform AJAX request
+    fetch(replyForm.action, {
+      method: "POST",
+      body: formData,
+    })
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.text();
+      })
+      .then(function (data) {
+        // Handle the response from the server
+        console.log(data);
+      })
+      .catch(function (error) {
+        console.error("Error:", error);
+      });
+
+    // Close the modal
+    modal.hide();
+  });
+});
+
+// copy-editor eof
