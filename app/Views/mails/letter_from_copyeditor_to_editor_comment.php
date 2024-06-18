@@ -307,7 +307,7 @@ img { border: 0; outline: none; text-decoration: none; }
                                                 <?= $sub_title; ?> ,
                                             </span>
                                             <?php if ($recommondation): ?>
-                                                <strong>Recommondation: <?= $recommondation; ?></strong>
+                                                <strong>Recommendation: <?= $recommondation; ?></strong>
                                             <?php endif; ?>
                                             submitted to <span style="color:#000000;">
                                                 <?= $journal; ?>
@@ -323,7 +323,7 @@ img { border: 0; outline: none; text-decoration: none; }
                                             </span>
                                         </p>
                                         <?php if ($recommondation): ?>
-                                            <p> <strong>Recommondation: <?= $recommondation; ?></strong></p>
+                                            <p> <strong>Recommendation: <?= $recommondation; ?></strong></p>
                                         <?php endif; ?>
                                         <p>Comment: <span style="color:#000000;">
                                                 <?= $message; ?>

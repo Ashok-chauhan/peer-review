@@ -257,7 +257,6 @@
                             </form>
                         </div>
                     </div> -->
-
                     <div class="dropdown d-inline-block">
                         <button type="button" class="btn header-item noti-icon waves-effect"
                             id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -399,6 +398,14 @@
                                 class="ri-record-circle-line align-middle font-size-14 text-success"></i> Online</span>
                     </div>
                 </div>
+
+                <?php if (session()->get('role') == 1): ?>
+                    <div class="mt-3" style=" margin-left:15px;">
+                        <a style="color: #ffffff;" href="<?= base_url(); ?>admin/registration">
+                            Registration
+                        </a>
+                    </div>
+                <?php endif; ?>
 
             </div>
         </div>

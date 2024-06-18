@@ -123,10 +123,86 @@ Dashboard
                                     </table>
                                 <?php endif; ?>
 
+                                <!-- peerFiles bof -->
+
+                                <?php if ($peerFiles): ?>
+                                    <h4>Reviewer files</h4>
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Select file</th>
+                                                <th scope="col">Article component</th>
+                                                <th scope="col">Download</th>
+                                                <th scope="col">Submission date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($peerFiles as $k => $content): ?>
+                                                <?php
+                                                session_start();
+                                                $_SESSION["peerFiles"] = $peerFiles;
+                                                ?>
+
+                                                <?php $submissionid = $content->submissionID; ?>
+                                                <tr>
+                                                    <td>
+                                                        <div class="square-switch">
+                                                            <input type="checkbox" id="contentid_rev<?= $k; ?>" switch="info"
+                                                                name="content_id[]" value="<?= $content->id; ?>" />
+
+                                                            <label for="contentid_rev<?= $k; ?>" data-on-label="Yes"
+                                                                data-off-label="No"></label>
+
+                                                        </div>
+                                                        <!-- <input type="hidden" name="content_id[]" value="<?= $content->id; ?>" /> -->
+                                                        <!-- <input class="checkmark" type="checkbox" id="contentid" name="contentid[]" value="<? //= $content->id; 
+                                                                ?>"> -->
+                                                        <? //= $title; 
+                                                                ?>
+                                                    </td>
+                                                    <td>
+                                                        <?= $content->article_component; ?>
+                                                    </td>
+                                                    <td><a href="<?= base_url(); ?>editor/downloads/<?= $content->file; ?>">
+                                                            <?= $content->file; ?>
+                                                        </a></td>
+                                                    <td>
+                                                        <?= $content->date_created; ?>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                            <?php if ($editorContent): ?>
+                                                <tr>
+                                                    <td colspan="3">
+                                                        <span class="badge text-bg-warning">Editor's uploaded file</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+
+                                                        <input class="checkmark" type="checkbox" id="contentid"
+                                                            name="contentid[]" value="<?= $editorContent->decisionID; ?>">
+                                                        <?= $title; ?>
+                                                    </td>
+                                                    <td><a
+                                                            href="<?= base_url(); ?>editor/downloads/<?= $editorContent->upload_content; ?>">
+                                                            <?= $editorContent->upload_content; ?>
+                                                        </a></td>
+                                                    <td>
+                                                        <?= $editorContent->decision_date; ?>
+                                                    </td>
+                                                </tr>
+
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                <?php endif; ?>
+                                <!-- peerFiles eof -->
+
 
                             </div>
                             <div class="d-grid gap-2">
-                                <button class="btn btn-primary" submit="button">Send to review</button>
+                                <button class="btn btn-primary" submit="button">Send to copy editor</button>
                             </div>
                         </div>
                     </form>

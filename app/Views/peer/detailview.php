@@ -21,24 +21,14 @@ Reviewer Dashboard
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title ">Term & conditons</h5>
+                        <h5 class="modal-title ">Request to Review</h5>
+
                     </div>
                     <div class="modal-body">
+                        <h6 class="modal-title p-2"><?= $peerTerms->title; ?></h6>
                         <div class="p-2">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a gravida ex, nec interdum
-                            libero. Quisque dapibus turpis at lorem maximus, vel suscipit metus consequat. Pellentesque
-                            habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam blandit
-                            orci ut mi tincidunt, ac tristique lorem aliquet. Etiam suscipit faucibus lacus a lobortis.
-                            Praesent ac nisi sapien. Etiam maximus diam sed libero luctus hendrerit. Nam suscipit purus sit
-                            amet ornare scelerisque. Phasellus mattis ornare sollicitudin. Morbi vehicula bibendum massa
-                            eget dictum.
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a gravida ex, nec interdum
-                            libero. Quisque dapibus turpis at lorem maximus, vel suscipit metus consequat. Pellentesque
-                            habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam blandit
-                            orci ut mi tincidunt, ac tristique lorem aliquet. Etiam suscipit faucibus lacus a lobortis.
-                            Praesent ac nisi sapien. Etiam maximus diam sed libero luctus hendrerit. Nam suscipit purus sit
-                            amet ornare scelerisque. Phasellus mattis ornare sollicitudin. Morbi vehicula bibendum massa
-                            eget dictum.
+                            <?= $peerTerms->message; ?>
+
                         </div>
                         <form id="peerConsentForm" action="../../accept" method="POST" enctype="multipart/form-data">
 
@@ -47,7 +37,7 @@ Reviewer Dashboard
                             <div class="alert alert-warning">
 
                                 <b>Completion date: </b>
-                                <?= date("l jS \of F Y h:i:s A", strtotime($completion_date)); ?>
+                                <?= date("l jS \of F Y ", strtotime($completion_date)); ?>
 
                             </div>
                             <div class="form-check">
@@ -323,7 +313,7 @@ Reviewer Dashboard
                                 </h4>
                                 <?php if ($discussion->recommondation): ?>
                                     <h6>
-                                        Recommondation: <?= $discussion->recommondation; ?>
+                                        Recommendation: <?= $discussion->recommondation; ?>
                                     </h6>
                                 <?php endif; ?>
                                 <p>
@@ -372,7 +362,7 @@ Reviewer Dashboard
                     <div id="editor"></div>
                     <form id="peerReplyForm" action="../../notify" method="POST" enctype="multipart/form-data">
                         <div>
-                            <div class="fw-bold">Recommondation *</div>
+                            <div class="fw-bold">Recommendation *</div>
 
                             <select class="form-select" name="recommondation" id="recommondation">
                                 <option selected="true" disabled="disabled">Choose One</option>

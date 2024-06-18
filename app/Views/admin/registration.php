@@ -1,43 +1,35 @@
+<?= $this->extend("layouts/base"); ?>
+<?= $this->section("title"); ?>
+Dashboard
+<?= $this->endSection(); ?>
+
+<?= $this->section("content"); ?>
 <?php $page_session = \Config\Services::session(); ?>
-<!doctype html>
-<html lang="en">
+<div class="container">
+    <div class="row">
+        <div class="list-group col-8">
 
-<head>
 
-    <meta charset="utf-8" />
-    <title>SCRIPTURE</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-    <meta content="Themesdesign" name="author" />
-    <!-- App favicon -->
-    <link rel="shortcut icon" href="<?= base_url(); ?>assets/images/favicon.png">
+            <?php
+            $role = [
+                '1' => 'Admin',
+                '2' => 'Editor',
+                '3' => 'Author',
+                '4' => 'Reviewr',
+                '5' => 'Copy-editor',
+                '6' => 'Publisher',
+                '7' => 'Reader',
+            ];
+            $status = [
+                'active' => 'Active',
+                'inactive' => 'Inactive',
 
-    <!-- Bootstrap Css -->
-    <link href="<?= base_url(); ?>assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
-    <!-- Icons Css -->
-    <link href="<?= base_url(); ?>assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <!-- App Css-->
-    <link href="<?= base_url(); ?>assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
-    <link href="<?= base_url(); ?>assets/css/registration.css" rel="stylesheet" type="text/css" />
-    <link href="<?= base_url(); ?>assets/css/tag.css" rel="stylesheet" type="text/css" />
-
-</head>
-
-<body class="auth-body-bg">
-    <div class="bg-overlay"></div>
-    <div class="wrapper-page">
-        <div class="container-fluid p-0">
+            ];
+            ?>
             <div class="card">
                 <div class="card-body">
 
-                    <div class="text-center mt-4">
-                        <div class="mb-3">
-                            <a href="register.html" class="auth-logo">
-                                <img src="assets/images/logo.png" class="logo-dark mx-auto" alt="">
-                                <img src="assets/images/logo.png" class="logo-light mx-auto" alt="">
-                            </a>
-                        </div>
-                    </div>
+
 
                     <h4 class="text-muted text-center font-size-18"><b>REGISTER</b></h4>
 
@@ -125,14 +117,20 @@
                             <div class="col-12">
                                 <input name="cpass" value="<?= set_value('cpass'); ?>" id="cpass" class="form-control"
                                     placeholder="Repeat password" type="password">
-                                <input type="hidden" id="roleID" name="roleID" value="3">
+                                <!-- <input type="hidden" id="roleID" name="roleID" value="3"> -->
                             </div>
                         </div>
 
 
-                        <!-- <h6 class="alert-warning">You have to select appropriate role to register</h6>
+                        <h6 class="alert-warning">You have to select appropriate role to register</h6>
                         <div class="form-group mb-3 row">
                             <div class="col-12">
+                                <div class="custom-control custom-checkbox">
+                                    <label class="form-label fw-normal" for="data_consent">
+                                        <input type="checkbox" class="custom-control-input" id="author" name="roles[]"
+                                            value="2"><a href="#" class="text-muted ms-6 ">
+                                            Editor</a></label>
+                                </div>
                                 <div class="custom-control custom-checkbox">
                                     <label class="form-label fw-normal" for="data_consent">
                                         <input type="checkbox" class="custom-control-input" id="author" name="roles[]"
@@ -156,51 +154,15 @@
                                     <label class="form-label fw-normal" for="notification">
                                         <input type="checkbox" class="custom-control-input" id="translator"
                                             name="roles[]" value="6"> <a href="#" class="text-muted  ms-6 ">
-                                            Translator</a></label>
+                                            Publisher</a></label>
                                 </div>
 
-
-                            </div>
-
-                        </div> -->
-
-
-
-                        <div class="form-group mb-3 row">
-                            <div class="col-12">
-                                <div class="custom-control custom-checkbox">
-                                    <label class="form-label fw-normal" for="data_consent">
-                                        <input type="checkbox" class="custom-control-input" id="data_consent"
-                                            name="data_consent" required><a href="#" class="text-muted ms-6 ">Yes, I
-                                            agree to have my data collected and stored according to the Policy
-                                            Statement.</a></label>
-                                </div>
-
-                                <div class="custom-control custom-checkbox">
-                                    <label class="form-label fw-normal" for="notification">
-                                        <input type="checkbox" class="custom-control-input" id="notification"
-                                            name="notification"> <a href="#" class="text-muted  ms-6 ">Yes, I would like
-                                            to be notified of new publications and announcements.</a></label>
-                                </div>
-
-                                <div class="custom-control custom-checkbox">
-                                    <label class="form-label fw-normal" for="contact">
-                                        <input type="checkbox" class="custom-control-input" id="contact"
-                                            name="contact"><a href="#" class="text-muted  ms-6">Yes, I would like to be
-                                            contacted with requests to review submissions to this journal.</a></label>
-                                </div>
 
                             </div>
 
                         </div>
 
 
-                        <div class="tag-area" id="review-interests">
-                            <label for="tag-input" class="label">Review Interests</label>
-                            <ul>
-                                <input type="text" class="tag-input" id="tag-input" name="interests" />
-                            </ul>
-                        </div>
 
                         <div class="form-group text-center row mt-3 pt-1">
                             <div class="col-12">
@@ -210,11 +172,6 @@
                         </div>
 
 
-                        <div class="form-group mt-2 mb-0 row">
-                            <div class="col-12 mt-3 text-center">
-                                <a href="<?= base_url(); ?>" class="text-muted">Already have account?</a>
-                            </div>
-                        </div>
                         <!-- </form> -->
                         <?= form_close() ?>
                         <!-- end form -->
@@ -222,20 +179,29 @@
                 </div>
                 <!-- end cardbody -->
             </div>
-            <!-- end card -->
+
+
+
+
+
+
         </div>
-        <!-- end container -->
-    </div>
+        <!-- right col bof -->
+        <div class="col-4">
+
+        </div>
+        <!-- right col eof -->
+
+        <!-- Editor bof -->
+
+        <!-- editor eof -->
+
+    </div> <!-- row -->
+</div> <!--container-->
 
 
-    <script type="text/javascript" src="<?= base_url(); ?>assets/libs/jquery/jquery.min.js"></script>
-    <script type="text/javascript" src="<?= base_url(); ?>assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="<?= base_url(); ?>assets/libs/metismenu/metisMenu.min.js"></script>
-    <script type="text/javascript" src="<?= base_url(); ?>assets/libs/simplebar/simplebar.min.js"></script>
-    <script type="text/javascript" src="<?= base_url(); ?>assets/libs/node-waves/waves.min.js"></script>
-    <script type="text/javascript" src="<?= base_url(); ?>assets/js/app.js"></script>
-    <script type="text/javascript" src="<?= base_url(); ?>js/registration.js"></script>
-    <script type="text/javascript" src="<?= base_url(); ?>js/tag.js"></script>
-</body>
+<?= $this->section('javascript'); ?>
+<script type="text/javascript" src="<?= base_url(); ?>js/admin.js"></script>
 
-</html>
+<?= $this->endSection(); ?>
+<?= $this->endSection(); ?>

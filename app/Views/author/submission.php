@@ -36,13 +36,13 @@ $attributes = ['id' => 'submission', 'name' => 'submission', 'onsubmit' => 'retu
                         <div class="tab-pane" id="seller-details">
                             <div id="msg"></div>
                             <div id="del"></div>
-                            <?php if (isset ($validation)): ?>
+                            <?php if (isset($validation)): ?>
                                 <div class="alert alert-danger">
                                     <?= $validation->listErrors(); ?>
                                 </div>
                             <?php endif; ?>
 
-                            <?php if (isset ($success)): ?>
+                            <?php if (isset($success)): ?>
                                 <?php foreach ($success as $msg): ?>
                                     <div class="alert alert-success">
                                         <?= $msg; ?>
@@ -107,27 +107,6 @@ $attributes = ['id' => 'submission', 'name' => 'submission', 'onsubmit' => 'retu
 
                                 <!-- tinymce -->
                             </div>
-                            <!-- <h4 class="card-title font-size-14"><b>Corresponding Contact</b></h4>
-                                <div class="form-group mb-3 row">
-                                    <div class="col-12">
-                                        <div class="custom-control custom-checkbox">
-                                            <label class="form-label  fw-normal" for="contact">
-                                                <input type="checkbox" class="custom-control-input" id="contact" name="contact"> <a href="#" class="text-muted2 ms-1">Yes, I would like to be contacted about this submission.</a></label>
-                                        </div>
-                                        <div class="custom-control custom-checkbox">
-                                            <label class="form-label  fw-normal" for="data">
-                                                <input type="checkbox" class="custom-control-input" id="data" name="data"> <a href="#" class="text-muted2 ms-1">Yes, I agree to have my data collected and stored according to the Policy statement.</a></label>
-                                        </div>
-                                    </div>
-                                </div> -->
-
-
-                            <!-- <div>
-                                <span id="coauthor" class="fw-bold"> </span>
-                            </div> -->
-
-
-
 
                             <!-- uploads bof -->
                             <div class="mb-0">
@@ -164,7 +143,7 @@ $attributes = ['id' => 'submission', 'name' => 'submission', 'onsubmit' => 'retu
                                                 </tr>
 
                                                 <tr>
-                                                    <td width="50%">Other Component *</td>
+                                                    <td width="50%">Other Component </td>
                                                     <td>
                                                         <button type="button" onclick="authReset('authorForm');"
                                                             class="btn btn-primary" data-bs-toggle="modal"

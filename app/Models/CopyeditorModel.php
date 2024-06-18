@@ -181,6 +181,19 @@ class CopyeditorModel extends Model
         }
     }
 
+    public function copyTerms($recipeint_id, $subid)
+    {
+        $Q = $this->db->table('notifications');
+        $Q->where('recipient_id', $recipeint_id);
+        $Q->where('submissionID', $subid);
+        $Q->orderBy('date_created', 'ASC');
+        $query = $Q->get()->getRow();
+        if ($query) {
+            return $query;
+        } else {
+            return false;
+        }
+    }
 
     public function getBySubmissionId($table, $submissionID)
     {

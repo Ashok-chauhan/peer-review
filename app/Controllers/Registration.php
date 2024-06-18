@@ -41,11 +41,16 @@ class Registration extends Controller
                 'cpass' => 'required|matches[password]',
                 'phone' => 'required|exact_length[10]|numeric',
                 'country' => 'required',
-                'roles' => 'required',
+
             ];
             if ($this->validate($rules)) {
                 $uniid = md5(str_shuffle('abcdefghijklmnopqrstuvwxyz' . time()));
-                $roles = $this->request->getVar('roles');
+                $roles = [];
+                $roles[] = $this->request->getVar('roleID');
+                if ($this->request->getVar('contact')) {
+                    $roles[] = 4; //Peer role
+                }
+
 
                 $userdata = [
                     'title' => $this->request->getVar('title', FILTER_SANITIZE_STRING),

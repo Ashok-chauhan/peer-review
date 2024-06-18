@@ -118,4 +118,25 @@ class AdminModel extends Model
             return false;
         }
     }
+
+    public function createUsers($data)
+    {
+        $builder = $this->db->table('users');
+        $result = $builder->insert($data);
+        if ($this->db->affectedRows()) {
+            return $this->db->insertID();
+        } else {
+            return false;
+        }
+    }
+    public function userRoles($data)
+    {
+        $builder = $this->db->table('user_roles');
+        $result = $builder->insert($data);
+        if ($this->db->affectedRows()) {
+            return $this->db->insertID();
+        } else {
+            return false;
+        }
+    }
 }

@@ -58,4 +58,83 @@ class Admin extends BaseController
 
         return view('admin/index', $data);
     }
+
+    public function registration()
+    {
+        $data = [];
+        $data['validation'] = null;
+
+        if ($this->request->getMethod() == 'post') {
+
+            $rules = [
+                'username' => 'required',
+                'email' => 'required|valid_email|is_unique[users.email]',
+                'password' => 'required',
+                'cpass' => 'required|matches[password]',
+                'phone' => 'required|exact_length[10]|numeric',
+                'country' => 'required',
+                'roles' => 'required',
+
+            ];
+            if ($this->validate($rules)) {
+                $uniid = md5(str_shuffle('abcdefghijklmnopqrstuvwxyz' . time()));
+
+                $roles = $this->request->getVar('roles');
+
+
+
+                $userdata = [
+                    'title' => $this->request->getVar('title', FILTER_SANITIZE_STRING),
+                    'username' => $this->request->getVar('username', FILTER_SANITIZE_STRING),
+                    'middle_name' => $this->request->getVar('middle_name', FILTER_SANITIZE_STRING),
+                    'last_name' => $this->request->getVar('last_name', FILTER_SANITIZE_STRING),
+                    'email' => $this->request->getVar('email'),
+                    'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
+                    'uniid' => $uniid,
+                    'activation_date' => date("Y-m-d h:i:s"),
+                    'country' => $this->request->getVar('country', FILTER_SANITIZE_STRING),
+                    'roleID' => $roles[0],
+                ];
+
+                $insertID = $this->adminModel->createUsers($userdata);
+
+                if ($insertID) {
+                    foreach ($roles as $role) {
+                        $roleData = [
+                            'user_id' => $insertID,
+                            'role_id' => $role,
+                        ];
+                        $this->adminModel->userRoles($roleData);
+                    }
+                }
+
+                //if ($this->registrationModel->createUsers($userdata)) {
+                if ($insertID) {
+                    //send activation email. 
+                    $mailData = [];
+                    $mailData['title'] = $this->request->getVar('title');
+                    $mailData['name'] = $this->request->getVar('username');
+                    $mailData['last_name'] = $this->request->getVar('last_name');
+                    $mailData['link'] = base_url() . 'activate/' . $uniid;
+                    $to = $this->request->getVar('email');
+                    $subject = 'Verify Your Scripture Account';
+                    $this->email->setMailType('html');
+                    $this->email->setTo($to);
+                    $this->email->setSubject($subject);
+                    $body = view('activation_email', $mailData);
+                    $this->email->setMessage($body);
+                    $sent = $this->email->send();
+                    $this->session->setTempdata("success", "Account created successfully, Account activation email sent.", 3);
+                    // return redirect()->to('registration/thankyou');
+                } else {
+                    //send error.
+                    $this->session->setTempdata("error", "Sorry! Unable to crate an account, try again", 3);
+                    return redirect()->to(current_url());
+                }
+            } else {
+                $data['validation'] = $this->validator;
+            }
+        }
+        return view('admin/registration', $data);
+    }
 }

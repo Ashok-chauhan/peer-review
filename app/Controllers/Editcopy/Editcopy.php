@@ -112,6 +112,7 @@ class Editcopy extends BaseController
         $reviewTableId = $uri->getSegment(4); //to update review table
         $data = [];
         //$data['reviewTableId'] = $reviewTableId;
+        $data['copyTerms'] = $this->cpEditor->copyTerms(session()->get('userID'), $submission_id);
         $result = $this->cpEditor->checkStatus($reviewTableId);
 
         if ($result->status > 1 && $result->status <= 6) {
@@ -124,14 +125,6 @@ class Editcopy extends BaseController
             $data['status'] = false;
         }
         $data['data'] = $result;
-        // print '<pre>';
-        // print_r($data);
-        // print_r($result);
-        // exit;
-        // $data['completion_date'] = $result->completion_date;
-
-
-
 
         return view('editcopy/accept', $data);
 

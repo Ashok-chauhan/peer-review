@@ -114,6 +114,7 @@ class Submission extends BaseController
                             $this->submissionModel->updateCoauthor($coauthor_id, $submissionID);
                         }
                     }
+
                     //updating primary conteact of coauthor.
                     if (isset($coauthor_primaryContact))
                         $this->submissionModel->updateCoauthorPrimaryContacct($coauthor_primaryContact);
@@ -124,6 +125,21 @@ class Submission extends BaseController
                             $coa_names .= $coa . ', ';
                         }
                     }
+
+                    //send email to all the co-authors
+                    if (isset($coauthorIds)) {
+                        foreach ($coauthorIds as $coauthor_id) {
+                            $coAuthorDetails[] = $this->submissionModel->getCoauthorbyId($coauthor_id);
+                        }
+                    }
+                    if (isset($coAuthorDetails)) {
+                        foreach ($coAuthorDetails as $coauth) {
+                            $fname = $coauth->title . ' ' . $coauth->name . ' ' . $coauth->m_name . ' ' . $coauth->l_name;
+                            $comailSent = $this->sendEmail($coauth->email, $title, $fname, $coa_names, $submissionID, $coauthorEmails, $journalName);
+                        }
+                    }
+
+
                     $fullName = session()->get("title") . ' ' . session()->get("username") . ' ' . session()->get("middle_name") . ' ' . session()->get("last_name");
                     $mailSent = $this->sendEmail(session()->get("logged_user"), $title, $fullName, $coa_names, $submissionID, $coauthorEmails, $journalName);
                     //to editor
@@ -498,17 +514,19 @@ class Submission extends BaseController
         $subject = 'Confirmation of Manuscript Submission of ' . $journal . ' ' . $title;
         $this->email->setMailType('html');
         $this->email->setTo($to);
-        $this->email->setCC($coEmails);
+        // $this->email->setCC($coEmails); blocked 12/6/2024 since send mail to all co-authors by full name
         $this->email->setBCC('creativeplus92@gmail.com');
         $this->email->setSubject($subject);
         $body = view('submission_email', $mailData);
         $this->email->setMessage($body);
         // $this->email->send();
+
         if ($this->email->send()) {
             return true;
         } else {
             return false;
         }
+
     }
 
     public function mailToEditor($to, $title, $fullName, $coauthor, $id, $coEmails, $p_contact, $journal = 'Orthopedic')
@@ -528,12 +546,12 @@ class Submission extends BaseController
         $this->email->setSubject($subject);
         $body = view('mails/submissionMailToEditor', $mailData);
         $this->email->setMessage($body);
-
         if ($this->email->send()) {
             return true;
         } else {
             return false;
         }
+
     }
 
     public function notificationEmail($to, $title, $message, $file = null)

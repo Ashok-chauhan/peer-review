@@ -17,7 +17,7 @@ Dashboard
                     $message = <<<EOT
                     <p>
                     <h5>$mail->title</h5>
-                    <h6>Recommondation: $mail->recommondation</h6>
+                    <h6>Recommendation: $mail->recommondation</h6>
                     </p> $mail->message
                     <p><a href='$fileurl'>$mail->file</a></p>
                 EOT;
@@ -25,7 +25,7 @@ Dashboard
                     $message = <<<EOT
                     <p>
                     <h5>$mail->title</h5>
-                    <h6>Recommondation: $mail->recommondation</h6>
+                    <h6>Recommendation: $mail->recommondation</h6>
                     </p> $mail->message
                     EOT;
                 }
@@ -34,7 +34,7 @@ Dashboard
                     class="border border-primary p-2 m-2 rounded" style="cursor:pointer;">
                     <p>
                     <h5><?= $mail->title; ?></h5>
-                    <h6>Recommondation: <?= $mail->recommondation; ?></h6>
+                    <h6>Recommendation: <?= $mail->recommondation; ?></h6>
                     </p><?= $mail->message; ?>
                     <p>
                     <p><a href="<?= base_url(); ?>editor/downloads/<?= $mail->file; ?>"><?= $mail->file; ?></a></p>

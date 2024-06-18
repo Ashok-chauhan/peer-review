@@ -210,6 +210,7 @@ $STATUS = [
         </div>
         <!-- end col -->
 
+
         <div class="col-xl-4">
             <div class="card">
                 <div class="card-body ">
@@ -323,28 +324,100 @@ $STATUS = [
 
                             </div>
                             <?php if (!is_array($editorialDecision) && !isset($editorialDecision->status)): ?>
+
                                 <div class="list-group-item" role="alert">
                                     <?= anchor('editor/accepted_copyediting/' . $submission->submissionID . '/' . 6, '<span class="btn-dark waves-light" style="padding: 0.47rem 34px; border-radius: 5px;"><i class="fa fa-comments"></i>&nbsp; Accept & proceed</span>'); ?>
                                 </div>
                             <?php endif; ?>
 
                         <?php endif; ?>
-                        <?php if ($editorialDecision && $editorialDecision->status == 6): ?>
-                            <div class="list-group-item" role="alert">
-                                <button type="button" class="btn btn-success waves-effect waves-light"
-                                    style="padding: 0.47rem 54px;">
-                                    <i class="fa fa-area-chart"></i>&nbsp; Production
-                                </button>
-                            </div>
+
+
+                        <?php if (isset($editorialDecision->status)): ?>
+                            <?php if ($editorialDecision->status == 6): ?>
+                                <div class="list-group-item" role="alert">
+                                    <button type="button" class="btn btn-success waves-effect waves-light"
+                                        style="padding: 0.47rem 54px;">
+                                        <i class="fa fa-area-chart"></i>&nbsp; Production
+                                    </button>
+                                </div>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
 
                 </div>
+
+                <!-- peer files -->
+                <div class="card">
+                    <div class="card-body ">
+                        <div class="">
+                            <h4 class="card-title">Reviewer files</h4>
+
+                            <?php if ($peerDiscussions): ?>
+                                <?php foreach ($peerDiscussions as $peerfile): ?>
+
+                                    <?php if (isset($peerfile->file)): ?>
+                                        <?php $f = $peerfile->file; ?>
+                                        <div>
+                                            <?= anchor('editor/downloads/' . $peerfile->file, $peerfile->file); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                <?php if (isset($f)): ?>
+                                    <?= anchor('editor/downloadpeerZip/' . $peerDiscussions[0]->submissionID, '<span class="btn1 btn-success">downloads</span>'); ?>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <!-- eof peer files -->
+
+                <!-- bof copyeditor files -->
+                <div class="card">
+                    <div class="card-body ">
+                        <div class="">
+                            <h4 class="card-title">Copy-editor files</h4>
+                            <?php if ($cpEditorDiscussions): ?>
+                                <?php foreach ($cpEditorDiscussions as $copyfile): ?>
+                                    <div>
+                                        <?= anchor('editor/downloads/' . $copyfile->file, $copyfile->file); ?>
+                                    </div>
+                                <?php endforeach; ?>
+                                <?= anchor('editor/downloadpeerZip/' . $cpEditorDiscussions[0]->submissionID, '<span class="btn1 btn-success">downloads</span>'); ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <!-- eof copyeditor files -->
+                <!-- bof editorieal history  -->
+                <div class="card">
+                    <div class="card-body ">
+                        <div class="">
+                            <h4 class="card-title">Editorial history</h4>
+                            <?php if ($editorialHistory['notifications']): ?>
+                                <?php foreach ($editorialHistory as $history): ?>
+                                    <?php foreach ($history as $notifications): ?>
+                                        <ul>
+                                            <li>From : <?= $notifications['sender']; ?> To <?= $notifications['recipient']; ?>
+                                            </li>
+                                            <span><?= $notifications['title']; ?></span>
+                                        </ul>
+                                    <?php endforeach; ?>
+                                <?php endforeach; ?>
+                                <?= anchor('editor/editorialhistory/' . $editorialHistory['notifications'][0]['submissionID'], '<span class="btn1 btn-success">More</span>'); ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <!-- eof editorial history  -->
             </div>
         </div>
+
+
         <!-- end col -->
 
     </div>
+
     <!-- end row -->
 
     <!-- <div class="row">
@@ -499,7 +572,7 @@ $STATUS = [
                                                 </h4>
                                                 <?php if ($discussion->recommondation): ?>
                                                     <h6>
-                                                        Recommondation: <?= $discussion->recommondation; ?>
+                                                        Recommendation: <?= $discussion->recommondation; ?>
                                                     </h6>
                                                 <?php endif; ?>
                                                 <p>
@@ -578,7 +651,7 @@ $STATUS = [
                                                 </h4>
                                                 <?php if ($discussion->recommondation): ?>
                                                     <h6>
-                                                        Recommondation: <?= $discussion->recommondation; ?>
+                                                        Recommendation: <?= $discussion->recommondation; ?>
                                                     </h6>
                                                 <?php endif; ?>
                                                 <p>

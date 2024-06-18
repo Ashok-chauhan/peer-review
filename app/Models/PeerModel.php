@@ -47,7 +47,7 @@ class PeerModel extends Model
 
         $builder = $this->db->table('submission');
         $builder->select('*');
-        $builder->join('reviews', 'reviews.submissionID = submission.submissionID AND submission.status_id=3');
+        $builder->join('reviews', 'reviews.submissionID = submission.submissionID AND submission.status_id IN (3,4)');
         $builder->where('reviewerID', $reviewerID);
 
         $query = $builder->get()->getResult();
@@ -275,6 +275,20 @@ class PeerModel extends Model
         $Q->where('recipient_id', $recipeint_id);
         $Q->orderBy('date_created', 'DESC');
         $query = $Q->get()->getResult();
+        if ($query) {
+            return $query;
+        } else {
+            return false;
+        }
+    }
+
+    public function peerTerms($recipeint_id, $subid)
+    {
+        $Q = $this->db->table('notifications');
+        $Q->where('recipient_id', $recipeint_id);
+        $Q->where('submissionID', $subid);
+        $Q->orderBy('date_created', 'ASC');
+        $query = $Q->get()->getRow();
         if ($query) {
             return $query;
         } else {

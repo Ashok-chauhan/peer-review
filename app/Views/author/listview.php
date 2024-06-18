@@ -15,7 +15,10 @@ Dashboard
             </div>
         </div>
     </div>
+
     <!-- end page title -->
+
+
 
     <div class="row">
         <div class="col-xl-12">
@@ -23,25 +26,30 @@ Dashboard
                 <div class="card-body">
 
                     <!-- Nav tabs -->
-                    <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#home1" role="tab">
-                                <span class="d-block d-sm-none">Active Submissions</span>
-                                <span class="d-none d-sm-block">Active Submissions</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#profile1" role="tab">
-                                <span class="d-block d-sm-none">Archived Submissions</span>
-                                <span class="d-none d-sm-block">Archived Submissions</span>
-                            </a>
-                        </li>
+                    <?php if (count($list) > 0 || count($completed) > 0): ?>
+                        <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#home1" role="tab">
+                                    <span class="d-block d-sm-none">Active Submissions</span>
+                                    <span class="d-none d-sm-block">Active Submissions</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#profile1" role="tab">
+                                    <span class="d-block d-sm-none">Archived Submissions</span>
+                                    <span class="d-none d-sm-block">Archived Submissions</span>
+                                </a>
+                            </li>
 
-                    </ul>
-
+                        </ul>
+                    <?php else: ?>
+                        <div class="text-center">
+                            <h3><code>You haven't submitted yet!</code></h3>
+                        </div>
+                    <?php endif; ?>
                     <!-- Tab panes -->
                     <div class="tab-content p-3 text-muted">
-                        <?php if (isset ($list)): ?>
+                        <?php if (isset($list)): ?>
 
                             <div class="tab-pane active" id="home1" role="tabpanel">
 
@@ -111,13 +119,13 @@ Dashboard
 
                                                         <td width="15%">
                                                             <!-- <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2"> -->
-                                                            <?php if ($row->status_id == 0 && isset ($row->notification) < 1): ?>
+                                                            <?php if ($row->status_id == 0 && isset($row->notification) < 1): ?>
                                                                 <span class="btn-primary "
                                                                     style="padding: 0.6rem 58px;border-radius: 50px;">
                                                                     <i class="fa fa-send-o"></i>
                                                                     Submitted
                                                                 </span>
-                                                            <?php elseif (isset ($row->notification) && $row->status_id == 0): ?>
+                                                            <?php elseif (isset($row->notification) && $row->status_id == 0): ?>
                                                                 <span class="btn-warning  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fa fa-search"></i>&nbsp; Pre-Review Discussions
@@ -157,7 +165,7 @@ Dashboard
 
                                                             <!-- </button> -->
                                                             <p></p>
-                                                            <?php if (isset ($row->notification)): ?>
+                                                            <?php if (isset($row->notification)): ?>
                                                                 <p><i class='far fa-comment'></i>
                                                                     <?= $row->notification; ?>
                                                                 </p>
@@ -240,7 +248,7 @@ Dashboard
 
                                                             <!-- </button> -->
                                                             <p></p>
-                                                            <?php if (isset ($row->notification)): ?>
+                                                            <?php if (isset($row->notification)): ?>
                                                                 <p><i class='far fa-comment'></i>
                                                                     <?= $row->notification; ?>
                                                                 </p>
@@ -274,6 +282,8 @@ Dashboard
 
         </div>
     </div>
+
+
 </div>
 
 

@@ -235,7 +235,7 @@ Reviewer Dashboard
                                 </h4>
                                 <?php if ($discussion->recommondation): ?>
                                     <h6>
-                                        Recommondation: <?= $discussion->recommondation; ?>
+                                        Recommendation: <?= $discussion->recommondation; ?>
                                     </h6>
                                 <?php endif; ?>
                                 <p>
@@ -284,7 +284,7 @@ Reviewer Dashboard
                     <div id="editor"></div>
                     <form id="peerReplyForm" action="../../notify" method="POST" enctype="multipart/form-data">
                         <div>
-                            <div class="fw-bold">Recommondation *</div>
+                            <div class="fw-bold">Recommendation *</div>
 
                             <select class="form-select" name="recommondation" id="recommondation">
                                 <option selected="true" disabled="disabled">Choose One</option>

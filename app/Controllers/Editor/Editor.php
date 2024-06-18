@@ -140,6 +140,7 @@ class Editor extends BaseController
         $uri = $this->request->getUri();
         $submissionID = $uri->getSegment(3);
         $peerData = $this->editorModel->getReviewsBySubId($submissionID);
+
         if ($peerData) {
             $data['peer'] = $this->user->getUser($peerData->reviewerID);
         } else {
@@ -155,11 +156,10 @@ class Editor extends BaseController
         $revisionFile = $this->editorModel->getRevisionFile($submissionID);
         $submissionTitle = $this->editorModel->getBySubmissionId('submission', $submissionID);
         //$editorialDecision = $this->editorModel->getEditorialUploadsBySubId($submissionID);
-
         $editorialDecision = $this->editorModel->getEditorialDecision_bySubid($submissionID);
-
         $editorial_decision = $this->editorModel->getCopyeditorNote(session()->get('userID'), $submissionID);
         $user = $this->editorModel->getAutor($submissionTitle[0]->authorID);
+
         $data['authorName'] = $user->title . ' ' . $user->username . ' ' . $user->middle_name . ' ' . $user->middle_name . ' ' . $user->last_name;
         $data['authorEmail'] = $user->email;
         $data['userid'] = $user->userID;
@@ -167,11 +167,6 @@ class Editor extends BaseController
         $data['title'] = $submissionTitle[0]->title;
         $data['contents'] = $this->editorModel->getBySubmissionId('submission_content', $submissionID);
         $data['discussions'] = $this->editorModel->getDiscussion($submissionID);
-        // $note = $this->editorModel->getDiscussion($submissionID);
-        // if (isset($note['author']) && array_key_exists('author', $note)) $data['discussions'] = $note['author']; //$this->editorModel->getDiscussion($submissionID);
-        // if (isset($note['peer']) && array_key_exists('peer', $note))  $data['peerDiscussions'] = $note['peer'];
-        // if (isset($note['copyeditor']) && array_key_exists('copyeditor', $note))  $data['copyEditor'] = $note['copyeditor'];
-
         $data['revisionFile'] = $revisionFile;
         // $data['peerDiscussions'] = $this->editorModel->getPeerDiscussion(session()->get('userID'), $submissionID);
         $data['peerDiscussions'] = $this->editorModel->peerDiscussion($submissionID);
@@ -182,9 +177,7 @@ class Editor extends BaseController
         $data['submission'] = $submissionTitle[0];
         $data['submission']->contributor = $coauthor;
         $data['sentMessages'] = $this->editorModel->getSentDiscussion(session()->get('userID'), $submissionID);
-        // print '<pre>';
-        // print_r($data);
-
+        $data['editorialHistory'] = $this->editorialHistory($submissionID);
 
         return view('editor/byauthor', $data);
     }
@@ -358,7 +351,8 @@ class Editor extends BaseController
                 $insertNote = $this->editorModel->discussion($note);
                 if ($insertNote) {
                     //send email
-
+                    /*
+                    //dont show downloadable file links in peer email , so commented.
                     $mailContent = '';
                     foreach ($this->request->getVar('contentid') as $contId) {
                         $content = $this->editorModel->getRevisionFile($contId);
@@ -369,10 +363,12 @@ class Editor extends BaseController
                             $mailContent .= '<p><a href=' . base_url() . 'editor/downloads/' . $editorFile->upload_content . '>' . $editorFile->upload_content . '</a></p>';
                         }
                     }
+                     */
                     $subMissionTitle = $submision[0]->title;
                     $sbjTitle = $this->request->getVar('title');
                     $mailMsg = $this->request->getVar('message');
-                    $body = $mailMsg . $mailContent;
+                    // $body = $mailMsg . $mailContent; //file link not needed in peer mail
+                    $body = $mailMsg;
                     $completion_date = $this->request->getVar('completion_date');
                     $this->mailToPeer($peer->email, $peerFullName, $sbjTitle, $subMissionTitle, $completion_date, $body, $journal->journal_name); //, $journal = null
                     $this->session->setTempdata("success", "Notification sent successfully to the Reviewer.", 3);
@@ -387,6 +383,45 @@ class Editor extends BaseController
 
     public function send_to_copyeditor()
     {
+
+        // bof inserting peer uploaded file into submission_content table
+        $contentid = $this->request->getVar('content_id');
+        $content_id = $this->request->getVar('contentid');
+        if (is_array($contentid) && is_array($content_id)) {
+            $mergedContentId = array_merge($content_id, $contentid);
+        } else {
+            $mergedContentId = $content_id;
+        }
+        if (isset($_SESSION['peerFiles']) && !empty($_SESSION['peerFiles'])) {
+            $peerFiles = $_SESSION['peerFiles'];
+            if (is_array($peerFiles)) {
+                foreach ($peerFiles as $key => $peer_File) {
+                    if (is_array($contentid)) {
+                        foreach ($contentid as $cid) {
+                            if ($cid == $peer_File->id) {
+                                $peerUpload[] = $peer_File;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // if (is_array($peerFiles)) {
+        //     foreach ($peerFiles as $key => $peer_File) {
+        //         if (is_array($contentid)) {
+        //             foreach ($contentid as $cid) {
+        //                 if ($cid == $peer_File->id) {
+        //                     $peerUpload[] = $peer_File;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        $_SESSION['peerFiles'] = '';
+        // eof submission_content table
+
+
         if ($this->request->getMethod() == 'post') {
 
 
@@ -398,14 +433,36 @@ class Editor extends BaseController
                 $data_reviews['copyeditor_id'] = $this->request->getVar('peer');
                 $data_reviews['editor_id'] = session()->get('userID');
                 $data_reviews['completion_date'] = $this->request->getVar('completion_date');
-
+                //insert into submission_content tabel
+                if (isset($peerUpload) && is_array($peerUpload)) {
+                    $insertid = [];
+                    foreach ($peerUpload as $peerfile) {
+                        $submission_content['submissionID'] = $this->request->getVar('submissionid');
+                        $submission_content['content'] = $peerfile->file;
+                        $submission_content['article_component'] = $peerfile->article_component;
+                        $submission_content['submission_date'] = $peerfile->date_created;
+                        $insertid[] = $this->editorModel->createSubmissionContent($submission_content);
+                    }
+                    if (is_array($this->request->getVar('contentid'))) {
+                        $contentIDS = array_merge($this->request->getVar('contentid'), $insertid);
+                    } else {
+                        $contentIDS = $insertid;
+                    }
+                } else {
+                    $contentIDS = $this->request->getVar('contentid');
+                }
+                // eof submission_content table
                 $copyediting_id = $this->editorModel->insertCopyediting($data_reviews);
                 $review_content['submission_id'] = $this->request->getVar('submissionid');
                 $review_content['copyeditor_id'] = $this->request->getVar('peer');
                 $review_content['copyediting_id'] = $copyediting_id;
 
 
-                foreach ($this->request->getVar('contentid') as $content) {
+                // foreach ($this->request->getVar('contentid') as $content) {
+                //     $review_content['submission_content_id'] = $content;
+                //     $revContentId = $this->editorModel->insertCopyeditingContent($review_content);
+                // }
+                foreach ($contentIDS as $content) {
                     $review_content['submission_content_id'] = $content;
                     $revContentId = $this->editorModel->insertCopyeditingContent($review_content);
                 }
@@ -427,7 +484,9 @@ class Editor extends BaseController
                     //send email
 
                     $mailContent = '';
-                    foreach ($this->request->getVar('contentid') as $contId) {
+                    // foreach ($this->request->getVar('contentid') as $contId) {
+                    foreach ($contentIDS as $contId) {
+
                         $content = $this->editorModel->getRevisionFile($contId);
                         $editorFile = $this->editorModel->getEditorialUploads($contId);
                         if ($content) {
@@ -479,6 +538,7 @@ class Editor extends BaseController
         $data['submissionid'] = $subid;
         $data['subContents'] = $subContents;
         $data['editorContent'] = $editorContent;
+        $data['peerFiles'] = $this->editorModel->peerDiscussion($subid);
 
         return view('editor/tocopyedit', $data);
         /*
@@ -817,6 +877,39 @@ class Editor extends BaseController
         }
     }
 
+    public function downloadpeerZip()
+    {
+        $uri = $this->request->getUri();
+        $submissionID = $uri->getSegment(3);
+        $submission_content = $this->editorModel->peerDiscussion($submissionID);
+        if (!$submission_content)
+            return false;
+        $zip = new \ZipArchive();
+        $zipFilename = '/tmp/article.zip';
+        if ($zip->open($zipFilename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+            // Add files to the zip (replace with your actual file paths)
+            if ($submission_content) {
+                foreach ($submission_content as $content) {
+                    $zip->addFile(WRITEPATH . 'uploads/' . $content->file, $content->file);
+                }
+            }
+            // Close the zip file
+            $zip->close();
+            // Force download the zip file
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename="' . $zipFilename . '"');
+            header('Content-Length: ' . filesize($zipFilename));
+            header('Pragma: no-cache');
+            header('Expires: 0');
+            readfile($zipFilename);
+            // Delete the zip file after download (optional)
+            unlink($zipFilename);
+            exit;
+        } else {
+            echo 'Failed to create zip file';
+        }
+    }
+
 
     public function notificationEmail($to, $title, $message, $mail, $file = null, $journal = null)
     {
@@ -918,12 +1011,13 @@ class Editor extends BaseController
         $reviewer = $this->editorModel->getUser($reveData->reviewerID);
         $author = $this->editorModel->getUser($submission[0]->authorID);
         $peerFullname = $reviewer->title . ' ' . $reviewer->username . ' ' . $reviewer->middle_name . ' ' . $reviewer->last_name;
+        $authorFullname = $author->title . ' ' . $author->username . ' ' . $author->middle_name . ' ' . $author->last_name;
         $status_id = $uri->getSegment(4);
         $status = $this->editorModel->accepted($submissionID, $status_id);
         if ($status) {
             $this->thnakyouMailtoPeer($reviewer->email, $subtitle, $peerFullname, $journal->journal_name);
             //send email to Author
-            $this->thnakyouMailtoAuthor($author->email, $subtitle, $peerFullname, $journal->journal_name);
+            $this->thnakyouMailtoAuthor($author->email, $subtitle, $authorFullname, $journal->journal_name);
         }
         if ($status) {
             return redirect()->to('editor/byauthor/' . $submissionID);
@@ -1113,15 +1207,28 @@ class Editor extends BaseController
 
     }
 
-    public function editorialHistory()
+    public function editorialHistory_all()
     {
+        $uri = $this->request->getUri();
+        $submissionID = $uri->getSegment(3);
         $model = new \App\Models\NotificationsModel();
 
         $data = [
-            'notifications' => $model->paginate(20),
+            'notifications' => $model->where('submissionID', $submissionID)->paginate(20),
             'pager' => $model->pager,
         ];
 
         return view('editorial_history/index', $data);
+    }
+    public function editorialHistory($subid)
+    {
+        $model = new \App\Models\NotificationsModel();
+
+        $data = [
+            'notifications' => $model->where('submissionID', $subid)->paginate(9),
+            'pager' => $model->pager,
+        ];
+        return $data;
+        // return view('editorial_history/index', $data);
     }
 }

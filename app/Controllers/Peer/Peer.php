@@ -87,6 +87,7 @@ class Peer extends BaseController
         $data['details'] = $this->peerModel->getReviewDetailBySubid($submission_id);
         $data['discussions'] = $this->peerModel->getDiscussion($submission_id);
         $data['editor'] = $this->peerModel->getUser($data['details']->editor_id);
+        $data['peerTerms'] = $this->peerModel->peerTerms(session()->get('userID'), $submission_id);
         $data['submission_id'] = $submission_id;
 
         return view('peer/detailview', $data);

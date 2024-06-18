@@ -60,6 +60,8 @@ $routes->group('editor', static function ($routes) {
     $routes->get('byauthor/(:segment)', 'Editor\Editor::byAuthor', ['filter' => 'auth']);
     $routes->get('downloads/(:segment)', 'Editor\Editor::downloads');
     $routes->get('downloadZip/(:segment)', 'Editor\Editor::downloadZip');
+    $routes->get('downloadpeerZip/(:segment)', 'Editor\Editor::downloadpeerZip');
+
     $routes->get('accepted/(:num)/(:num)', 'Editor\Editor::accepted/$1/$2', ['filter' => 'auth']);
     $routes->get('accepted_copyediting/(:num)/(:num)', 'Editor\Editor::accepted_copyediting/$1/$2', ['filter' => 'auth']);
 
@@ -86,13 +88,18 @@ $routes->group('editor', static function ($routes) {
     $routes->post('copyeditorDiscussion/', 'Editor\Editor::copyeditorDiscussion', ['filter' => 'auth']);
     $routes->get('requestrevision/(:segment)', 'Editor\Editor::requestrevision', ['filter' => 'auth']);
     $routes->post('requestrevision/(:segment)', 'Editor\Editor::requestrevision', ['filter' => 'auth']);
-    $routes->get('editorialhistory/', 'Editor\Editor::editorialHistory', ['filter' => 'auth']);
+    $routes->get('editorialhistory/(:segment)', 'Editor\Editor::editorialHistory_all', ['filter' => 'auth']);
+
+
 
 });
 
 $routes->group('admin', static function ($routes) {
     $routes->get('', 'Admin\Admin::index', ['filter' => 'auth']);
     $routes->post('', 'Admin\Admin::index', ['filter' => 'auth']);
+
+    $routes->get('registration/', 'Admin\Admin::registration', ['filter' => 'auth']);
+    $routes->post('registration/', 'Admin\Admin::registration', ['filter' => 'auth']);
 });
 
 $routes->group('peer', static function ($routes) {

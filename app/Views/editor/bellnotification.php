@@ -43,7 +43,7 @@ Notifications
 
                                         <?php if ($notification->recommondation): ?>
                                             <h6>
-                                                Recommondation: <?= $notification->recommondation; ?>
+                                                Recommendation: <?= $notification->recommondation; ?>
                                             </h6>
                                         <?php endif; ?>
                                         <p class="mb-1"><?= $notification->message; ?></p>
