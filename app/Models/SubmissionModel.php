@@ -109,6 +109,19 @@ class SubmissionModel extends Model
         }
     }
 
+
+    public function getJournals()
+    {
+        $Q = $this->db->table('journal');
+        $result = $Q->get()->getResult();
+        if ($result) {
+            return $result;
+        } else {
+            return false;
+        }
+    }
+
+
     public function getBySubmissionId($submissionID)
     {
         $Q = $this->db->table('submission_content')->select('*')->where('submissionID', $submissionID);

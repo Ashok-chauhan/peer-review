@@ -232,17 +232,22 @@ class EditorModel extends Model
         }
     }
 
-    public function getReviewer($role = 4, $email = '')
+    public function getReviewer($role = 4, $email = '', $jid = 1)
     {
 
 
         $rows = [];
+        /*
         $query = $this->db->query("SELECT * FROM user_roles
         RIGHT JOIN users ON user_roles.user_id = users.userID
         WHERE user_roles.role_id=$role AND users.status='active' AND users.email !='$email'");
+        */
 
-        // $q = $this->db->getLastQuery();
-        // echo (string) $q;
+        $query = $this->db->query("SELECT * FROM user_roles
+        INNER JOIN users ON user_roles.user_id = users.userID
+        INNER JOIN journal_peer j ON j.pid  = users.userID
+        WHERE user_roles.role_id=$role AND users.status='active' AND users.email !='$email' AND j.jid='$jid'");
+
         foreach ($query->getResult() as $row) {
             $rows[] = $row;
         }
@@ -428,13 +433,31 @@ class EditorModel extends Model
         }
     }
 
-    public function getCopyeditor()
+    public function getCopyeditor($email = '')
     {
+        /*
+        // looks like not in use
         $Q = $this->db->table('users');
-        $Q->where('roleID', 7);
+        $Q->where('roleID', 7); //copy editor role is 5
         $result = $Q->get()->getResult();
         if ($result) {
             return $result;
+        } else {
+            return false;
+        }
+            */
+        $rows = [];
+        $query = $this->db->query("SELECT * FROM user_roles
+            INNER JOIN users ON user_roles.user_id = users.userID
+            
+            WHERE user_roles.role_id=5 AND users.status='active' AND users.email !='$email'");
+
+        foreach ($query->getResult() as $row) {
+            $rows[] = $row;
+        }
+
+        if ($rows) {
+            return $rows;
         } else {
             return false;
         }
@@ -552,8 +575,20 @@ class EditorModel extends Model
     public function accepted($submissionID, $status)
     {
         $Q = $this->db->table('submission');
-        $Q->where('submissionId', $submissionID);
+        $Q->where('submissionID', $submissionID);
         $Q->update(['status_id' => $status]);
+        if ($this->db->affectedRows() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function updateTableStatus($table, $submissionID, $status)
+    {
+        $Q = $this->db->table($table);
+        $Q->where('submissionID', $submissionID);
+        $Q->update(['status' => $status]);
         if ($this->db->affectedRows() == 1) {
             return true;
         } else {

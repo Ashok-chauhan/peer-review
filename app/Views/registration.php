@@ -20,10 +20,13 @@
     <link href="<?= base_url(); ?>assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
     <link href="<?= base_url(); ?>assets/css/registration.css" rel="stylesheet" type="text/css" />
     <link href="<?= base_url(); ?>assets/css/tag.css" rel="stylesheet" type="text/css" />
+    <script src="<?= base_url(); ?>assets/libs/jquery/jquery.min.js"></script>
+
 
 </head>
 
 <body class="auth-body-bg">
+
     <div class="bg-overlay"></div>
     <div class="wrapper-page">
         <div class="container-fluid p-0">
@@ -195,12 +198,33 @@
                         </div>
 
 
-                        <div class="tag-area" id="review-interests">
+                        <!-- <div class="tag-area" id="review-interests">
                             <label for="tag-input" class="label">Review Interests</label>
                             <ul>
                                 <input type="text" class="tag-input" id="tag-input" name="interests" />
                             </ul>
+                        </div> -->
+
+                        <div class="form-group mb-3 row" id="review-interests">
+                            <div class="col-12">
+                                <?php if ($journals): ?>
+                                    <label for="intrest" class="">Review Interests</label>
+                                    <select class="js-example-basic-multiple" style="width:100%;" name="interests[]"
+                                        multiple="multiple">
+
+                                        <?php foreach ($journals as $value): ?>
+                                            <option value="<?= $value->id; ?>"><?= $value->journal_name; ?></option>
+                                        <?php endforeach; ?>
+
+                                    </select>
+                                <?php endif; ?>
+
+                            </div>
                         </div>
+
+
+
+
 
                         <div class="form-group text-center row mt-3 pt-1">
                             <div class="col-12">
@@ -215,6 +239,7 @@
                                 <a href="<?= base_url(); ?>" class="text-muted">Already have account?</a>
                             </div>
                         </div>
+
                         <!-- </form> -->
                         <?= form_close() ?>
                         <!-- end form -->
@@ -226,6 +251,7 @@
         </div>
         <!-- end container -->
     </div>
+    <!-- https://select2.org/getting-started/basic-usage -->
 
 
     <script type="text/javascript" src="<?= base_url(); ?>assets/libs/jquery/jquery.min.js"></script>
@@ -235,7 +261,17 @@
     <script type="text/javascript" src="<?= base_url(); ?>assets/libs/node-waves/waves.min.js"></script>
     <script type="text/javascript" src="<?= base_url(); ?>assets/js/app.js"></script>
     <script type="text/javascript" src="<?= base_url(); ?>js/registration.js"></script>
-    <script type="text/javascript" src="<?= base_url(); ?>js/tag.js"></script>
+    <!-- <script type="text/javascript" src="<? //= base_url(); ?>js/tag.js"></script> -->
+
+    <script>
+        $(document).ready(function () {
+            $('.js-example-basic-multiple').select2();
+        });
+    </script>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 </body>
 
 </html>

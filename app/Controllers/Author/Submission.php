@@ -28,6 +28,7 @@ class Submission extends BaseController
         $data['validation'] = null;
         $coAuthors = $this->submissionModel->getCoAuthor(session()->get('userID'));
         $data['coAuthors'] = $coAuthors;
+        $data['journals'] = $this->submissionModel->getJournals();
         if ($this->request->getMethod() == 'post') {
 
             $rules = [
@@ -61,12 +62,14 @@ class Submission extends BaseController
                 $coauthorNames = $this->request->getVar('coauthorName');
                 $coauthorIds = $this->request->getVar('coauthorId');
                 $coauthorEmails = $this->request->getVar('coauthorEmails');
+                $jid = $this->request->getVar('jid');
+
                 //$coauthor_id = $this->request->getVar('coauthor');
                 $coauthor_primaryContact = $this->request->getVar('primary_contact');
 
 
                 $submission = [
-                    'jid' => 1,
+                    'jid' => $jid,
                     'content' => $editorComment,
                     'consent_contact' => $contactConsent,
                     'consent_store' => $dataConsent,
@@ -127,6 +130,8 @@ class Submission extends BaseController
                     }
 
                     //send email to all the co-authors
+                    $primaryContact = $this->submissionModel->getCoauthorbyId($coauthor_primaryContact);
+                    $primary_contact_name = $primaryContact->title . ' ' . $primaryContact->name . ' ' . $primaryContact->m_name . ' ' . $primaryContact->l_name;
                     if (isset($coauthorIds)) {
                         foreach ($coauthorIds as $coauthor_id) {
                             $coAuthorDetails[] = $this->submissionModel->getCoauthorbyId($coauthor_id);
@@ -135,16 +140,16 @@ class Submission extends BaseController
                     if (isset($coAuthorDetails)) {
                         foreach ($coAuthorDetails as $coauth) {
                             $fname = $coauth->title . ' ' . $coauth->name . ' ' . $coauth->m_name . ' ' . $coauth->l_name;
-                            $comailSent = $this->sendEmail($coauth->email, $title, $fname, $coa_names, $submissionID, $coauthorEmails, $journalName);
+                            $comailSent = $this->sendEmail($coauth->email, $title, $fname, $coa_names, $submissionID, $coauthorEmails, $primary_contact_name, $journalName);
                         }
                     }
 
 
                     $fullName = session()->get("title") . ' ' . session()->get("username") . ' ' . session()->get("middle_name") . ' ' . session()->get("last_name");
-                    $mailSent = $this->sendEmail(session()->get("logged_user"), $title, $fullName, $coa_names, $submissionID, $coauthorEmails, $journalName);
+                    $mailSent = $this->sendEmail(session()->get("logged_user"), $title, $fullName, $coa_names, $submissionID, $coauthorEmails, $primary_contact_name, $journalName);
                     //to editor
                     $editors = $this->submissionModel->getEditors();
-                    $primaryContact = $this->submissionModel->getCoauthorbyId($coauthor_primaryContact);
+                    // $primaryContact = $this->submissionModel->getCoauthorbyId($coauthor_primaryContact);
                     if ($editors) {
                         foreach ($editors as $editor) {
                             $this->mailToEditor($editor->email, $title, $fullName, $coa_names, $submissionID, $coauthorEmails, $primaryContact->email, $journalName);
@@ -282,12 +287,20 @@ class Submission extends BaseController
 
     public function reply()
     {
+
+
         $Submission = $this->submissionModel->getById($this->request->getVar('submission'));
         $user = $this->submissionModel->getUser($this->request->getVar('recipient_id'));
         $primary = $this->submissionModel->getCoauthorSubid($this->request->getVar('submission'));
-        $pContact = $primary->title . ' ' . $primary->name . ' ' . $primary->m_name . ' ' . $primary->l_name;
+        if ($primary) {
+            $pContact = $primary->title . ' ' . $primary->name . ' ' . $primary->m_name . ' ' . $primary->l_name;
+        } else {
+            $pContact = 'N/A';
+        }
+
         $submissionDate = $Submission->submission_date;
         $fullName = $user->title . ' ' . $user->username . ' ' . $user->middle_name . ' .' . $user->last_name;
+
         if ($this->request->getMethod() == 'post' && ($_FILES['revisionFile']['size'] > 0)) {
             $revFileId = '';
             if ($this->request->getVar('updateFileId')) {
@@ -299,9 +312,11 @@ class Submission extends BaseController
             $rules = [
                 'revisionFile' => 'uploaded[revisionFile]|ext_in[revisionFile,png,jpg,gif,doc,docx,pdf,jpeg]',
             ];
+
             if ($this->validate($rules)) {
                 $file = $this->request->getFile('revisionFile');
                 if ($file->isValid() && !$file->hasMoved()) {
+
                     $newName = $file->getRandomName() . '_' . $file->getClientName();
                     if ($file->move(WRITEPATH . 'uploads/', $newName)) {
 
@@ -317,9 +332,7 @@ class Submission extends BaseController
                         $notification['message'] = $this->request->getVar('message-text');
                         $notification['file'] = $newName;
                         $notification['role'] = session()->get('role');
-
                         $note = $this->submissionModel->discussion($notification);
-
                         $submission_content['submissionID'] = $this->request->getVar('submission');
                         $submission_content['content'] = $newName;
                         $submission_content['article_component'] = $this->request->getVar('article_type');
@@ -491,19 +504,42 @@ class Submission extends BaseController
         if ($discussions) {
             foreach ($discussions as $key => $discussion) {
                 $sender = $this->submissionModel->getUser($discussion->sender_id);
-                $discussions[$key]->sender_role = $sender->roleID;
+                $discussions[$key]->sender_role = $sender->roleID; //genrally editor 2
             }
+        } else {
+            $discussions = [];
         }
-        $data['discussions'] = $discussions;
+
+
+        $sentMessages = $this->submissionModel->getSentDiscussion(session()->get('userID'), $submission_id);
+        if ($sentMessages) {
+            foreach ($sentMessages as $key => $_discussion) {
+                $sentMessages[$key]->sender_role = 3; //author role 
+            }
+        } else {
+            $sentMessages = [];
+        }
+        $discussion_merge_sentDiscussion = array_merge($discussions, $sentMessages);
+        // Sort the array
+        usort($discussion_merge_sentDiscussion, function ($a, $b) {
+            return strtotime($b->date_created) - strtotime($a->date_created);
+        });
+
+
+
+        $data['discussions'] = $discussion_merge_sentDiscussion; //$discussions;
         $data['submission'] = $submission;
         $data['submission_content'] = $submission_content;
         $data['coauthor'] = $coauthor;
         $data['user'] = $user;
         //$data['sentMessages'] = $this->submissionModel->getSentDiscussion(session()->get('userID'), $submission_id);
+
         return view('author/detailview', $data);
     }
 
-    public function sendEmail($to, $title, $fullName, $coauthor, $id, $coEmails, $journal = 'Orthopedic')
+
+
+    public function sendEmail($to, $title, $fullName, $coauthor, $id, $coEmails, $primary_cotact, $journal = 'Orthopedic')
     {
         $mailData = [];
         $mailData['title'] = $title;
@@ -511,6 +547,7 @@ class Submission extends BaseController
         $mailData['coauthors'] = $coauthor;
         $mailData['journal'] = $journal;
         $mailData['id'] = $id;
+        $mailData['primary_contact'] = $primary_cotact;
         $subject = 'Confirmation of Manuscript Submission of ' . $journal . ' ' . $title;
         $this->email->setMailType('html');
         $this->email->setTo($to);

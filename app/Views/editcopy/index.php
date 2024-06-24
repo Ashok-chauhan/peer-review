@@ -76,24 +76,30 @@ Dashboard
                                                         <td>
 
                                                             <!-- <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2"> -->
-                                                            <?php if ($row->status_id == 4): ?>
+                                                            <?php if ($row->status == 5): ?>
                                                                 <span class="btn-primary "
                                                                     style="padding: 0.6rem 58px;border-radius: 50px;">
                                                                     <i class="fa fa-send-o"></i>
                                                                     Submitted
                                                                 </span>
 
-                                                            <?php elseif ($row->status_id == 5): ?>
+                                                            <?php elseif ($row->status == 6): ?>
                                                                 <span class="btn-danger  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fas fa-edit"></i>&nbsp; Under Copy Editing
                                                                 </span>
-                                                            <?php elseif ($row->status_id == 6): ?>
+                                                            <?php elseif ($row->status == 7): ?>
                                                                 <span class="btn-success waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fa fa-area-chart"></i>&nbsp; Completed
+                                                                    <i class="fa fa-area-chart"></i>&nbsp; Completed & awaiting
+                                                                    Editor's response
                                                                 </span>
-                                                            <?php elseif ($row->status_id == 7): ?>
+                                                            <?php elseif ($row->status >= 8 && $row->status < 20): ?>
+                                                                <span class="btn-dark waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-area-chart"></i>&nbsp; Accepted
+                                                                </span>
+                                                            <?php elseif ($row->status == 20): ?>
                                                                 <span class="btn-danger  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fa fa-comments"></i>&nbsp; You Declined
@@ -113,9 +119,9 @@ Dashboard
                                                         </td>
 
                                                         <td width="5%">
-
-                                                            <?= anchor('editcopy/accept/' . $row->submissionID . '/' . $row->id, '<span class="btn1 btn-success"><i class="fa fa-eye"></i></span>'); ?>
-
+                                                            <?php if ($row->status != 7): ?>
+                                                                <?= anchor('editcopy/accept/' . $row->submissionID . '/' . $row->id, '<span class="btn1 btn-success"><i class="fa fa-eye"></i></span>'); ?>
+                                                            <?php endif; ?>
                                                         </td>
                                                     </tr>
                                                 <?php endforeach; ?>
@@ -161,10 +167,10 @@ Dashboard
                                                         <td width="15%">
                                                             <!-- <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2"> -->
 
-                                                            <?php if ($row->status_id == 3): ?>
+                                                            <?php if ($row->status == 8): ?>
                                                                 <span class="btn-success waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fa fa-area-chart"></i>&nbsp; Completed
+                                                                    <i class="fa fa-area-chart"></i>&nbsp;Accepted & Completed
                                                                 </span>
 
                                                             <?php endif; ?>
@@ -181,10 +187,7 @@ Dashboard
                                                             <?php endif; ?>
                                                         </td>
 
-                                                        <td width="5%">
 
-                                                            <?= anchor('editcopy/accept/' . $row->submissionID . '/' . $row->id, '<span class="btn1 btn-success"><i class="fa fa-eye"></i></span>'); ?>
-                                                        </td>
                                                     </tr>
                                                 <?php endforeach; ?>
 

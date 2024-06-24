@@ -60,7 +60,6 @@ class Editcopy extends BaseController
         if (isset($editorPeerContent))
             $data['editorPeerContent'] = array_filter($editorPeerContent);
 
-
         return view('editcopy/index', $data);
     }
 
@@ -101,7 +100,7 @@ class Editcopy extends BaseController
             $this->cpEditor->updateCopyediting($id, $status);
             $this->cpEditor->updateSubmissionStatus($this->request->getVar('submission_id'), $status);
             $result = $this->cpEditor->checkStatus($id);
-            if ($result->status == '7')
+            if ($result->status == '20')
                 return redirect()->to('editcopy');
             return redirect()->to('editcopy/detailview/' . $sid . '/' . $id);
             // echo 'consent updated.';
@@ -115,17 +114,18 @@ class Editcopy extends BaseController
         $data['copyTerms'] = $this->cpEditor->copyTerms(session()->get('userID'), $submission_id);
         $result = $this->cpEditor->checkStatus($reviewTableId);
 
-        if ($result->status > 1 && $result->status <= 6) {
+        //if ($result->status > 1 && $result->status <= 6) {
+        if ($result->status == 6) {
             $data['status'] = true;
             return redirect()->to('editcopy/detailview/' . $submission_id . '/' . $reviewTableId);
-        } else if ($result->status == '7') {
+        } else if ($result->status == '8') {
+
             return redirect()->to('editcopy');
 
         } else {
             $data['status'] = false;
         }
         $data['data'] = $result;
-
         return view('editcopy/accept', $data);
 
     }
@@ -151,9 +151,9 @@ class Editcopy extends BaseController
         $this->cpEditor->updateSubmissionStatus($submissionid, $status);
         if ($q) {
             $success = array('success' => 'Review status has been updated successfully!');
-            return redirect()->to('editcopy/detailview/' . $submissionid . '/' . $copyediting_id);
-            //return json_encode($success);
-            // echo json_encode($success);
+            // return redirect()->to('editcopy/detailview/' . $submissionid . '/' . $copyediting_id);
+            return redirect()->to('editcopy/');
+
         } else {
             $error = array('error' => 'Somethng went wrong!');
             //return json_encode($error);

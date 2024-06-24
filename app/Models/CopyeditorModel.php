@@ -19,7 +19,7 @@ class CopyeditorModel extends Model
         $builder->select('*');
         $builder->join('copyediting', 'copyediting.submissionID = submission.submissionID');
         $builder->where('copyeditor_id', $copyeditor_id);
-        $builder->where('status !=', 4);
+        $builder->where('status <=', 7);
         $query = $builder->get()->getResult();
         foreach ($query as $key => $qry) {
             $q = $this->db->table('copyediting_content');
@@ -45,9 +45,13 @@ class CopyeditorModel extends Model
     public function getEditingCompleted($copyeditor_id)
     {
 
+        // $builder = $this->db->table('submission');
+        // $builder->select('*');
+        // $builder->join('copyediting', 'copyediting.submissionID = submission.submissionID AND submission.status_id=');
+        // $builder->where('copyeditor_id', $copyeditor_id);
         $builder = $this->db->table('submission');
         $builder->select('*');
-        $builder->join('copyediting', 'copyediting.submissionID = submission.submissionID AND submission.status_id=4');
+        $builder->join('copyediting', 'copyediting.submissionID = submission.submissionID AND copyediting.status=8');
         $builder->where('copyeditor_id', $copyeditor_id);
 
         $query = $builder->get()->getResult();

@@ -235,7 +235,7 @@ $STATUS = [
                             </div>
                         <?php endif; ?>
 
-                        <?php if ($submission->status_id <= 1): ?>
+                        <?php if ($submission->status_id < 1): ?>
                             <div class="list-group-item" role="alert">
                                 <form method="POST" action="../toreview">
                                     <input type="hidden" name="submissionid" value="<?= $submission->submissionID; ?>" />
@@ -246,6 +246,13 @@ $STATUS = [
                                         <i class="fa fa-search"></i>&nbsp;Send to review
                                     </button>
                                 </form>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($submission->status_id == 1): ?>
+                            <div class="list-group-item" role="alert">
+                                <span class="btn-secondary  waves-light" style="padding: 0.6rem 36px;border-radius: 5px;">
+                                    <i class="fa fa-search"></i>&nbsp; Sent to Reviewer
+                                </span>
                             </div>
                         <?php endif; ?>
 
@@ -280,7 +287,7 @@ $STATUS = [
 
 
 
-                        <?php if ($submission->status_id == 7): ?>
+                        <?php if ($submission->status_id == 20): ?>
                             <div class="list-group-item" role="alert">
                                 <button type="button" class="btn btn-danger waves-effect waves-light"
                                     style="padding: 0.47rem 56px;">
@@ -311,12 +318,19 @@ $STATUS = [
                         <?php endif; ?>
                         <?php if ($submission->status_id == 5): ?>
                             <div class="list-group-item" role="alert">
+                                <span class=" btn-secondary waves-light" style="padding: 0.47rem 27px; border-radius: 5px;">
+                                    <i class="fas fa-edit"></i>&nbsp; Sent To Copy Editing
+                                </span>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($submission->status_id == 6): ?>
+                            <div class="list-group-item" role="alert">
                                 <span class=" btn-danger waves-light" style="padding: 0.47rem 27px; border-radius: 5px;">
                                     <i class="fas fa-edit"></i>&nbsp; Under Copy Editing
                                 </span>
                             </div>
                         <?php endif; ?>
-                        <?php if ($submission->status_id == 6): ?>
+                        <?php if ($submission->status_id == 7): ?>
                             <div class="list-group-item" role="alert">
                                 <span class=" btn-success waves-light" style="padding: 0.47rem 12px; border-radius: 5px;">
                                     <i class="fas fa-edit"></i>&nbsp; Copy Editing completed
@@ -326,7 +340,7 @@ $STATUS = [
                             <?php if (!is_array($editorialDecision) && !isset($editorialDecision->status)): ?>
 
                                 <div class="list-group-item" role="alert">
-                                    <?= anchor('editor/accepted_copyediting/' . $submission->submissionID . '/' . 6, '<span class="btn-dark waves-light" style="padding: 0.47rem 34px; border-radius: 5px;"><i class="fa fa-comments"></i>&nbsp; Accept & proceed</span>'); ?>
+                                    <?= anchor('editor/accepted_copyediting/' . $submission->submissionID . '/' . 8, '<span class="btn-dark waves-light" style="padding: 0.47rem 34px; border-radius: 5px;"><i class="fa fa-comments"></i>&nbsp; Accept & proceed</span>'); ?>
                                 </div>
                             <?php endif; ?>
 
@@ -334,15 +348,50 @@ $STATUS = [
 
 
                         <?php if (isset($editorialDecision->status)): ?>
-                            <?php if ($editorialDecision->status == 6): ?>
+                            <?php if ($editorialDecision->status == 8 && $submission->status_id == 8): ?>
                                 <div class="list-group-item" role="alert">
-                                    <button type="button" class="btn btn-success waves-effect waves-light"
+                                    <button type="button" class="btn btn-dark waves-effect waves-light"
                                         style="padding: 0.47rem 54px;">
-                                        <i class="fa fa-area-chart"></i>&nbsp; Production
+                                        <i class="fa fa-area-chart"></i>&nbsp;Send to Production
                                     </button>
                                 </div>
                             <?php endif; ?>
+
                         <?php endif; ?>
+
+                        <?php if ($submission->status_id == 9): ?>
+                            <div class="list-group-item" role="alert">
+                                <span class=" btn-secondary waves-light" style="padding: 0.47rem 54px;">
+                                    <i class="fa fa-area-chart"></i>&nbsp; Sent to Production
+                                </span>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($submission->status_id == 10): ?>
+                            <div class="list-group-item" role="alert">
+                                <span class=" btn-danger waves-light" style="padding: 0.47rem 54px;">
+                                    <i class="fa fa-area-chart"></i>&nbsp; Under Production
+                                </span>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($submission->status_id == 11): ?>
+                            <div class="list-group-item" role="alert">
+                                <span class=" btn-success waves-light" style="padding: 0.47rem 54px;">
+                                    <i class="fa fa-area-chart"></i>&nbsp; Production complted
+                                </span>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($submission->status_id == 11): ?>
+
+                            <div class="list-group-item" role="alert">
+                                <?= anchor('editor/accepted_production/' . $submission->submissionID . '/' . 8, '<span class="btn-dark waves-light" style="padding: 0.50rem 65px; border-radius: 5px;"><i class="fa fa-comments"></i>&nbsp; Accept & proceed</span>'); ?>
+                            </div>
+                        <?php endif; ?>
+
+
+
+
                     </div>
 
                 </div>

@@ -168,12 +168,12 @@ Reviewer Dashboard
                     <form method="POST" action="../../update_copyediting">
                         <!-- update_copyediting -->
                         <input type="hidden" name="submissionid" value="<?= $details->submissionID; ?>">
-                        <input type="hidden" name="status" value="6">
+                        <input type="hidden" name="status" value="7">
                         <input type="hidden" name="copyediting_id" value="<?= $details->id; ?>">
 
 
                         <!-- <div class="d-flex justify-content-start"> -->
-                        <?php if ($details->status == 6): ?>
+                        <?php if ($details->status == 8): ?>
                             <button type="button" class="btn btn-warning" disabled>You have completed & submitted!</button>
                         <?php else: ?>
                             <button type="submit" class="btn btn-primary">Complete copy-editing & submit</button>

@@ -178,7 +178,6 @@ class Editor extends BaseController
         $data['submission']->contributor = $coauthor;
         $data['sentMessages'] = $this->editorModel->getSentDiscussion(session()->get('userID'), $submissionID);
         $data['editorialHistory'] = $this->editorialHistory($submissionID);
-
         return view('editor/byauthor', $data);
     }
 
@@ -297,11 +296,14 @@ class Editor extends BaseController
 
     public function toReview()
     {
-        $reviewer = $this->editorModel->getReviewer(4, session()->get('logged_user')); //param roee, email toexclude
         $subid = $this->request->getVar('submissionid');
+        $submission = $this->editorModel->getSubmission($subid);
+        $reviewer = $this->editorModel->getReviewer(4, session()->get('logged_user'), $submission->jid); //param roee, email toexclude
+
         $title = $this->request->getVar('title');
         $editorContent = $this->editorModel->getEditorialUploadsBySubId($subid);
         $subContents = $this->editorModel->getBySubmissionId('submission_content', $subid);
+
 
         $peer = [];
         if (is_array($reviewer)) {
@@ -316,6 +318,9 @@ class Editor extends BaseController
         $data['submissionid'] = $subid;
         $data['subContents'] = $subContents;
         $data['editorContent'] = $editorContent;
+        // print '<pre>';
+        // print_r($data);
+        // exit;
         return view('editor/toreview', $data);
     }
 
@@ -349,6 +354,8 @@ class Editor extends BaseController
                 $note['title'] = $this->request->getVar('title');
                 $note['message'] = $this->request->getVar('message');
                 $insertNote = $this->editorModel->discussion($note);
+                $affected_id = $this->editorModel->accepted($this->request->getVar('submissionid'), 1); // sent to peer.
+
                 if ($insertNote) {
                     //send email
                     /*
@@ -480,6 +487,8 @@ class Editor extends BaseController
 
 
                 $insertNote = $this->editorModel->discussion($note);
+                $affected_id = $this->editorModel->accepted($this->request->getVar('submissionid'), 5); // sent to copyeditor.
+                $this->editorModel->updateTableStatus("copyediting", $this->request->getVar('submissionid'), 5); // set status of copyediting table.
                 if ($insertNote) {
                     //send email
 
@@ -519,21 +528,21 @@ class Editor extends BaseController
     public function tocopyedit()
     {
 
-        $reviewer = $this->editorModel->getReviewer(5, session()->get('logged_user')); //param roee, email toexclude
+        $copy_editor = $this->editorModel->getCopyeditor(session()->get('logged_user')); //param roee, email toexclude
         $subid = $this->request->getVar('submissionid');
         $title = $this->request->getVar('title');
         $editorContent = $this->editorModel->getEditorialUploadsBySubId($subid);
         $subContents = $this->editorModel->getBySubmissionId('submission_content', $subid);
 
-        $peer = [];
-        if (is_array($reviewer)) {
-            foreach ($reviewer as $review) {
-                $peer[$review->userID] = $review->title . ' ' . $review->username . ' ' . $review->middle_name . ' ' . $review->last_name;
+        $copyeditor = [];
+        if (is_array($copy_editor)) {
+            foreach ($copy_editor as $review) {
+                $copyeditor[$review->userID] = $review->title . ' ' . $review->username . ' ' . $review->middle_name . ' ' . $review->last_name;
             }
         }
 
-        $data['peers'] = $reviewer;
-        $data['peer'] = $peer;
+        $data['peers'] = $copy_editor;
+        $data['peer'] = $copyeditor;
         $data['title'] = $title;
         $data['submissionid'] = $subid;
         $data['subContents'] = $subContents;
@@ -751,7 +760,7 @@ class Editor extends BaseController
 
     public function tocpeditor()
     {
-
+        //may be not used
         $cpEditor = $this->editorModel->getCopyeditor();
         $submissionid = $this->request->getVar('submissionid');
         $title = $this->request->getVar('title');
@@ -1014,6 +1023,8 @@ class Editor extends BaseController
         $authorFullname = $author->title . ' ' . $author->username . ' ' . $author->middle_name . ' ' . $author->last_name;
         $status_id = $uri->getSegment(4);
         $status = $this->editorModel->accepted($submissionID, $status_id);
+        //update reviews table status.
+        $this->editorModel->updateTableStatus('reviews', $submissionID, $status_id);
         if ($status) {
             $this->thnakyouMailtoPeer($reviewer->email, $subtitle, $peerFullname, $journal->journal_name);
             //send email to Author
@@ -1027,6 +1038,11 @@ class Editor extends BaseController
     {
         $uri = $this->request->getUri();
         $submissionID = $uri->getSegment(3);
+        $status_id = $uri->getSegment(4);
+        //update submission table status_id
+        $status = $this->editorModel->accepted($submissionID, $status_id);
+        //update copyediting table status.
+        $this->editorModel->updateTableStatus('copyediting', $submissionID, $status_id);
 
         $submission = $this->editorModel->getBySubmissionId('submission', $submissionID);
         $subtitle = $submission[0]->title;
@@ -1035,9 +1051,7 @@ class Editor extends BaseController
         $reviewer = $this->editorModel->getUser($reveData->copyeditor_id);
         $author = $this->editorModel->getUser($submission[0]->authorID);
         $peerFullname = $reviewer->title . ' ' . $reviewer->username . ' ' . $reviewer->middle_name . ' ' . $reviewer->last_name;
-        $status_id = $uri->getSegment(4);
 
-        $status = $this->editorModel->accepted($submissionID, $status_id);
         //insert editorial_decision table appropriate data.
         $data = [
             'submissionID' => $submissionID,

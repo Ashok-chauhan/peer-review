@@ -46,13 +46,13 @@ Peer Dashboard
                                 <div class="form-check">
                                     <input type="hidden" name="id" value="<?= $data->id ?>" />
                                     <input type="hidden" name="submission_id" value="<?= $data->submissionID ?>" />
-                                    <input class="checkmark" type="checkbox" value="5" id="accept" name="consent">
+                                    <input class="checkmark" type="checkbox" value="6" id="accept" name="consent">
                                     <label class="form-check-label fw-bold" for="accept">
                                         Accept
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="checkmark" type="checkbox" value="7" id="decline" name="consent">
+                                    <input class="checkmark" type="checkbox" value="20" id="decline" name="consent">
                                     <label class="form-check-label fw-bold" for="decline">
                                         Decline
                                     </label>

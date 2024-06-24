@@ -98,6 +98,22 @@ $attributes = ['id' => 'submission', 'name' => 'submission', 'onsubmit' => 'retu
                                     </div>
                                 </div>
                             </div>
+                            <!-- journals -->
+                            <div class="form-group mb-3 row ">
+                                <div class="col-8">
+                                    <h4 class="card-title font-size-14"><b>Select Journal *</b></h4>
+                                    <?php if ($journals): ?>
+                                        <select class="js-example-basic-single form-select" name="jid">
+                                            <?php foreach ($journals as $value): ?>
+                                                <option value="<?= $value->id; ?>"><?= $value->journal_name; ?></option>
+                                            <?php endforeach; ?>
+
+                                        </select>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <!-- journals eof  -->
                             <div class="form-group mb-3">
                                 <h4 class="card-title font-size-14"><b>Comments for editor</b></h4>
                                 <!-- tinemce -->
@@ -973,6 +989,14 @@ $attributes = ['id' => 'submission', 'name' => 'submission', 'onsubmit' => 'retu
 
 <?= $this->section('javascript'); ?>
 <script type="text/javascript" src="<?= base_url(); ?>js/submission.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.js-example-basic-single').select2();
+    });
+</script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
 

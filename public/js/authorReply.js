@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //formData.append("recipient", "dadsfds");
     //formData.append("recipient_id", "444");
     console.log(replyForm.action);
+    console.log(formData);
     fetch(replyForm.action, {
       method: "POST",
       body: formData,

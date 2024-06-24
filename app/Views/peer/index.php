@@ -75,28 +75,28 @@ Dashboard
 
                                                         <td>
                                                             <!-- <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2"> -->
-                                                            <?php if ($row->status_id == 0 && isset ($row->notification) < 1): ?>
+                                                            <?php if ($row->status == 1 && isset($row->notification) < 1): ?>
                                                                 <span class="btn-primary "
                                                                     style="padding: 0.6rem 58px;border-radius: 50px;">
                                                                     <i class="fa fa-send-o"></i>
                                                                     Submitted
                                                                 </span>
-                                                            <?php elseif (isset ($row->notification) && $row->status_id == 0): ?>
+                                                            <?php elseif (isset($row->notification) && $row->status_id == 0): ?>
                                                                 <span class="btn-warning  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fa fa-search"></i>&nbsp; Pre-Review Discussions
                                                                 </span>
-                                                            <?php elseif ($row->status_id >= 1 && $row->status_id < 3): ?>
+                                                            <?php elseif ($row->status >= 1 && $row->status < 3): ?>
                                                                 <span class="btn-danger  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fa fa-comments"></i>&nbsp; In Review
                                                                 </span>
-                                                            <?php elseif ($row->status_id == 3): ?>
+                                                            <?php elseif ($row->status == 3): ?>
                                                                 <span class="btn-success waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fa fa-area-chart"></i>&nbsp; Completed
                                                                 </span>
-                                                            <?php elseif ($row->status_id == 7): ?>
+                                                            <?php elseif ($row->status == 20): ?>
                                                                 <span class="btn-danger  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fa fa-comments"></i>&nbsp; You Declined
@@ -106,7 +106,7 @@ Dashboard
 
                                                             <!-- </button> -->
                                                             <p></p>
-                                                            <?php if (isset ($row->notification)): ?>
+                                                            <?php if (isset($row->notification)): ?>
                                                                 <p><i class='far fa-comment'></i>
                                                                     <?= $row->notification; ?>
                                                                 </p>
@@ -163,10 +163,10 @@ Dashboard
                                                         <td width="15%">
                                                             <!-- <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2"> -->
 
-                                                            <?php if ($row->status_id == 3): ?>
+                                                            <?php if ($row->status == 4): ?>
                                                                 <span class="btn-success waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fa fa-area-chart"></i>&nbsp; Completed
+                                                                    <i class="fa fa-area-chart"></i>&nbsp; Completed & accepted
                                                                 </span>
 
                                                             <?php endif; ?>
@@ -174,7 +174,7 @@ Dashboard
                                                             <!-- </button> -->
                                                             <p></p>
 
-                                                            <?php if (isset ($row->notification)): ?>
+                                                            <?php if (isset($row->notification)): ?>
                                                                 <p><i class='far fa-comment'></i>
                                                                     <?= $row->notification; ?>
                                                                 </p>
@@ -183,9 +183,7 @@ Dashboard
                                                             <?php endif; ?>
                                                         </td>
 
-                                                        <td width="5%">
-                                                            <?= anchor('peer/detailview/' . $row->submissionID . '/' . $row->reviewID, '<span class="btn1 btn-success"><i class="fa fa-eye"></i></span>'); ?>
-                                                        </td>
+
                                                     </tr>
                                                 <?php endforeach; ?>
 

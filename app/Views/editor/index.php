@@ -41,7 +41,7 @@ Dashboard
 
                     <!-- Tab panes -->
                     <div class="tab-content p-3 text-muted">
-                        <?php if (isset ($list)): ?>
+                        <?php if (isset($list)): ?>
 
                             <div class="tab-pane active" id="home1" role="tabpanel">
 
@@ -118,7 +118,13 @@ Dashboard
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fa fa-search"></i>&nbsp; Pre-Review Discussions
                                                                 </span>
-                                                            <?php elseif ($row->status_id >= 1 && $row->status_id < 3): ?>
+                                                            <?php elseif ($row->status_id == 1): ?>
+
+                                                                <span class="btn-secondary  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-comments"></i>&nbsp; Sent to reviewer
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 2): ?>
 
                                                                 <span class="btn-danger  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
@@ -133,28 +139,58 @@ Dashboard
                                                             <?php elseif ($row->status_id == 4): ?>
                                                                 <span class="btn-dark  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fa fa-comments"></i>&nbsp; Send Copy Editing
+                                                                    <i class="fa fa-comments"></i>&nbsp; Accept & proceed
                                                                 </span>
                                                             <?php elseif ($row->status_id == 5): ?>
-                                                                <span class="btn-danger  waves-light"
+                                                                <span class="btn-secondary  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fas fa-edit"></i>&nbsp; Under Copy Editing
+                                                                    <i class="fas fa-edit"></i>&nbsp;Send Copy Editing
                                                                 </span>
                                                             <?php elseif ($row->status_id == 6): ?>
+                                                                <span class="btn-danger  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fas fa-edit"></i>&nbsp;Under copy editing
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 7): ?>
                                                                 <span class="btn-success  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fas fa-edit"></i>&nbsp; Copy Editing completed
                                                                 </span>
-                                                            <?php elseif ($row->status_id == 7): ?>
+                                                            <?php elseif ($row->status_id == 8): ?>
+                                                                <span class="btn-dark  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-comments"></i>&nbsp; Accept & proceed
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 9): ?>
+                                                                <span class="btn-secondary  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-comments"></i>&nbsp; Sent to production
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 10): ?>
                                                                 <span class="btn-danger  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fa fa-comments"></i>&nbsp; Rejectd
+                                                                    <i class="fa fa-comments"></i>&nbsp; Under production
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 11): ?>
+                                                                <span class="btn-success  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-comments"></i>&nbsp; Production complted
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 12): ?>
+                                                                <span class="btn-secondary  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-comments"></i>&nbsp;Accept Production
+                                                                </span>
+                                                            <?php elseif ($row->status_id == 20): ?>
+                                                                <span class="btn-danger  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-comments"></i>&nbsp;Rejected
                                                                 </span>
                                                             <?php endif; ?>
 
                                                             <!-- </button> -->
                                                             <p></p>
-                                                            <?php if (isset ($row->notification)): ?>
+                                                            <?php if (isset($row->notification)): ?>
                                                                 <p><i class='far fa-comment'></i>
                                                                     <?= $row->notification; ?>
                                                                 </p>
@@ -243,7 +279,7 @@ Dashboard
                                                             <!-- </button> -->
                                                             <p></p>
 
-                                                            <?php if (isset ($row->notification)): ?>
+                                                            <?php if (isset($row->notification)): ?>
                                                                 <p><i class='far fa-comment'></i>
                                                                     <?= $row->notification; ?>
                                                                 </p>

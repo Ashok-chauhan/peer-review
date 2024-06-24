@@ -61,4 +61,25 @@ class RegistrationModel extends Model
             return false;
         }
     }
+
+    public function journalPeer($data)
+    {
+        $builder = $this->db->table('journal_peer');
+        $result = $builder->insert($data);
+        if ($this->db->affectedRows()) {
+            return $this->db->insertID();
+        } else {
+            return false;
+        }
+    }
+    public function getJournal()
+    {
+        $Q = $this->db->table('journal');
+        $result = $Q->get()->getResult();
+        if ($result) {
+            return $result;
+        } else {
+            return false;
+        }
+    }
 }

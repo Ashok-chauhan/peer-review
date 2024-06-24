@@ -64,7 +64,6 @@ class Peer extends BaseController
         }
         if (isset($editorPeerContent))
             $data['editorPeerContent'] = array_filter($editorPeerContent);
-
         return view('peer/index', $data);
     }
     public function detailview()

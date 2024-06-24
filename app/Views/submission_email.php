@@ -263,22 +263,27 @@
 </head>
 
 <body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-    <table class="fallback-text wrapper" border="0" align="center" cellpadding="0" cellspacing="0" style="font-family: Arial;">
+    <table class="fallback-text wrapper" border="0" align="center" cellpadding="0" cellspacing="0"
+        style="font-family: Arial;">
         <tr>
             <td width="100%" style="font-size: 12px;max-width: 650px">
 
-                <table class="fallback-text" width="100%" border="0" align="center" cellpadding="0" cellspacing="0" style="font-family: Arial;color: rgb(83, 81, 81); max-width:650px;font-size: 13px;border: 1px solid #eee;">
+                <table class="fallback-text" width="100%" border="0" align="center" cellpadding="0" cellspacing="0"
+                    style="font-family: Arial;color: rgb(83, 81, 81); max-width:650px;font-size: 13px;border: 1px solid #eee;">
 
                     <tr>
                         <td colspan="5" style="padding: 0px" bgcolor="#ffffff">
-                            <img src="https://cminds.in/SCRIPTURE/Emailer/Emailer-2/images/banner.jpg" style="max-width: 100%;padding: 0px;margin: 0">
+                            <img src="https://cminds.in/SCRIPTURE/Emailer/Emailer-2/images/banner.jpg"
+                                style="max-width: 100%;padding: 0px;margin: 0">
                         </td>
                     </tr>
 
 
                     <tr>
                         <td colspan="5" style="padding:30px 40px 40px;" bgcolor="#ffffff">
-                            <table class="fallback-text" width="100%" cellspacing="0" cellpadding="0" style="font-family: system-ui;color: #000221; max-width:650px;font-size: 14.3px;padding:0 15px;font-weight:500" border="0">
+                            <table class="fallback-text" width="100%" cellspacing="0" cellpadding="0"
+                                style="font-family: system-ui;color: #000221; max-width:650px;font-size: 14.3px;padding:0 15px;font-weight:500"
+                                border="0">
 
                                 <tr>
 
@@ -287,21 +292,30 @@
                                         <p><b>Submission Confirmation Mail</b></p>
                                         <p><?= date("l jS \of F Y h:i:s A"); ?></p>
                                         <p>Dear <?= $fullName; ?></p>
-                                        <p>We hope this email finds you well. I am writing to confirm the submission of the manuscript titled "<?= $title; ?>" to <?= $journal; ?> on <?= date("l jS \of F Y h:i:s A"); ?>.</p>
+                                        <p>We hope this email finds you well. I am writing to confirm the submission of
+                                            the manuscript titled "<?= $title; ?>" to <?= $journal; ?> on
+                                            <?= date("l jS \of F Y h:i:s A"); ?>.
+                                        </p>
                                         <p>Below are the details of the submission:</p>
                                         <p>Manuscript Title: <?= $title; ?></p>
-                                        <p>Corresponding Author: <?= $fullName; ?></p>
-                                        <?php if ($coauthors) : ?>
+                                        <p>Corresponding Author: <?= $primary_contact; ?></p>
+                                        <?php if ($coauthors): ?>
                                             <p>Co-Authors: <?= $coauthors; ?></p>
                                         <?php endif; ?>
                                         <p>Journal Name: <?= $journal; ?></p>
                                         <p>Submission Date: <?= date("l jS \of F Y h:i:s A"); ?></p>
                                         <p>Manuscript ID: <?= $id; ?></p>
-                                        <p>We have followed the submission guidelines provided by the journal and have included all necessary documents and information as per the requirements.</p>
-                                        <p>Please feel free to contact us should you require any further information or clarification regarding the submission. We eagerly anticipate the review process and hope for a favourable outcome.</p>
+                                        <p>We have followed the submission guidelines provided by the journal and have
+                                            included all necessary documents and information as per the requirements.
+                                        </p>
+                                        <p>Please feel free to contact us should you require any further information or
+                                            clarification regarding the submission. We eagerly anticipate the review
+                                            process and hope for a favourable outcome.</p>
                                         <p style="margin-top: 28px;">Best regards,</p>
                                         <p style="margin-top: -7px">Scripture Team</p>
-                                        <p style="margin-top: -7px">PS: Questions? Write to <a clicktracking=off href="mailto:support@scripturesubmission.com" target="_blank">support@scripturesubmission.com</a> and we'd be </p>
+                                        <p style="margin-top: -7px">PS: Questions? Write to <a clicktracking=off
+                                                href="mailto:support@scripturesubmission.com"
+                                                target="_blank">support@scripturesubmission.com</a> and we'd be </p>
                                         <p style="margin-top: -7px">happy to answer them!</p>
                                     </td>
                                 </tr>
@@ -311,21 +325,30 @@
                     </tr>
                     <tr>
                         <td colspan="5" align="center" bgcolor="#143e99" style="padding: 0px">
-                            <table class="fallback-text" width="100%" cellspacing="0" cellpadding="0" style="font-family: system-ui;color: #ffffff; max-width:650px;font-size: 11px;padding:0 15px;" border="0">
+                            <table class="fallback-text" width="100%" cellspacing="0" cellpadding="0"
+                                style="font-family: system-ui;color: #ffffff; max-width:650px;font-size: 11px;padding:0 15px;"
+                                border="0">
 
                                 <tr>
                                     <td>
-                                        <table class="fallback-text" style="font-family: Arial;" width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
+                                        <table class="fallback-text" style="font-family: Arial;" width="100%"
+                                            cellspacing="0" cellpadding="0" border="0" align="center">
                                             <tbody>
                                                 <tr>
-                                                    <td class="column-2" style="padding: 10px" valign="top" align="center" width="5%"></td>
-                                                    <td class="column-2" style="padding: 10px" valign="top" align="center" width="90%">
-                                                        <table class="fallback-text" style="font-family: system-ui;color: #FFFFFF;font-size: 13px;" width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
+                                                    <td class="column-2" style="padding: 10px" valign="top"
+                                                        align="center" width="5%"></td>
+                                                    <td class="column-2" style="padding: 10px" valign="top"
+                                                        align="center" width="90%">
+                                                        <table class="fallback-text"
+                                                            style="font-family: system-ui;color: #FFFFFF;font-size: 13px;"
+                                                            width="100%" cellspacing="0" cellpadding="0" border="0"
+                                                            align="center">
                                                             <tbody>
 
 
                                                                 <tr>
-                                                                    <td align="center" valign="top" style="color: #ffffff;font-size: 18px;">
+                                                                    <td align="center" valign="top"
+                                                                        style="color: #ffffff;font-size: 18px;">
                                                                         <b>Address</b>
                                                                     </td>
                                                                 </tr>
@@ -334,7 +357,8 @@
                                                             </tbody>
                                                         </table>
                                                     </td>
-                                                    <td class="column-2" style="padding: 10px" valign="top" align="center" width="5%"></td>
+                                                    <td class="column-2" style="padding: 10px" valign="top"
+                                                        align="center" width="5%"></td>
                                                 </tr>
                                             </tbody>
                                         </table>

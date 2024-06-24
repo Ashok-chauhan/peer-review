@@ -31,8 +31,11 @@ class Registration extends Controller
     {
         $data = [];
         $data['validation'] = null;
+        $data['journals'] = $this->registrationModel->getJournal();
 
         if ($this->request->getMethod() == 'post') {
+
+
 
             $rules = [
                 'username' => 'required',
@@ -65,7 +68,7 @@ class Registration extends Controller
                     'data_consent' => $this->request->getVar('data_consent', FILTER_SANITIZE_STRING),
                     'notification' => $this->request->getVar('notification', FILTER_SANITIZE_STRING),
                     'contact' => $this->request->getVar('contact', FILTER_SANITIZE_STRING),
-                    'interests' => $this->request->getVar('interests', FILTER_SANITIZE_STRING),
+                    'interests' => serialize($this->request->getVar('interests')),
                     'roleID' => $roles[0], //$this->request->getVar('roleID'),
                 ];
 
@@ -77,6 +80,14 @@ class Registration extends Controller
                             'role_id' => $role,
                         ];
                         $this->registrationModel->userRoles($roleData);
+                    }
+                    //inserting into journal_peer table for multiple journal
+                    foreach ($this->request->getVar('interests') as $jid) {
+                        $journalData = [
+                            'pid' => $insertID,
+                            'jid' => $jid,
+                        ];
+                        $this->registrationModel->journalPeer($journalData);
                     }
                 }
 
