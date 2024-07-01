@@ -1,3 +1,4 @@
+//ABANDORNED NOT IN USSE SINCE UISNG SEPARATE PAGE INSTEAD RADIO BUTTON TO CHANGE STATUS.
 function radioCtr(status, revId, subid) {
   const proto = window.location.protocol;
   const host = proto + "//" + window.location.hostname + "/peer/updateReview";
@@ -18,13 +19,13 @@ function radioCtr(status, revId, subid) {
       return response.json();
     })
     .then(function (data) {
-      // Handle the response from the server
+     
       const msg = document.getElementById("msg");
       msg.innerHTML = `<div class="alert alert-success alert-dismissible  role="alert">
                         ${data.success}
              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                       </div>`;
-      // You can update the modal or perform any other actions here
+     
     })
     .catch(function (error) {
       console.error("Error:", error);
@@ -107,6 +108,9 @@ $("#peerModal").on("show.bs.modal", function (event) {
 });
 
 
+/*******
+ * Aboandoned since using page not modal
+
 const peerConsentForm = document.getElementById("peerConsentForm");
 var peerConsent_modal = document.getElementById("peerConsent");
 var peerConsentModal = new bootstrap.Modal(peerConsent_modal);
@@ -148,3 +152,4 @@ peerConsentForm.addEventListener("submit", function (event) {
   // Close the modal
   peerConsentModal.hide();
 });
+*/

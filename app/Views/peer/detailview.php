@@ -17,7 +17,7 @@ Reviewer Dashboard
         </script>
 
         <!-- error modal bof -->
-        <div class="modal" tabindex="-1" id="peerConsent" data-bs-backdrop="static" data-bs-keyboard="false">
+        <!-- <div class="modal" tabindex="-1" id="peerConsent" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -25,24 +25,22 @@ Reviewer Dashboard
 
                     </div>
                     <div class="modal-body">
-                        <h6 class="modal-title p-2"><?= $peerTerms->title; ?></h6>
+                        <h6 class="modal-title p-2"><?//= $peerTerms->title; ?></h6>
                         <div class="p-2">
-                            <?= $peerTerms->message; ?>
+                            <?//= $peerTerms->message; ?>
 
                         </div>
                         <form id="peerConsentForm" action="../../accept" method="POST" enctype="multipart/form-data">
 
-
-                            <!-- <div class="d-grid gap-2 col-6 mx-auto"> -->
                             <div class="alert alert-warning">
 
                                 <b>Completion date: </b>
-                                <?= date("l jS \of F Y ", strtotime($completion_date)); ?>
+                                <?//= date("l jS \of F Y ", strtotime($completion_date)); ?>
 
                             </div>
                             <div class="form-check">
-                                <input type="hidden" name="reviewTableId" value="<?= $reviewTableId ?>" />
-                                <input type="hidden" name="submission_id" value="<?= $submission_id ?>" />
+                                <input type="hidden" name="reviewTableId" value="<?//= $reviewTableId ?>" />
+                                <input type="hidden" name="submission_id" value="<?//= $submission_id ?>" />
                                 <input type="radio" value="2" id="accept" name="consent">
                                 <label class="form-check-label fw-bold" for="accept">
                                     Accept
@@ -55,20 +53,17 @@ Reviewer Dashboard
                                     Decline
                                 </label>
                             </div>
-                            <!-- </div> -->
+
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </form>
 
                     </div>
-                    <!-- <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
-                    </div> -->
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- error modal eof -->
     <?php endif; ?>
 
@@ -231,16 +226,12 @@ Reviewer Dashboard
                         <!-- <div class="d-flex justify-content-start"> -->
                         <div class="form-check">
                             <?php if ($details->status == 2): ?>
-                                <input class="checkmark" type="radio" value="2" id="accepted" name="radiobtn"
-                                    onClick="radioCtr(2,<?= $details->reviewID; ?>,<?= $details->submissionID; ?>);"
-                                    checked>
-                            <?php else: ?>
-                                <input class="checkmark" type="radio" value="2" id="accepted" name="radiobtn"
-                                    onClick="radioCtr(2,<?= $details->reviewID; ?>,<?= $details->submissionID; ?>);">
+
+
+                                <?= anchor('peer/finalupload/' . $details->submissionID . '/' . $details->reviewID, 'Upload final file & submit to complete', 'class="btn btn-primary"'); ?>
+
                             <?php endif; ?>
-                            <label class="form-check-label" for="radiobtn">
-                                Accepted
-                            </label>
+
                         </div>
                         <div class="form-check">
                             <?php if ($details->status == 3): ?>

@@ -116,8 +116,7 @@ Dashboard
                                                         </td>
 
                                                         <td width="5%">
-
-                                                            <?= anchor('peer/accept/' . $row->submissionID . '/' . $row->reviewID, '<span class="btn1 btn-success"><i class="fa fa-eye"></i></span>'); ?>
+                                                            <?= anchor('peer/detailview/' . $row->submissionID . '/' . $row->reviewID, '<span class="btn1 btn-success"><i class="fa fa-eye"></i></span>'); ?>
 
                                                         </td>
                                                     </tr>

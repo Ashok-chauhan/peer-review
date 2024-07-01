@@ -596,6 +596,18 @@ class EditorModel extends Model
         }
     }
 
+    public function updateTableReviewUploads($id)
+    {
+        $Q = $this->db->table('review_uploads');
+        $Q->where('id', $id);
+        $Q->update(['added' => 1]);
+        if ($this->db->affectedRows() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function requestRevision($submissionID)
     {
         $Q = $this->db->table('notifications');
@@ -635,6 +647,19 @@ class EditorModel extends Model
         } else {
             return false;
         }
+    }
+
+    public function getFinalupload($subid)
+    {
+        $builder = $this->db->table('review_uploads');
+        $builder->where('submission_id', $subid);
+        $row = $builder->get()->getRow();
+        if ($row) {
+            return $row;
+        } else {
+            return false;
+        }
+
     }
 
 }

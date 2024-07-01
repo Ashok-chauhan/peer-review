@@ -429,6 +429,7 @@ class Editor extends BaseController
         // eof submission_content table
 
 
+
         if ($this->request->getMethod() == 'post') {
 
 
@@ -489,6 +490,9 @@ class Editor extends BaseController
                 $insertNote = $this->editorModel->discussion($note);
                 $affected_id = $this->editorModel->accepted($this->request->getVar('submissionid'), 5); // sent to copyeditor.
                 $this->editorModel->updateTableStatus("copyediting", $this->request->getVar('submissionid'), 5); // set status of copyediting table.
+                if ($this->request->getVar('final_upload')) {
+                    $this->editorModel->updateTableReviewUploads($this->request->getVar('final_upload'));
+                }
                 if ($insertNote) {
                     //send email
 
@@ -548,7 +552,7 @@ class Editor extends BaseController
         $data['subContents'] = $subContents;
         $data['editorContent'] = $editorContent;
         $data['peerFiles'] = $this->editorModel->peerDiscussion($subid);
-
+        $data['final_upload'] = $this->editorModel->getFinalupload($subid);
         return view('editor/tocopyedit', $data);
         /*
         $reviewer = $this->editorModel->getCopyeditor();

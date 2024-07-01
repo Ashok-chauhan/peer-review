@@ -197,6 +197,76 @@ Dashboard
                                         </tbody>
                                     </table>
                                 <?php endif; ?>
+
+                                <?php if ($final_upload): ?>
+                                    <h4>Reviewer's final files</h4>
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Select files</th>
+                                                <th scope="col">Article component</th>
+                                                <th scope="col">Download</th>
+                                                <th scope="col">Submission date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            <tr>
+                                                <td>
+                                                    <div class="square-switch">
+                                                        <input type="checkbox" id="contentid_rev1<?= $final_upload->id; ?>"
+                                                            switch="info" name="final_upload"
+                                                            value="<?= $final_upload->id; ?>" />
+                                                        <label for="contentid_rev1<?= $final_upload->id; ?>"
+                                                            data-on-label="Yes" data-off-label="No"></label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    Title page
+                                                </td>
+                                                <td><a
+                                                        href="<?= base_url(); ?>editor/downloads/<?= $final_upload->title_page; ?>">
+                                                        <?= $final_upload->title_page; ?>
+                                                    </a></td>
+                                                <td>
+                                                    <!-- date -->
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+
+                                                    &nbsp;
+                                                </td>
+                                                <td>
+                                                    Article text
+                                                </td>
+                                                <td><a
+                                                        href="<?= base_url(); ?>editor/downloads/<?= $final_upload->article_text; ?>">
+                                                        <?= $final_upload->article_text; ?>
+                                                    </a></td>
+                                                <td>
+                                                    <!-- date -->
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    &nbsp;
+                                                </td>
+                                                <td>
+                                                    <?= $final_upload->article_type; ?>
+
+                                                </td>
+                                                <td><a
+                                                        href="<?= base_url(); ?>editor/downloads/<?= $final_upload->article_file; ?>">
+                                                        <?= $final_upload->article_file; ?>
+                                                    </a></td>
+                                                <td>
+                                                    <!-- date -->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                <?php endif; ?>
                                 <!-- peerFiles eof -->
 
 

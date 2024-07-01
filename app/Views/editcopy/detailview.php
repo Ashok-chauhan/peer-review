@@ -138,6 +138,49 @@ Reviewer Dashboard
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
+
+
+                                <!-- peer uploads bof -->
+                                <?php if ($peerUploads): ?>
+
+                                    <tr>
+                                        <td data-label="Component">
+                                            Title page
+                                        </td>
+                                        <td data-label="Filename">
+                                            <?= $peerUploads->title_page; ?>
+                                        </td>
+                                        <td data-label="Filename">
+                                            <?= anchor('author/downloads/' . $peerUploads->title_page, '<span class="btn1 btn-success">download</span>'); ?>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td data-label="Component">
+                                            Article Text
+                                        </td>
+                                        <td data-label="Filename">
+                                            <?= $peerUploads->article_text; ?>
+                                        </td>
+                                        <td data-label="Filename">
+                                            <?= anchor('author/downloads/' . $peerUploads->article_text, '<span class="btn1 btn-success">download</span>'); ?>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td data-label="Component">
+                                            <?= $peerUploads->article_type; ?>
+                                        </td>
+                                        <td data-label="Filename">
+                                            <?= $peerUploads->article_file; ?>
+                                        </td>
+                                        <td data-label="Filename">
+                                            <?= anchor('author/downloads/' . $peerUploads->article_file, '<span class="btn1 btn-success">download</span>'); ?>
+                                        </td>
+                                    </tr>
+
+                                <?php endif; ?>
+                                <!-- peer uploads eof -->
                             </tbody>
                         </table>
                     </div>

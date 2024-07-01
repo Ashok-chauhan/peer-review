@@ -71,18 +71,7 @@ class Editcopy extends BaseController
         $reviewTableId = $uri->getSegment(4); //to update review table
         $data = [];
         $data['reviewTableId'] = $reviewTableId;
-        /*
-                $result = $this->cpEditor->checkStatus($reviewTableId);
-                if ($result->status > 1 && $result->status < 6) {
-                    $data['status'] = true;
-                } else if ($result->status == '7') {
-                    return redirect()->to('editcopy');
-                } else {
-                    $data['status'] = false;
-                    return redirect()->to('editcopy/accept/' . $submission_id . '/' . $reviewTableId);
-                }
-                $data['completion_date'] = $result->completion_date;
-        */
+        $data['peerUploads'] = $this->cpEditor->getPeerUploads($submission_id);
         $data['details'] = $this->cpEditor->getEditDetailBySubid($submission_id);
         $data['discussions'] = $this->cpEditor->getDiscussion($submission_id);
         $data['editor'] = $this->cpEditor->getUser($data['details']->editor_id);

@@ -312,6 +312,19 @@ class CopyeditorModel extends Model
 
     }
 
+    public function getPeerUploads($sid)
+    {
+        $q = $this->db->table('review_uploads');
+        $q->where('submission_id', $sid);
+        $q->where('added', 1);
+        $data = $q->get()->getRow();
+        if ($data) {
+            return $data;
+        } else {
+            return false;
+        }
+    }
+
 
 
 

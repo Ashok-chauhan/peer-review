@@ -109,12 +109,14 @@ $routes->group('peer', static function ($routes) {
     $routes->get('discussion/(:num)/(:num)', 'Peer\Peer::discussion/$1/$2', ['filter' => 'auth']);
     $routes->post('discussion/(:num)/(:num)', 'Peer\Peer::discussion/$1/$2', ['filter' => 'auth']);
     $routes->post('updateReview', 'Peer\Peer::updateReview');
-    // $routes->get('accept/(:num)/(:num)', 'Peer\Peer::accept/$1/$2', ['filter' => 'auth']);
+    $routes->get('accept/(:num)/(:num)', 'Peer\Peer::accept/$1/$2', ['filter' => 'auth']);
     $routes->post('accept', 'Peer\Peer::accept', ['filter' => 'auth']);
     //$routes->get('detailview/(:segment)', 'Peer\Peer::detailview', ['filter' => 'auth']);
     $routes->get('detailview/(:num)/(:num)', 'Peer\Peer::detailview/$1/$2', ['filter' => 'auth']);
     //$routes->post('detailview', 'Peer\Peer::detailview', ['filter' => 'auth']);
     $routes->post('notify', 'Peer\Peer::notify', ['filter' => 'auth']);
+    $routes->get('finalupload/(:num)/(:num)', 'Peer\Peer::finalupload/$1/$2', ['filter' => 'auth']);
+    // $routes->post('finalupload', 'Peer\Peer::accept', ['filter' => 'auth']);
 });
 
 $routes->group('editcopy', static function ($routes) {

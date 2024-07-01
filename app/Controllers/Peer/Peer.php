@@ -92,6 +92,8 @@ class Peer extends BaseController
         return view('peer/detailview', $data);
     }
 
+    /*
+    modified to new one
     public function accept()
     {
 
@@ -105,7 +107,45 @@ class Peer extends BaseController
         }
 
     }
+*/
+    public function accept()
+    {
+        if ($this->request->getMethod() == 'post') {
+            $status = $this->request->getVar('consent');
+            $id = $this->request->getVar('id');
+            $sid = $this->request->getVar('submission_id');
+            $this->peerModel->updateReview($id, $status);
+            $this->peerModel->updateSubmissionStatus($this->request->getVar('submission_id'), $status);
+            $result = $this->peerModel->checkStatus($id);
+            if ($result->status == '20')
+                return redirect()->to('peer');
+            return redirect()->to('peer/detailview/' . $sid . '/' . $id);
+            // echo 'consent updated.';
+        }
 
+        $uri = $this->request->getUri();
+        $submission_id = $uri->getSegment(3);
+        $reviewTableId = $uri->getSegment(4); //to update review table
+        $data = [];
+        //$data['reviewTableId'] = $reviewTableId;
+        $data['copyTerms'] = $this->peerModel->peerTerms(session()->get('userID'), $submission_id);
+        $result = $this->peerModel->checkStatus($reviewTableId);
+
+        //if ($result->status > 1 && $result->status <= 6) {
+        if ($result->status == 2) {
+            $data['status'] = true;
+            return redirect()->to('peer/detailview/' . $submission_id . '/' . $reviewTableId);
+        } else if ($result->status == '3') {
+
+            return redirect()->to('peer');
+
+        } else {
+            $data['status'] = false;
+        }
+        $data['data'] = $result;
+        return view('peer/accept', $data);
+
+    }
 
     public function notify()
     {
@@ -289,19 +329,74 @@ table='editor_peer_content'
         $to = $editor->email;
         $q = $this->peerModel->updateReview($revId, $status);
         $this->peerModel->updateSubmissionStatus($submissionid, $status);
+        //upload final file to review_uploads table
+
+        $rules_title_page = [
+            'title_page' => 'uploaded[title_page]|ext_in[title_page,png,jpg,gif,doc,docx,pdf,jpeg]',
+        ];
+        if ($this->validate($rules_title_page)) {
+            $file = $this->request->getFile('title_page');
+            if ($file->isValid() && !$file->hasMoved()) {
+                $newName = $file->getRandomName() . '_' . $file->getClientName();
+                if ($file->move(WRITEPATH . 'uploads/', $newName)) {
+                    $peerUploads['title_page'] = $newName;
+                } else {
+                    echo $file->getErrorString() . " " . $file->getError();
+                }
+            }
+        }
+
+        $rules_article_text = [
+            'article_text' => 'uploaded[article_text]|ext_in[article_text,png,jpg,gif,doc,docx,pdf,jpeg]',
+        ];
+        if ($this->validate($rules_article_text)) {
+            $file = $this->request->getFile('article_text');
+            if ($file->isValid() && !$file->hasMoved()) {
+                $newName = $file->getRandomName() . '_' . $file->getClientName();
+                if ($file->move(WRITEPATH . 'uploads/', $newName)) {
+                    $peerUploads['article_text'] = $newName;
+                } else {
+                    echo $file->getErrorString() . " " . $file->getError();
+                }
+            }
+        }
+        $rules_article_file = [
+            'article_file' => 'uploaded[article_file]|ext_in[article_file,png,jpg,gif,doc,docx,pdf,jpeg]',
+        ];
+        if ($this->validate($rules_article_file)) {
+            $file = $this->request->getFile('article_file');
+            if ($file->isValid() && !$file->hasMoved()) {
+                $newName = $file->getRandomName() . '_' . $file->getClientName();
+                if ($file->move(WRITEPATH . 'uploads/', $newName)) {
+                    $peerUploads['article_file'] = $newName;
+                } else {
+                    echo $file->getErrorString() . " " . $file->getError();
+                }
+            }
+        }
+
+        $peerUploads['submission_id'] = $submissionid;
+        $peerUploads['peer_id'] = $revId;
+        $peerUploads['status'] = $status;
+        $peerUploads['article_type'] = $this->request->getVar('article_type');
+        $this->peerModel->peerUpload($peerUploads);
+        // eof review_uploads table
+
+        /*
         if ($q) {
             $success = array('success' => 'Review status has been updated successfully!');
-            //return json_encode($success);
             echo json_encode($success);
         } else {
             $error = array('error' => 'Somethng went wrong!');
-            //return json_encode($error);
             echo json_encode($error);
         }
+            */
+
         if ($status == 3) {
             //send mail to editor
             $this->mailToEditor($to, $mailData);
         }
+        return redirect()->to('peer');
     }
 
 
@@ -376,5 +471,15 @@ table='editor_peer_content'
         $data['notifications'] = $this->submissionModel->getBellNotification(session()->get('userID'));
         $updated = $this->submissionModel->updateNotifications(session()->get('userID'));
         return view('peer/notification', $data);
+    }
+
+    public function finalupload()
+    {
+        $data = [];
+        $uri = $this->request->getUri();
+        $data['submission_id'] = $uri->getSegment(3);
+        $data['peer_id'] = $uri->getSegment(4);
+        return view('peer/finalupload', $data);
+
     }
 }

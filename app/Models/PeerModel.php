@@ -246,6 +246,8 @@ class PeerModel extends Model
         }
     }
 
+
+
     public function updateSubmissionStatus($subid, $status)
     {
         $query = $this->db->query("Update submission SET status_id=" . $status . " WHERE submissionID=" . $subid . "");
@@ -309,6 +311,18 @@ class PeerModel extends Model
         }
 
     }
+    public function peerUpload($data)
+    {
+        $builder = $this->db->table('review_uploads');
+        $result = $builder->insert($data);
+        if ($this->db->affectedRows()) {
+            return $this->db->insertID();
+        } else {
+            return false;
+        }
+    }
+
+
 
 
 }
