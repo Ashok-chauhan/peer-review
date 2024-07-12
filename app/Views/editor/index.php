@@ -257,41 +257,15 @@ Dashboard
                                                         </td>
 
                                                         <td width="15%">
-                                                            <!-- <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2"> -->
-                                                            <?php if ($row->status_id == 0): ?>
-                                                                Submitted
-                                                            <?php elseif ($row->status_id >= 1 && $row->status_id < 3): ?>
-                                                                Under reviw
-                                                            <?php elseif ($row->status_id == 3): ?>
-                                                                <span class="btn-success waves-light"
-                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fa fa-area-chart"></i>&nbsp; Completed
-                                                                </span>
-                                                            <?php elseif ($row->status_id == 6): ?>
-                                                                <span class="btn-success waves-light"
-                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fas fa-edit"></i>&nbsp; Copy Editing completed
-                                                                </span>
-                                                            <?php elseif ($row->status_id == 4): ?>
+
+                                                            <?php if ($row->status_id == 20): ?>
                                                                 Rejectd
                                                             <?php endif; ?>
 
-                                                            <!-- </button> -->
-                                                            <p></p>
-
-                                                            <?php if (isset($row->notification)): ?>
-                                                                <p><i class='far fa-comment'></i>
-                                                                    <?= $row->notification; ?>
-                                                                </p>
-                                                            <?php else: ?>
-                                                                <p><i class='far fa-comment'></i>0</p>
-                                                            <?php endif; ?>
                                                         </td>
 
-                                                        <!-- <td width="5%"><button class="btn1 btn-success" data-bs-toggle="modal" data-bs-target=".bs-example-modal-lg<? //= $key; 
-                                                                ?>"> <i class="fa fa-eye"></i> ++</button></td> -->
                                                         <td width="5%">
-                                                            <?= anchor('editor/byauthor/' . $row->submissionID, '<span class="btn1 btn-success"><i class="fa fa-eye"></i></span>'); ?>
+                                                            <?= anchor('editor/production/' . $row->submissionID, '<span class="btn1 btn-success"><i class="fa fa-eye"></i></span>'); ?>
                                                         </td>
                                                     </tr>
                                                 <?php endforeach; ?>

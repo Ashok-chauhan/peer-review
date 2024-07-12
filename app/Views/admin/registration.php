@@ -157,6 +157,14 @@ Dashboard
                                             Publisher</a></label>
                                 </div>
 
+                                <div class="custom-control custom-checkbox">
+                                    <label class="form-label fw-normal" for="notification">
+                                        <input type="checkbox" class="custom-control-input" id="translator"
+                                            name="roles[]" value="7"> <a href="#" class="text-muted  ms-6 ">
+                                            Translator</a></label>
+                                </div>
+
+
 
                             </div>
 

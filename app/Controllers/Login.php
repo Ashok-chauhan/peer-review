@@ -37,9 +37,11 @@ class Login extends Controller
                 $email = $this->request->getVar('email');
                 $password = $this->request->getVar('password');
                 $userdata = $this->loginModel->verifyEmail($email);
-                $roles = $this->loginModel->getRole($userdata['userID']);
+
+                // $roles = $this->loginModel->getRole($userdata['userID']);
 
                 if ($userdata) {
+                    $roles = $this->loginModel->getRole($userdata['userID']);
                     if (password_verify($password, $userdata['password'])) {
                         if ($userdata['status'] == 'active') {
                             $fullname = $userdata['title'] . ' ' . $userdata['username'] . ' ' . $userdata['middle_name'] . ' ' . $userdata['last_name'];

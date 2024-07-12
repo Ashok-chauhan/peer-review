@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Controllers\Editcopy;
+namespace App\Controllers\Production;
 
 use App\Controllers\BaseController;
-use App\Models\CopyeditorModel;
+use App\Models\ProductionModel;
 use App\Models\UserModel;
 
 /**
- * Description of Editcopy
+ * Description of Production
  *
  * @author Ashok
  */
-class Editcopy extends BaseController
+class Production extends BaseController
 {
 
-    public $cpEditor;
+    public $production;
     public $userModel;
     public $session;
     public $email;
@@ -22,15 +22,15 @@ class Editcopy extends BaseController
     public function __construct()
     {
         helper(['url', 'form', 'role']);
-        $this->cpEditor = new CopyeditorModel();
+        $this->production = new ProductionModel();
         $this->userModel = new UserModel;
 
         $this->session = \Config\Services::session();
         $this->email = \Config\Services::email();
-        if (session()->get('role') == 5) {
+        if (session()->get('role') == 6) {
         } elseif (isset($_GET['r'])) {
             session()->set('role', base64_decode($_GET['r']));
-        } elseif (session()->get('role') != 5) {
+        } elseif (session()->get('role') != 6) {
             session_destroy();
             die('Access denied');
         }
@@ -42,13 +42,13 @@ class Editcopy extends BaseController
         $data = [];
         $uid = session()->get('userID');
 
-        $editings = $this->cpEditor->getEditingRequest($uid);
-        $completed = $this->cpEditor->getEditingCompleted($uid);
+        $editings = $this->production->getProductionRequest($uid);
+        $completed = $this->production->getProductionCompleted($uid);
 
         if ($editings) {
             foreach ($editings as $edit) {
-                $editorPeerContent[] = $this->cpEditor->getEditoriealUploads($edit->submissionID);
-                $noteCount[] = $this->cpEditor->noteCount($uid, $edit->submissionID);
+                $editorPeerContent[] = $this->production->getEditoriealUploads($edit->submissionID);
+                $noteCount[] = $this->production->noteCount($uid, $edit->submissionID);
             }
         }
 
@@ -60,7 +60,7 @@ class Editcopy extends BaseController
         if (isset($editorPeerContent))
             $data['editorPeerContent'] = array_filter($editorPeerContent);
 
-        return view('editcopy/index', $data);
+        return view('production/index', $data);
     }
 
     public function detailview()
@@ -71,15 +71,14 @@ class Editcopy extends BaseController
         $reviewTableId = $uri->getSegment(4); //to update review table
         $data = [];
         $data['reviewTableId'] = $reviewTableId;
-        $data['peerUploads'] = $this->cpEditor->getPeerUploads($submission_id);
-        $data['details'] = $this->cpEditor->getEditDetailBySubid($submission_id);
-        $data['discussions'] = $this->cpEditor->getDiscussion($submission_id);
-        $data['editor'] = $this->cpEditor->getUser($data['details']->editor_id);
-        $data['submission_id'] = $submission_id;
-        // print '<pre>';
-        // print_r($data);
+        $data['peerUploads'] = $this->production->getCopyUploads($submission_id);
 
-        return view('editcopy/detailview', $data);
+        $data['details'] = $this->production->getProductionDetailBySubid($submission_id);
+        $data['discussions'] = $this->production->getDiscussion($submission_id);
+        $data['editor'] = $this->production->getUser($data['details']->publisher_id);
+        $data['submission_id'] = $submission_id;
+
+        return view('production/detailview', $data);
     }
 
     public function accept()
@@ -88,12 +87,12 @@ class Editcopy extends BaseController
             $status = $this->request->getVar('consent');
             $id = $this->request->getVar('id');
             $sid = $this->request->getVar('submission_id');
-            $this->cpEditor->updateCopyediting($id, $status);
-            $this->cpEditor->updateSubmissionStatus($this->request->getVar('submission_id'), $status);
-            $result = $this->cpEditor->checkStatus($id);
+            $this->production->updateProduction($id, $status);
+            $this->production->updateSubmissionStatus($this->request->getVar('submission_id'), $status);
+            $result = $this->production->checkStatus($id);
             if ($result->status == '20')
-                return redirect()->to('editcopy');
-            return redirect()->to('editcopy/detailview/' . $sid . '/' . $id);
+                return redirect()->to('production');
+            return redirect()->to('production/detailview/' . $sid . '/' . $id);
             // echo 'consent updated.';
         }
 
@@ -102,22 +101,22 @@ class Editcopy extends BaseController
         $reviewTableId = $uri->getSegment(4); //to update review table
         $data = [];
         //$data['reviewTableId'] = $reviewTableId;
-        $data['copyTerms'] = $this->cpEditor->copyTerms(session()->get('userID'), $submission_id);
-        $result = $this->cpEditor->checkStatus($reviewTableId);
+        $data['copyTerms'] = $this->production->copyTerms(session()->get('userID'), $submission_id);
+        $result = $this->production->checkStatus($reviewTableId);
 
         //if ($result->status > 1 && $result->status <= 6) {
-        if ($result->status == 6) {
+        if ($result->status == 10) {
             $data['status'] = true;
-            return redirect()->to('editcopy/detailview/' . $submission_id . '/' . $reviewTableId);
-        } else if ($result->status == '8') {
+            return redirect()->to('production/detailview/' . $submission_id . '/' . $reviewTableId);
+        } else if ($result->status == '12') {
 
-            return redirect()->to('editcopy');
+            return redirect()->to('production');
 
         } else {
             $data['status'] = false;
         }
         $data['data'] = $result;
-        return view('editcopy/accept', $data);
+        return view('production/accept', $data);
 
     }
 
@@ -129,28 +128,28 @@ class Editcopy extends BaseController
         // $revId = $this->request->getVar('reviewID');
         $status = $this->request->getVar('status');
         $submissionid = $this->request->getVar('submissionid');
-        $copyediting_id = $this->request->getVar('copyediting_id');
-        $sub = $this->cpEditor->getSubmission($submissionid);
+        $production_id = $this->request->getVar('production_id');
+        $sub = $this->production->getSubmission($submissionid);
         if ($sub) {
-            $journal = $this->cpEditor->getJournal($sub->jid);
-            $editor = $this->cpEditor->getUser($journal->editor_id);
+            $journal = $this->production->getJournal($sub->jid);
+            $editor = $this->production->getUser($journal->editor_id);
         }
         $mailData['subtitle'] = $sub->title;
         $mailData['journal'] = $journal->journal_name;
         $to = $editor->email;
-        $q = $this->cpEditor->updateCopyediting($copyediting_id, $status);
-        $this->cpEditor->updateSubmissionStatus($submissionid, $status);
+        $q = $this->production->updateProduction($production_id, $status);
+        $this->production->updateSubmissionStatus($submissionid, $status);
         if ($q) {
-            $success = array('success' => 'Review status has been updated successfully!');
-            // return redirect()->to('editcopy/detailview/' . $submissionid . '/' . $copyediting_id);
-            return redirect()->to('editcopy/');
+            $success = array('success' => 'Production status has been updated successfully!');
+            // return redirect()->to('production/detailview/' . $submissionid . '/' . $copyediting_id);
+            return redirect()->to('production/');
 
         } else {
             $error = array('error' => 'Somethng went wrong!');
             //return json_encode($error);
             echo json_encode($error);
         }
-        if ($status == 7) {
+        if ($status == 11) {
             //send mail to editor
             $this->mailToEditor($to, $mailData);
         }
@@ -159,8 +158,9 @@ class Editcopy extends BaseController
     public function notify()
     {
 
-        $submissionTitle = $this->cpEditor->getBySubmissionId('submission', $this->request->getVar('submissionID'));
-        $author = $this->cpEditor->getUser($this->request->getVar('recipient_id'));
+
+        $submissionTitle = $this->production->getBySubmissionId('submission', $this->request->getVar('submissionID'));
+        $author = $this->production->getUser($this->request->getVar('recipient_id'));
         $fullName = $author->title . ' ' . $author->username . ' ' . $author->middle_name . ' ' . $author->last_name;
         $sub_title = $submissionTitle[0]->title;
         $mailData['fullName'] = $fullName;
@@ -169,7 +169,7 @@ class Editcopy extends BaseController
         if ($this->request->getVar('recommondation'))
             $mailData['recommondation'] = $this->request->getVar('recommondation');
 
-        $journal = $this->cpEditor->getJournal($submissionTitle[0]->jid);
+        $journal = $this->production->getJournal($submissionTitle[0]->jid);
         $journalName = $journal->journal_name;
 
 
@@ -205,7 +205,7 @@ class Editcopy extends BaseController
                         $notification['recommondation'] = $this->request->getVar('recommondation');
                         $notification['message'] = $this->request->getVar('message-text');
                         $notification['file'] = $newName;
-                        $note = $this->cpEditor->discussion($notification);
+                        $note = $this->production->discussion($notification);
 
                         if ($note) {
                             $mail = $this->notificationEmail($this->request->getVar('recipient'), $this->request->getVar('subject-title'), $this->request->getVar('message-text'), $mailData, $newName, $journalName);
@@ -218,6 +218,7 @@ class Editcopy extends BaseController
                 $data['validation'] = $this->validator;
             }
         } elseif ($this->request->getMethod() == 'post') {
+
 
             $notification['sender'] = session()->get('fullName');
             $notification['sender_email'] = session()->get('logged_user');
@@ -232,7 +233,7 @@ class Editcopy extends BaseController
 
             $notification['message'] = $this->request->getVar('message-text');
 
-            $note = $this->cpEditor->discussion($notification);
+            $note = $this->production->discussion($notification);
             if ($note) {
                 $mail = $this->notificationEmail($this->request->getVar('recipient'), $this->request->getVar('subject-title'), $this->request->getVar('message-text'), $mailData, null, $journalName);
             }
@@ -250,7 +251,7 @@ class Editcopy extends BaseController
         $data = [];
         $data['submission_id'] = $submission_id;
         $data['editor_id'] = $editor_id;
-        $data['editorDiscussions'] = $this->cpEditor->getDiscussion(session()->get('userID'), $submission_id);
+        $data['editorDiscussions'] = $this->production->getDiscussion(session()->get('userID'), $submission_id);
         if ($this->request->getMethod() == 'post' && ($_FILES['revisionFile']['size'] > 0)) {
             $submission_content = [];
             $notification = [];
@@ -275,12 +276,12 @@ class Editcopy extends BaseController
                         $notification['decision'] = $this->request->getVar('title');
                         $notification['comments'] = $this->request->getVar('message');
 
-                        $note = $this->cpEditor->sendToEditor($notification);
+                        $note = $this->production->sendToEditor($notification);
 
                         if ($note) {
                             //send email
                             $mailContent = '';
-                            $editorData = $this->cpEditor->getEditorialDecisionByid($note); //$revision_id or $note
+                            $editorData = $this->production->getEditorialDecisionByid($note); //$revision_id or $note
                             $mailContent .= '<p><a href=' . base_url() . 'editor/downloads/' . $editorData->upload_content . '>' . $editorData->upload_content . '</a></p>';
                             $mailMsg = $this->request->getVar('message');
                             $body = $mailMsg . $mailContent;
@@ -290,7 +291,7 @@ class Editcopy extends BaseController
                             $this->email->setMessage($body);
                             if ($this->email->send()) {
                                 $this->session->setTempdata("success", "Notification sent successfully to the Editor.", 3);
-                                return redirect()->to('editcopy');
+                                return redirect()->to('production');
                             } else {
                                 $this->session->setTempdata("error", "Something happen wrong!", 3);
                             }
@@ -303,7 +304,7 @@ class Editcopy extends BaseController
                 $data['validation'] = $this->validator;
             }
         }
-        return view('editcopy/discussion', $data);
+        return view('production/discussion', $data);
     }
 
     public function notificationEmail($to, $title, $message, $mail, $file = null, $journal = null)
@@ -345,36 +346,34 @@ class Editcopy extends BaseController
         }
     }
 
-
-
     public function finalupload()
     {
         $data = [];
         $uri = $this->request->getUri();
         $data['submission_id'] = $uri->getSegment(3);
-        $data['peer_id'] = $uri->getSegment(4);
-        return view('editcopy/finalupload', $data);
+        $data['production_id'] = $uri->getSegment(4);
+        return view('production/finalupload', $data);
 
     }
 
-    public function updateCopyediting()
+    public function updateProduction()
     {
 
         $uid = session()->get('userID');
 
-        $copyId = $this->request->getVar('reviewID');
+        $prodId = $this->request->getVar('production_id');
         $status = $this->request->getVar('status');
         $submissionid = $this->request->getVar('submissionid');
-        $sub = $this->cpEditor->getSubmission($submissionid);
+        $sub = $this->production->getSubmission($submissionid);
         if ($sub) {
-            $journal = $this->cpEditor->getJournal($sub->jid);
-            $editor = $this->cpEditor->getUser($journal->editor_id);
+            $journal = $this->production->getJournal($sub->jid);
+            $editor = $this->production->getUser($journal->editor_id);
         }
         $mailData['subtitle'] = $sub->title;
         $mailData['journal'] = $journal->journal_name;
         $to = $editor->email;
-        $q = $this->cpEditor->updateCopyediting($copyId, $status);
-        $this->cpEditor->updateSubmissionStatus($submissionid, $status);
+        $q = $this->production->updateProduction($prodId, $status);
+        $this->production->updateSubmissionStatus($submissionid, $status);
         //upload final file to review_uploads table
 
         $rules_title_page = [
@@ -422,20 +421,19 @@ class Editcopy extends BaseController
         }
 
         $copyeditorUploads['submission_id'] = $submissionid;
-        $copyeditorUploads['copyeditor_id'] = $copyId;
+        $copyeditorUploads['production_id'] = $prodId;
         $copyeditorUploads['status'] = $status;
         $copyeditorUploads['article_type'] = $this->request->getVar('article_type');
-        $this->cpEditor->copyeditorUpload($copyeditorUploads);
+        $this->production->productionUpload($copyeditorUploads);
         // eof review_uploads table
 
 
-        if ($status == 7) {
+        if ($status == 11) {
             //send mail to editor
             $this->mailToEditor($to, $mailData);
         }
-        return redirect()->to('editcopy');
+        return redirect()->to('production');
     }
-
 
     public function mailToEditor($to, $mail)
     {
@@ -466,16 +464,15 @@ class Editcopy extends BaseController
     public function bellnotification()
     {
         $data = [];
-        $data['notifications'] = $this->cpEditor->getBellNotification(session()->get('userID'));
-        $updated = $this->cpEditor->updateNotifications(session()->get('userID'));
-        return view('editcopy/notification', $data);
+        $data['notifications'] = $this->production->getBellNotification(session()->get('userID'));
+        $updated = $this->production->updateBellNotifications(session()->get('userID'));
+        return view('production/notification', $data);
     }
-
     public function update_bellnotification()
     {
         if ($this->request->getMethod() == 'post') {
 
-            $updated = $this->cpEditor->updateNotifications(session()->get('userID'));
+            $updated = $this->production->updateBellNotifications(session()->get('userID'));
             if ($updated) {
                 return '1';
             } else {
@@ -483,6 +480,5 @@ class Editcopy extends BaseController
             }
         }
     }
-
 
 }

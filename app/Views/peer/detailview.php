@@ -233,20 +233,7 @@ Reviewer Dashboard
                             <?php endif; ?>
 
                         </div>
-                        <div class="form-check">
-                            <?php if ($details->status == 3): ?>
-                                <input class="checkmark" type="radio" value="3" id="completed" name="radiobtn"
-                                    onClick="radioCtr(3,<?= $details->reviewID; ?>,<?= $details->submissionID; ?>);"
-                                    checked>
-                            <?php else: ?>
-                                <input class="checkmark" type="radio" value="3" id="completed" name="radiobtn"
-                                    onClick="radioCtr(3,<?= $details->reviewID; ?>,<?= $details->submissionID; ?>);">
-                            <?php endif; ?>
 
-                            <label class="form-check-label" for="radiobtn">
-                                Completed
-                            </label>
-                        </div>
 
                         <!-- </div> -->
                     </form>

@@ -51,6 +51,8 @@ $routes->group('author', static function ($routes) {
     $routes->post('deleteTempFile', 'Author\Submission::deleteTempFile');
     $routes->post('authorTempUpload/', 'Author\Submission::authorTempUpload');
     $routes->get('detailview/(:segment)', 'Author\Submission::detailview', ['filter' => 'auth']);
+    $routes->post('update_bellnotification/', 'Author\Profile::update_bellnotification', ['filter' => 'auth']);
+
 });
 
 
@@ -64,6 +66,7 @@ $routes->group('editor', static function ($routes) {
 
     $routes->get('accepted/(:num)/(:num)', 'Editor\Editor::accepted/$1/$2', ['filter' => 'auth']);
     $routes->get('accepted_copyediting/(:num)/(:num)', 'Editor\Editor::accepted_copyediting/$1/$2', ['filter' => 'auth']);
+    $routes->get('accepted_production/(:num)/(:num)', 'Editor\Editor::accepted_production/$1/$2', ['filter' => 'auth']);
 
 
     // $routes->post('notify/(:num)/(:num)', 'Editor\Editor::notify/$1/$2', ['filter' => 'auth']);
@@ -73,22 +76,34 @@ $routes->group('editor', static function ($routes) {
     $routes->get('getRevisionFile/(:segment)', 'Editor\Editor::getRevisionFile', ['filter' => 'auth']);
     $routes->post('toreview/', 'Editor\Editor::toReview', ['filter' => 'auth']);
     ///
-    $routes->post('tocopyedit/', 'Editor\Editor::tocopyedit', ['filter' => 'auth']);
-    //tocopyedit may be not required
+    //# $routes->post('/', 'Editor\Editor::tocopyedit', ['filter' => 'auth']);
+    $routes->post('tocopyedit', 'Editor\Editor::tocopyedit', ['filter' => 'auth']);
+
+    //tocopyedit may be tocopyeditnot required
     $routes->post('sendtopeer/', 'Editor\Editor::sendtopeer', ['filter' => 'auth']);
     $routes->post('editorUpload/', 'Editor\Editor::editorUpload');
     $routes->get('deleteEditorUpload/(:num)/(:num)', 'Editor\Editor::deleteEditorUpload/$1/$2', ['filter' => 'auth']);
     $routes->post('peerDiscussion/', 'Editor\Editor::peerDiscussion');
     $routes->post('tocpeditor/', 'Editor\Editor::tocpeditor');
     // $routes->post('tocopyedit/', 'Editor\Editor::tocpeditor');
+    $routes->post('toproduction', 'Editor\Editor::toproduction', ['filter' => 'auth']);
+
 
     $routes->post('send_to_copyeditor/', 'Editor\Editor::send_to_copyeditor', ['filter' => 'auth']);
+    $routes->post('send_to_production/', 'Editor\Editor::send_to_production', ['filter' => 'auth']);
+
 
     $routes->post('sendCopyEditor/', 'Editor\Editor::sendCopyEditor', ['filter' => 'auth']);
     $routes->post('copyeditorDiscussion/', 'Editor\Editor::copyeditorDiscussion', ['filter' => 'auth']);
     $routes->get('requestrevision/(:segment)', 'Editor\Editor::requestrevision', ['filter' => 'auth']);
     $routes->post('requestrevision/(:segment)', 'Editor\Editor::requestrevision', ['filter' => 'auth']);
     $routes->get('editorialhistory/(:segment)', 'Editor\Editor::editorialHistory_all', ['filter' => 'auth']);
+    $routes->get('production/(:segment)', 'Editor\Editor::production', ['filter' => 'auth']);
+    $routes->post('final_email/', 'Editor\Editor::final_email', ['filter' => 'auth']);
+    $routes->post('reset_all/', 'Editor\Editor::reset_all', ['filter' => 'auth']);
+    $routes->post('update_bellnotification/', 'Editor\Editor::update_bellnotification', ['filter' => 'auth']);
+
+
 
 
 
@@ -117,20 +132,48 @@ $routes->group('peer', static function ($routes) {
     $routes->post('notify', 'Peer\Peer::notify', ['filter' => 'auth']);
     $routes->get('finalupload/(:num)/(:num)', 'Peer\Peer::finalupload/$1/$2', ['filter' => 'auth']);
     // $routes->post('finalupload', 'Peer\Peer::accept', ['filter' => 'auth']);
+    $routes->post('update_bellnotification/', 'Peer\Peer::update_bellnotification', ['filter' => 'auth']);
+
 });
 
 $routes->group('editcopy', static function ($routes) {
     $routes->get('', 'Editcopy\Editcopy::index');
     $routes->get('accept/(:num)/(:num)', 'Editcopy\Editcopy::accept/$1/$2', ['filter' => 'auth']);
     $routes->post('accept/', 'Editcopy\Editcopy::accept', ['filter' => 'auth']);
+    $routes->get('bellnotification', 'Editcopy\Editcopy::bellnotification', ['filter' => 'auth']);
 
     $routes->get('discussion/(:num)/(:num)', 'Editcopy\Editcopy::discussion/$1/$2', ['filter' => 'auth']);
     $routes->post('discussion/(:num)/(:num)', 'Editcopy\Editcopy::discussion/$1/$2', ['filter' => 'auth']);
     $routes->get('detailview/(:num)/(:num)', 'Editcopy\Editcopy::detailview/$1/$2', ['filter' => 'auth']);
-    $routes->post('update_copyediting/', 'Editcopy\Editcopy::update_copyediting', ['filter' => 'auth']);
+    $routes->post('update_copyediting/', 'Editcopy\Editcopy::update_copyediting', ['filter' => 'auth']); //not used
     $routes->post('notify', 'Editcopy\Editcopy::notify', ['filter' => 'auth']);
+    $routes->get('finalupload/(:num)/(:num)', 'Editcopy\Editcopy::finalupload/$1/$2', ['filter' => 'auth']);
+    $routes->post('updateCopyediting/', 'Editcopy\Editcopy::updateCopyediting', ['filter' => 'auth']);
+    $routes->post('update_bellnotification/', 'Editcopy\Editcopy::update_bellnotification', ['filter' => 'auth']);
+
+
 
     // $routes->get('test', 'Copyediting\Copyediting::test');
+});
+
+$routes->group('production', static function ($routes) {
+    $routes->get('', 'Production\Production::index');
+    $routes->get('accept/(:num)/(:num)', 'Production\Production::accept/$1/$2', ['filter' => 'auth']);
+    $routes->post('accept/', 'Production\Production::accept', ['filter' => 'auth']);
+    $routes->get('bellnotification', 'Production\Production::bellnotification', ['filter' => 'auth']);
+
+    $routes->get('discussion/(:num)/(:num)', 'Production\Production::discussion/$1/$2', ['filter' => 'auth']);
+    $routes->post('discussion/(:num)/(:num)', 'Production\Production::discussion/$1/$2', ['filter' => 'auth']);
+    $routes->get('detailview/(:num)/(:num)', 'Production\Production::detailview/$1/$2', ['filter' => 'auth']);
+    $routes->post('update_copyediting/', 'Production\Production::update_copyediting', ['filter' => 'auth']);
+    $routes->post('notify', 'Production\Production::notify', ['filter' => 'auth']);
+    $routes->get('finalupload/(:num)/(:num)', 'Production\Production::finalupload/$1/$2', ['filter' => 'auth']);
+    $routes->post('updateProduction/', 'Production\Production::updateProduction', ['filter' => 'auth']);
+    $routes->post('update_bellnotification/', 'Production\Production::update_bellnotification', ['filter' => 'auth']);
+
+
+
+
 });
 
 $routes->group('dash', static function ($routes) {

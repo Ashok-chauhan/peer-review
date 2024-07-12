@@ -468,11 +468,23 @@ table='editor_peer_content'
     public function bellnotification()
     {
         $data = [];
-        $data['notifications'] = $this->submissionModel->getBellNotification(session()->get('userID'));
-        $updated = $this->submissionModel->updateNotifications(session()->get('userID'));
+        $data['notifications'] = $this->peerModel->getBellNotification(session()->get('userID'));
+        $updated = $this->peerModel->updateNotifications(session()->get('userID'));
         return view('peer/notification', $data);
     }
 
+    public function update_bellnotification()
+    {
+        if ($this->request->getMethod() == 'post') {
+
+            $updated = $this->peerModel->updateNotifications(session()->get('userID'));
+            if ($updated) {
+                return '1';
+            } else {
+                return '0';
+            }
+        }
+    }
     public function finalupload()
     {
         $data = [];

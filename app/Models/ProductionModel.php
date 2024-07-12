@@ -9,27 +9,27 @@ use CodeIgniter\Model;
  *
  * @author Ashok
  */
-class CopyeditorModel extends Model
+class ProductionModel extends Model
 {
 
-    public function getEditingRequest($copyeditor_id)
+    public function getProductionRequest($publisher_id)
     {
 
         $builder = $this->db->table('submission');
         $builder->select('*');
-        $builder->join('copyediting', 'copyediting.submissionID = submission.submissionID');
-        $builder->where('copyeditor_id', $copyeditor_id);
-        $builder->where('status <=', 7);
+        $builder->join('production', 'production.submissionID = submission.submissionID');
+        $builder->where('publisher_id', $publisher_id);
+        $builder->where('status <=', 11);
         $query = $builder->get()->getResult();
         foreach ($query as $key => $qry) {
-            $q = $this->db->table('copyediting_content');
+            $q = $this->db->table('production_content');
             $q->select('*');
-            $q->join('submission_content', 'copyediting_content.submission_content_id= submission_content.id');
-            $q->where('copyeditor_id', $qry->copyeditor_id);
-            $editingContents = $q->get()->getResult();
-            foreach ($editingContents as $editingContent) {
-                if ($query[$key]->submissionID == $editingContent->submissionID) {
-                    $query[$key]->editContents[] = $editingContent;
+            $q->join('submission_content', 'production_content.submission_content_id= submission_content.id');
+            $q->where('publisher_id', $qry->publisher_id);
+            $productionContents = $q->get()->getResult();
+            foreach ($productionContents as $productionContent) {
+                if ($query[$key]->submissionID == $productionContent->submissionID) {
+                    $query[$key]->editContents[] = $productionContent;
                 }
             }
         }
@@ -42,7 +42,7 @@ class CopyeditorModel extends Model
     }
 
 
-    public function getEditingCompleted($copyeditor_id)
+    public function getProductionCompleted($publisher_id)
     {
 
         // $builder = $this->db->table('submission');
@@ -51,19 +51,19 @@ class CopyeditorModel extends Model
         // $builder->where('copyeditor_id', $copyeditor_id);
         $builder = $this->db->table('submission');
         $builder->select('*');
-        $builder->join('copyediting', 'copyediting.submissionID = submission.submissionID AND copyediting.status=8');
-        $builder->where('copyeditor_id', $copyeditor_id);
+        $builder->join('production', 'production.submissionID = submission.submissionID AND production.status=12');
+        $builder->where('publisher_id', $publisher_id);
 
         $query = $builder->get()->getResult();
         foreach ($query as $key => $qry) {
-            $q = $this->db->table('copyediting_content');
+            $q = $this->db->table('production_content');
             $q->select('*');
-            $q->join('submission_content', 'copyediting_content.submission_content_id= submission_content.id');
-            $q->where('copyeditor_id', $qry->copyeditor_id);
-            $editingContents = $q->get()->getResult();
-            foreach ($editingContents as $editContent) {
-                if ($query[$key]->submissionID == $editContent->submissionID) {
-                    $query[$key]->editContents[] = $editContent;
+            $q->join('submission_content', 'production_content.submission_content_id= submission_content.id');
+            $q->where('publisher_id', $qry->publisher_id);
+            $productionContents = $q->get()->getResult();
+            foreach ($productionContents as $productionContent) {
+                if ($query[$key]->submissionID == $productionContent->submissionID) {
+                    $query[$key]->productionContents[] = $productionContent;
                 }
             }
         }
@@ -75,20 +75,20 @@ class CopyeditorModel extends Model
         }
     }
 
-    public function getEditDetailBySubid($id)
+    public function getProductionDetailBySubid($id)
     {
 
         $builder = $this->db->table('submission');
         $builder->select('*');
-        $builder->join('copyediting', 'copyediting.submissionID = submission.submissionID');
+        $builder->join('production', 'production.submissionID = submission.submissionID');
         $builder->where('submission.submissionID', $id);
         $query = $builder->get()->getRow();
 
-        if (isset($query->copyeditor_id)) {
-            $q = $this->db->table('copyediting_content');
+        if (isset($query->publisher_id)) {
+            $q = $this->db->table('production_content');
             $q->select('*');
-            $q->join('submission_content', 'copyediting_content.submission_content_id= submission_content.id');
-            $q->where('copyeditor_id', $query->copyeditor_id);
+            $q->join('submission_content', 'production_content.submission_content_id= submission_content.id');
+            $q->where('publisher_id', $query->publisher_id);
             $revContents = $q->get()->getResult();
             foreach ($revContents as $revContent) {
                 if ($query->submissionID == $revContent->submissionID) {
@@ -164,9 +164,9 @@ class CopyeditorModel extends Model
         }
     }
 
-    public function updateCopyediting($id, $status)
+    public function updateProduction($id, $status)
     {
-        $query = $this->db->query("Update copyediting SET status=" . $status . " WHERE id=" . $id . "");
+        $query = $this->db->query("Update production SET status=" . $status . " WHERE id=" . $id . "");
 
         if ($this->db->affectedRows()) {
             return true;
@@ -174,6 +174,8 @@ class CopyeditorModel extends Model
             return false;
         }
     }
+
+
 
     public function discussion($data)
     {
@@ -227,7 +229,7 @@ class CopyeditorModel extends Model
         $Q = $this->db->table('notifications');
         //$data = [];
         $Q->where('submissionID', $submissionID);
-        $Q->where('role', 5);
+        $Q->where('role', 6);
         $Q->orderBy('date_created', 'DESC');
         $query = $Q->get()->getResult();
         if ($query) {
@@ -251,7 +253,7 @@ class CopyeditorModel extends Model
 
     public function checkStatus($id)
     {
-        $Q = $this->db->table('copyediting');
+        $Q = $this->db->table('production');
         $Q->where('id', $id);
         $qry = $Q->get();
         $result = $qry->getRow();
@@ -312,9 +314,9 @@ class CopyeditorModel extends Model
 
     }
 
-    public function getPeerUploads($sid)
+    public function getCopyUploads($sid)
     {
-        $q = $this->db->table('review_uploads');
+        $q = $this->db->table('copyediting_uploads');
         $q->where('submission_id', $sid);
         $q->where('added', 1);
         $data = $q->get()->getRow();
@@ -325,10 +327,9 @@ class CopyeditorModel extends Model
         }
     }
 
-
-    public function copyeditorUpload($data)
+    public function productionUpload($data)
     {
-        $builder = $this->db->table('copyediting_uploads');
+        $builder = $this->db->table('production_uploads');
         $result = $builder->insert($data);
         if ($this->db->affectedRows()) {
             return $this->db->insertID();
@@ -336,6 +337,20 @@ class CopyeditorModel extends Model
             return false;
         }
     }
+
+    public function updateBellNotifications($id)
+    {
+
+        $builder = $this->db->table('notifications');
+        $builder->where('recipient_id', $id);
+        $builder->update(['status' => 1]);
+        if ($this->db->affectedRows()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
 
 }

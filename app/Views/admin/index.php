@@ -16,8 +16,9 @@ Dashboard
                     '3' => 'Author',
                     '4' => 'Reviewr',
                     '5' => 'Copy-editor',
-                    '6' => 'Translator',
-                    '7' => 'Reader',
+                    '6' => 'Production',
+                    '7' => 'Translator',
+                    '8' => 'Reader',
                 ];
                 $status = [
                     'active' => 'Active',

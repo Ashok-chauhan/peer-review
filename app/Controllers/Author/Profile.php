@@ -39,6 +39,18 @@ class Profile extends BaseController
         $updated = $this->submissionModel->updateNotifications(session()->get('userID'));
         return view('author/notification', $data);
     }
+    public function update_bellnotification()
+    {
+        if ($this->request->getMethod() == 'post') {
+
+            $updated = $this->submissionModel->updateNotifications(session()->get('userID'));
+            if ($updated) {
+                return '1';
+            } else {
+                return '0';
+            }
+        }
+    }
     public function logout()
     {
         session()->destroy();

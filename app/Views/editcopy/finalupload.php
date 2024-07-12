@@ -22,17 +22,17 @@ Peer Dashboard
             <div class="card">
                 <div class="card-body">
                     <div class="list-group col-8 p-2 mx-auto">
-                        <h2 class="text-center">Upload files</h2>
+                        <h2 class="text-center">Upload files </h2>
 
 
 
                         <!-- <form method="POST" action="../../detailview"> -->
-                        <form method="POST" action="../../updateReview" enctype="multipart/form-data">
+                        <form method="POST" action="../../updateCopyediting" enctype="multipart/form-data">
                             <div class="d-grid gap-2 col-6 mx-auto">
 
                                 <input type="hidden" name="reviewID" value="<?= $peer_id ?>" />
                                 <input type="hidden" name="submissionid" value="<?= $submission_id ?>" />
-                                <input type="hidden" value="3" name="status">
+                                <input type="hidden" value="7" name="status">
 
 
                                 <div class="mb-3">

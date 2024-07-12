@@ -32,8 +32,10 @@ class Loggedin implements FilterInterface
             } elseif (session()->get('logged_user') && session()->get('role') == 5) {
                 return redirect()->to('/editcopy');
             } elseif (session()->get('logged_user') && session()->get('role') == 6) {
-                return redirect()->to('/translator');
+                return redirect()->to('/production');
             } elseif (session()->get('logged_user') && session()->get('role') == 7) {
+                return redirect()->to('/translator');
+            } elseif (session()->get('logged_user') && session()->get('role') == 8) {
                 return redirect()->to('/reader');
             }
         }

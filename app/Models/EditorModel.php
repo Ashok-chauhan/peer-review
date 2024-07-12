@@ -144,6 +144,21 @@ class EditorModel extends Model
         }
     }
 
+    public function publisherDiscussions($submissionID)
+    {
+        $Q = $this->db->table('notifications');
+        //$data = [];
+        $Q->where('submissionID', $submissionID);
+        $Q->where('role', 6);
+        $Q->orderBy('date_created', 'DESC');
+        $query = $Q->get()->getResult();
+        if ($query) {
+            return $query;
+        } else {
+            return false;
+        }
+    }
+
     public function getSentDiscussion($sender_id, $submissionID)
     {
         $Q = $this->db->table('notifications');
@@ -221,6 +236,18 @@ class EditorModel extends Model
         }
     }
 
+    public function updateProductionMailSend($id)
+    {
+        $Q = $this->db->table('submission');
+        $Q->where('submissionID', $id);
+        $Q->update(['production_copy_send' => 1]);
+        if ($this->db->affectedRows() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function createSubmissionContent($data)
     {
         $Q = $this->db->table('submission_content');
@@ -290,9 +317,28 @@ class EditorModel extends Model
         }
     }
 
+    public function insertProduction($data)
+    {
+        $Q = $this->db->table('production');
+        if ($Q->insert($data)) {
+            return $this->db->insertID();
+        } else {
+            return false;
+        }
+    }
     public function insertCopyeditingContent($data)
     {
         $Q = $this->db->table('copyediting_content');
+        if ($Q->insert($data)) {
+            return $this->db->insertID();
+        } else {
+            return false;
+        }
+    }
+
+    public function insertProductionContent($data)
+    {
+        $Q = $this->db->table('production_content');
         if ($Q->insert($data)) {
             return $this->db->insertID();
         } else {
@@ -324,18 +370,20 @@ class EditorModel extends Model
             return false;
         }
     }
-    /* 
-    public function uploadEditorResponseToPeer($data) {
-     $builder = $this->db->table('editor_peer_content');
-     $result = $builder->insert($data);
-     if($this->db->affectedRows()){
-         return $this->db->insertID();
-     } else {
-         return false; 
-     }
-        
- }
- */
+    public function checkPublisher($pubid, $submissionid)
+    {
+        $Q = $this->db->table('production');
+        $Q->where('submissionID', $submissionid);
+        $Q->where('publisher_id', $pubid);
+        $qry = $Q->get();
+        $result = $qry->getRow();
+        if ($result) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function insertEditorialUploads($data)
     {
         $Qr = $this->db->table('editor_uploads');
@@ -382,6 +430,18 @@ class EditorModel extends Model
     public function getCopyeditingBySubId($subId)
     {
         $Q = $this->db->table('copyediting');
+        $Q->where('submissionID', $subId);
+        $data = $Q->get()->getRow();
+        if ($data) {
+            return $data;
+        } else {
+            return false;
+        }
+    }
+
+    public function getProductionBySubId($subId)
+    {
+        $Q = $this->db->table('production');
         $Q->where('submissionID', $subId);
         $data = $Q->get()->getRow();
         if ($data) {
@@ -463,6 +523,25 @@ class EditorModel extends Model
         }
     }
 
+    public function getPublisher($email = '')
+    {
+
+        $rows = [];
+        $query = $this->db->query("SELECT * FROM user_roles
+            INNER JOIN users ON user_roles.user_id = users.userID
+            
+            WHERE user_roles.role_id=6 AND users.status='active' AND users.email !='$email'");
+
+        foreach ($query->getResult() as $row) {
+            $rows[] = $row;
+        }
+
+        if ($rows) {
+            return $rows;
+        } else {
+            return false;
+        }
+    }
     public function sendToCopyEditor($data)
     {
         $builder = $this->db->table('editorial_decision');
@@ -607,6 +686,28 @@ class EditorModel extends Model
             return false;
         }
     }
+    public function updateTableCopyeditingUploads($id)
+    {
+        $Q = $this->db->table('copyediting_uploads');
+        $Q->where('id', $id);
+        $Q->update(['added' => 1]);
+        if ($this->db->affectedRows() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function updateTableProductionUploads($id)
+    {
+        $Q = $this->db->table('production_uploads');
+        $Q->where('id', $id);
+        $Q->update(['added' => 1]);
+        if ($this->db->affectedRows() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public function requestRevision($submissionID)
     {
@@ -656,6 +757,76 @@ class EditorModel extends Model
         $row = $builder->get()->getRow();
         if ($row) {
             return $row;
+        } else {
+            return false;
+        }
+
+    }
+
+
+    public function getCopyFinalupload($subid)
+    {
+        $builder = $this->db->table('copyediting_uploads');
+        $builder->where('submission_id', $subid);
+        $row = $builder->get()->getRow();
+        if ($row) {
+            return $row;
+        } else {
+            return false;
+        }
+
+    }
+
+    public function getPublisherFinalupload($subid)
+    {
+        $builder = $this->db->table('production_uploads');
+        $builder->where('submission_id', $subid);
+        $row = $builder->get()->getRow();
+        if ($row) {
+            return $row;
+        } else {
+            return false;
+        }
+
+    }
+    function reset_all($sid)
+    {
+        $r = $this->db->table('reviews');
+        $r->where("submissionID", $sid);
+        $r->delete();
+        $rc = $this->db->table('review_content');
+        $rc->where("submission_id", $sid);
+        $rc->delete();
+        $ru = $this->db->table('review_uploads');
+        $ru->where("submission_id", $sid);
+        $ru->delete();
+
+        $c = $this->db->table('copyediting');
+        $c->where("submissionID", $sid);
+        $c->delete();
+        $cc = $this->db->table('copyediting_content');
+        $cc->where("submission_id", $sid);
+        $cc->delete();
+        $cu = $this->db->table('copyediting_uploads');
+        $cu->where("submission_id", $sid);
+        $cu->delete();
+
+        $p = $this->db->table('production');
+        $p->where("submissionID", $sid);
+        $p->delete();
+        $pc = $this->db->table('production_content');
+        $pc->where("submission_id", $sid);
+        $pc->delete();
+        $pu = $this->db->table('production_uploads');
+        $pu->where("submission_id", $sid);
+        $pu->delete();
+
+        //update submission sttatus
+        $sub = $this->db->table('submission');
+        $sub->where('submissionID', $sid);
+        $sub->update(['status_id' => 0]);
+        if ($this->db->affectedRows() == 1) {
+            return true;
         } else {
             return false;
         }

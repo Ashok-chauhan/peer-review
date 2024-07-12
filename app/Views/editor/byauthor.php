@@ -349,12 +349,21 @@ $STATUS = [
 
                         <?php if (isset($editorialDecision->status)): ?>
                             <?php if ($editorialDecision->status == 8 && $submission->status_id == 8): ?>
-                                <div class="list-group-item" role="alert">
+                                <!-- <div class="list-group-item" role="alert">
                                     <button type="button" class="btn btn-dark waves-effect waves-light"
                                         style="padding: 0.47rem 54px;">
                                         <i class="fa fa-area-chart"></i>&nbsp;Send to Production
                                     </button>
-                                </div>
+                                </div> -->
+                                <form method="POST" action="../toproduction">
+                                    <input type="hidden" name="submissionid" value="<?= $submission->submissionID; ?>" />
+                                    <input type="hidden" name="title" value="<?= $submission->title; ?>" />
+
+                                    <button type="submit" class="btn btn-dark waves-effect waves-light"
+                                        style="padding: 0.47rem 54px;">
+                                        <i class="fa fa-area-chart"></i>&nbsp;Send to Production
+                                    </button>
+                                </form>
                             <?php endif; ?>
 
                         <?php endif; ?>
@@ -385,7 +394,7 @@ $STATUS = [
                         <?php if ($submission->status_id == 11): ?>
 
                             <div class="list-group-item" role="alert">
-                                <?= anchor('editor/accepted_production/' . $submission->submissionID . '/' . 8, '<span class="btn-dark waves-light" style="padding: 0.50rem 65px; border-radius: 5px;"><i class="fa fa-comments"></i>&nbsp; Accept & proceed</span>'); ?>
+                                <?= anchor('editor/accepted_production/' . $submission->submissionID . '/' . 12, '<span class="btn-dark waves-light" style="padding: 0.50rem 65px; border-radius: 5px;"><i class="fa fa-comments"></i>&nbsp; Accept & proceed</span>'); ?>
                             </div>
                         <?php endif; ?>
 
@@ -426,11 +435,14 @@ $STATUS = [
                     <div class="card-body ">
                         <div class="">
                             <h4 class="card-title">Copy-editor files</h4>
+
                             <?php if ($cpEditorDiscussions): ?>
                                 <?php foreach ($cpEditorDiscussions as $copyfile): ?>
-                                    <div>
-                                        <?= anchor('editor/downloads/' . $copyfile->file, $copyfile->file); ?>
-                                    </div>
+                                    <?php if ($copyfile->file): ?>
+                                        <div>
+                                            <?= anchor('editor/downloads/' . $copyfile->file, $copyfile->file); ?>
+                                        </div>
+                                    <?php endif; ?>
                                 <?php endforeach; ?>
                                 <?= anchor('editor/downloadpeerZip/' . $cpEditorDiscussions[0]->submissionID, '<span class="btn1 btn-success">downloads</span>'); ?>
                             <?php endif; ?>
@@ -730,9 +742,185 @@ $STATUS = [
                             </div>
                         </div>
                         <!-- copy-editor disscusson eof -->
+                        <!-- publisher disscusion bof -->
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingPublisher">
+                                <button class="accordion-button collapsed fw-bold" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false"
+                                    aria-controls="collapseFour">
+                                    Publisher Discussion
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse"
+                                aria-labelledby="headingPublisher" data-bs-parent="#accordionEditor">
+                                <div class="accordion-body">
+
+
+                                    <?php if (!$publisherDiscussions): ?>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#copyeditorModal">
+                                            Start Discussion
+                                        </button>
+                                    <?php endif; ?>
+
+
+                                    <?php if ($publisherDiscussions): ?>
+                                        <?php foreach ($publisherDiscussions as $key => $discussion): ?>
+
+
+                                            <div class="card-body">
+                                                <div class="d-flex mb-4">
+                                                    <img class="me-3 rounded-circle avatar-sm"
+                                                        src="<?= base_url(); ?>assets/images/users/avatar-1.jpg"
+                                                        alt="Generic placeholder image">
+                                                    <div class="flex-1">
+                                                        <h5 class="font-size-14 my-1">
+                                                            <?= $discussion->sender; ?>
+                                                        </h5>
+                                                        <small class="text-muted">
+
+                                                            <!-- Editorial Co-ordinator -->
+
+                                                            <?= date("l jS \of F Y h:i:s A", strtotime($discussion->date_created)); ?>
+                                                        </small>
+
+                                                    </div>
+                                                </div>
+
+                                                <h4 class="font-size-16">
+                                                    <?= $discussion->title; ?>
+                                                </h4>
+                                                <?php if ($discussion->recommondation): ?>
+                                                    <h6>
+                                                        Recommendation: <?= $discussion->recommondation; ?>
+                                                    </h6>
+                                                <?php endif; ?>
+                                                <p>
+                                                    <?= $discussion->message; ?>
+                                                </p>
+                                                <?php if ($discussion->file): ?>
+                                                    <h6>Attachment</h6>
+                                                    Article component:
+                                                    <?= $discussion->article_component; ?>
+                                                    <p>
+                                                        <?= anchor('editor/downloads/' . $discussion->file, $discussion->file); ?>
+                                                    </p>
+                                                <?php endif; ?>
+
+                                                <hr />
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                    data-bs-target="#publisherModal">
+                                                    <i class="mdi mdi-reply"></i>Reply
+                                                </button>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <!-- publisher discussion eof -->
+
                     </div><!-- accordion eof -->
 
 
+                    <!-- publisher reply modal bof inserting into notifications table -->
+
+                    <div class="modal fade" id="publisherModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" aria-labelledby="publisherModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="publisherModalLabel">Discussion</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <h5>Add revision copy-editor</h5>
+
+                                    <div id="editor"></div>
+                                    <form id="publisherReplyForm" action="../notify" method="POST"
+                                        enctype="multipart/form-data">
+
+
+                                        <input type="hidden" name="role" id="role" value="6" />
+
+                                        <div class="mb-3">
+                                            <label for="subject-title" class="col-form-label">Subject:*</label>
+                                            <input type="text" class="form-control" id="subject-title"
+                                                name="subject-title" required>
+                                            <?php if ($publisher): ?>
+                                                <input type="hidden" name="submissionID" value="<?= $submission_id; ?>" />
+                                                <input type="hidden" name="recipient" value="<?= $publisher->email; ?>" />
+                                                <input type="hidden" name="recipient_id"
+                                                    value="<?= $publisher->userID; ?>" />
+                                                <input type="hidden" name="authorName"
+                                                    value="<?= $publisher->title . ' ' . $publisher->middle_name . ' ' . $publisher->last_name; ?>" />
+                                                <!-- <input type="hidden" name="role" value="<? //= $role; 
+                                                    ?>" /> -->
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="message-text" class="col-form-label">Message:</label>
+                                            <textarea class="form-control" id="message-text" name="message-text"
+                                                required></textarea>
+                                        </div>
+                                        <h3>File attachment</h3>
+                                        <div class="fw-bold">Revision file? *</div>
+                                        <select class="form-select" name="updateFileId" id="updateFileId">
+                                            <option value="0">This is not a revision of an existing file</option>
+
+                                            <?php if ($contents): ?>
+                                                <?php foreach ($contents as $content): ?>
+                                                    <option value="<?= $content->id; ?>">Revision of
+                                                        <?= $content->article_component; ?> - (
+                                                        <?= $content->content; ?>)
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+
+                                        </select>
+
+                                        <div class="fw-bold">Article Component *</div>
+
+                                        <select class="form-select" name="article_type" id="article_type">
+                                            <option value="" disabled selected>Select article component</option>
+                                            <option value="Article Text">Article Text</option>
+                                            <option value="Title Page">Title Page</option>
+                                            <option value="Reasearch Instrument">Research Instrument</option>
+                                            <option value="Research Materials">Research Materials</option>
+                                            <option value="Research Results">Research Results</option>
+                                            <option value="Transcripts">Transcripts</option>
+                                            <option value="Data Analysis">Data Analysis</option>
+                                            <option value="Data Set">Data set</option>
+                                            <option value="Source Texts">Source Texts</option>
+                                            <option value="Other">Other</option>
+
+                                        </select>
+
+
+                                        <div id="fileUploadFields">
+                                            <div class="p-2">
+                                                <input type="file" name="revisionFile" id="revisionFile"
+                                                    class="fileToUpload">
+                                            </div>
+                                        </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- publisher ready modal eof inserting into notifications table -->
                     <!-- COPY-EDITOR/ reply Modal bof inserting in to notifications table-->
                     <div class="modal fade" id="copyeditorModal" data-bs-backdrop="static" data-bs-keyboard="false"
                         tabindex="-1" aria-labelledby="copyeditorModalLabel" aria-hidden="true">
@@ -1071,6 +1259,8 @@ $STATUS = [
 
     <script type="text/javascript" src="<?= base_url(); ?>js/addEditorRevision.js"></script>
     <script type="text/javascript" src="<?= base_url(); ?>js/copyEditorDiscussion.js"></script>
+    <script type="text/javascript" src="<?= base_url(); ?>js/publisherDiscussion.js"></script>
+
 
     <?= $this->endSection(); ?>
     <?= $this->endSection(); ?>

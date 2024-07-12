@@ -16,7 +16,7 @@ Dashboard
         </div>
     </div>
     <!-- end page title -->
-    <?php session_start(); ?>
+    <?php //session_start(); ?>
     <div class="row">
         <div class="col-xl-12">
             <div class="card">
@@ -53,12 +53,12 @@ Dashboard
 
                             }
                             if (in_array('6', session()->get('roles'))) {
-                                echo '<li>Login as ' . anchor('translator/?r=' . base64_encode(6), 'Translator') . '</li>';
+                                echo '<li>Login as ' . anchor('production/?r=' . base64_encode(6), 'Publisher') . '</li>';
 
                             }
                             if (in_array('7', session()->get('roles'))) {
 
-                                echo '<li>Login as ' . anchor('reader/?r=' . base64_encode(7), 'Reader') . '</li>';
+                                echo '<li>Login as ' . anchor('translator/?r=' . base64_encode(7), 'Translator') . '</li>';
 
                             }
                             // } ?>

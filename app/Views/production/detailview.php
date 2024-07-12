@@ -141,6 +141,8 @@ Reviewer Dashboard
 
 
                                 <!-- peer uploads bof -->
+
+
                                 <?php if ($peerUploads): ?>
 
                                     <tr>
@@ -208,15 +210,17 @@ Reviewer Dashboard
 
                 <div class="card-body">
                     <div id="msg"></div>
-                    <div class="form-check">
-                        <?php if ($details->status == 6): ?>
-                            <?= anchor('editcopy/finalupload/' . $details->submissionID . '/' . $details->id, 'Upload final file & submit to complete', 'class="btn btn-primary"'); ?>
-                        <?php endif; ?>
 
-                    </div>
+                    <?php if ($details->status == 10): ?>
+
+
+                        <?= anchor('production/finalupload/' . $details->submissionID . '/' . $details->id, 'Upload final file & submit to complete', 'class="btn btn-primary"'); ?>
+
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
+
 
     </div>
 
@@ -248,7 +252,12 @@ Reviewer Dashboard
                                             <?= $discussion->sender; ?>
                                         </h5>
                                         <small class="text-muted">
-
+                                            <?php //if (array_key_exists($role, roles())) : 
+                                                    ?>
+                                            <? //= roles()[$role]; 
+                                                    ?>
+                                            <?php //endif; 
+                                                    ?>
                                             <!-- Editorial Co-ordinator -->
 
                                             <?= date("l jS \of F Y h:i:s A", strtotime($discussion->date_created)); ?>
@@ -283,7 +292,7 @@ Reviewer Dashboard
 
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                     data-arridx="<?= $editor->userID . '/' . $editor->email . '/' . $discussion->submissionID . '/' . $discussion->title; ?>"
-                                    data-role="3" data-bs-target="#peerModal">
+                                    data-role="3" data-bs-target="#productionModal">
                                     <i class="mdi mdi-reply"></i>Reply
                                 </button>
                             </div>
@@ -297,19 +306,19 @@ Reviewer Dashboard
     <!-- discussion eof -->
 
     <!-- PEER/ reply Modal bof inserting in to notifications table-->
-    <div class="modal fade" id="peerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="peerModalLabel" aria-hidden="true">
+    <div class="modal fade" id="productionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="productionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="revisionModalLabel">Discussion</h1>
+                    <h1 class="modal-title fs-5" id="productionModalLabel">Discussion</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
 
 
                     <div id="editor"></div>
-                    <form id="peerReplyForm" action="../../notify" method="POST" enctype="multipart/form-data">
+                    <form id="productionReplyForm" action="../../notify" method="POST" enctype="multipart/form-data">
                         <div>
                             <div class="fw-bold">Recommendation *</div>
 
@@ -323,7 +332,7 @@ Reviewer Dashboard
                                 <option value="See Comments">See Comments</option>
                             </select>
                         </div>
-                        <input type="hidden" name="role" id="role" value="5" />
+                        <input type="hidden" name="role" id="role" value="6" />
 
                         <div class="mb-3">
                             <label for="subject-title" class="col-form-label">Subject:*</label>
@@ -396,6 +405,8 @@ Reviewer Dashboard
 
 </div>
 <?= $this->section('javascript'); ?>
-<script type="text/javascript" src="<?= base_url(); ?>js/peer.js"></script>
+<script type="text/javascript" src="<?= base_url(); ?>js/production.js"></script>
+
+
 <?= $this->endSection(); ?>
 <?= $this->endSection(); ?>
