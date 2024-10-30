@@ -182,6 +182,7 @@ class Editor extends BaseController
         $data['submission']->contributor = $coauthor;
         $data['sentMessages'] = $this->editorModel->getSentDiscussion(session()->get('userID'), $submissionID);
         $data['editorialHistory'] = $this->editorialHistory($submissionID);
+        $data['peer_final_uploads'] = $this->editorModel->getFinalupload($submissionID);
         //print '<pre>';
         //print_r($data['publisherDiscussions']);
         return view('editor/byauthor', $data);
@@ -1642,4 +1643,15 @@ class Editor extends BaseController
             }
         }
     }
+    public function reject_peer()
+    {
+        $uri = $this->request->getUri();
+        $sid = $uri->getSegment(3);
+        $id = $this->editorModel->reject_peer($sid);
+        if ($id) {
+            return redirect()->to('/editor/byauthor/' . $sid);
+        }
+
+    }
+
 }

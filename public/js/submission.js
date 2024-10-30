@@ -309,6 +309,7 @@ function validateSForm() {
   //var error = document.getElementById("msg");
   const title = document.getElementById("title").value;
   const keyword = document.getElementById("keyword").value;
+  const keywordArray = keyword.split(',');
   const language = document.getElementById("language").value;
   const article_File = document.getElementById("articlePagefile").value;
   const textFile = document.getElementById("articleTextfile").value;
@@ -394,6 +395,11 @@ function validateSForm() {
     return false;
   } else if (!keyword.length) {
     alert("Please enter a valid keyword");
+    document.getElementById("keyword").focus();
+    return false;
+  }
+  if(keywordArray.length < 3){
+    alert("Minimum 3 keywords required");
     document.getElementById("keyword").focus();
     return false;
   }

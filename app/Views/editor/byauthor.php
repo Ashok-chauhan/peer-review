@@ -283,6 +283,11 @@ $STATUS = [
                             <div class="list-group-item" role="alert">
                                 <?= anchor('editor/accepted/' . $submission->submissionID . '/' . 4, '<span class="btn-dark waves-light" style="padding: 0.47rem 34px; border-radius: 5px;"><i class="fa fa-comments"></i>&nbsp; Accept & proceed</span>'); ?>
                             </div>
+
+
+                            <div class="list-group-item" role="alert">
+                                <?= anchor('editor/reject_peer/' . $submission->submissionID, '<span class="btn-danger waves-light" style="padding: 0.47rem 12px; border-radius: 5px;"><i class="fa fa-comments"></i>&nbsp; Reject review & reassign</span>', 'onclick="return resetPeer()"'); ?>
+                            </div>
                         <?php endif; ?>
 
 
@@ -405,6 +410,39 @@ $STATUS = [
 
                 </div>
 
+
+                <!-- peer final files -->
+                <?php if ($peer_final_uploads): ?>
+                    <div class="card ">
+                        <div class="card-body">
+                            <div class="">
+                                <h4 class="card-title">Reviewer's final uploaded files</h4>
+
+
+
+                                <?php if (isset($peer_final_uploads->title_page)): ?>
+                                    <div><span>Title page</span>
+                                        <?= anchor('editor/downloads/' . $peer_final_uploads->title_page, $peer_final_uploads->title_page); ?>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if (isset($peer_final_uploads->article_text)): ?>
+                                    <div><span>Article text</span>
+                                        <?= anchor('editor/downloads/' . $peer_final_uploads->article_text, $peer_final_uploads->article_text); ?>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if (isset($peer_final_uploads->article_file)): ?>
+                                    <div><span><?= $peer_final_uploads->article_type; ?></span>
+                                        <?= anchor('editor/downloads/' . $peer_final_uploads->article_file, $peer_final_uploads->article_file); ?>
+                                    </div>
+                                <?php endif; ?>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <!-- eof peer final files -->
                 <!-- peer files -->
                 <div class="card">
                     <div class="card-body ">

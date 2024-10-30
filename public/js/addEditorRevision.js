@@ -116,3 +116,11 @@ peerForm.addEventListener("submit", function (event) {
   // Close the modal
   peerModal.hide();
 });
+
+
+function resetPeer() {
+  if (confirm('Are you sure you want to reject & reassign Reviewer?')) {
+   } else {
+      return false
+    }
+   }

@@ -82,12 +82,14 @@ class Registration extends Controller
                         $this->registrationModel->userRoles($roleData);
                     }
                     //inserting into journal_peer table for multiple journal
-                    foreach ($this->request->getVar('interests') as $jid) {
-                        $journalData = [
-                            'pid' => $insertID,
-                            'jid' => $jid,
-                        ];
-                        $this->registrationModel->journalPeer($journalData);
+                    if (is_array($this->request->getVar('interests'))) {
+                        foreach ($this->request->getVar('interests') as $jid) {
+                            $journalData = [
+                                'pid' => $insertID,
+                                'jid' => $jid,
+                            ];
+                            $this->registrationModel->journalPeer($journalData);
+                        }
                     }
                 }
 

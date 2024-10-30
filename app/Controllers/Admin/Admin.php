@@ -4,6 +4,8 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\AdminModel;
+use App\Models\RegistrationModel;
+
 
 /**
  * Description of Admin
@@ -12,7 +14,7 @@ use App\Models\AdminModel;
  */
 class Admin extends BaseController
 {
-
+    public $registrationModel;
     public $adminModel;
     public $session;
     public $email;
@@ -21,6 +23,7 @@ class Admin extends BaseController
     {
         helper(['url', 'form', 'role']);
         $this->adminModel = new AdminModel();
+        $this->registrationModel = new RegistrationModel();
         $this->session = \Config\Services::session();
         $this->email = \Config\Services::email();
         if (session()->get('role') != 1) {
@@ -63,6 +66,7 @@ class Admin extends BaseController
     {
         $data = [];
         $data['validation'] = null;
+        $data['journals'] = $this->registrationModel->getJournal();
 
         if ($this->request->getMethod() == 'post') {
 
@@ -93,6 +97,7 @@ class Admin extends BaseController
                     'uniid' => $uniid,
                     'activation_date' => date("Y-m-d h:i:s"),
                     'country' => $this->request->getVar('country', FILTER_SANITIZE_STRING),
+                    'interests' => serialize($this->request->getVar('interests')),
                     'roleID' => $roles[0],
                 ];
 
@@ -105,6 +110,15 @@ class Admin extends BaseController
                             'role_id' => $role,
                         ];
                         $this->adminModel->userRoles($roleData);
+                    }
+
+                    //inserting into journal_peer table for multiple journal
+                    foreach ($this->request->getVar('interests') as $jid) {
+                        $journalData = [
+                            'pid' => $insertID,
+                            'jid' => $jid,
+                        ];
+                        $this->registrationModel->journalPeer($journalData);
                     }
                 }
 

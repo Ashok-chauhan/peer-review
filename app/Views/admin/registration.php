@@ -122,12 +122,14 @@ Dashboard
                         </div>
 
 
+
+
                         <h6 class="alert-warning">You have to select appropriate role to register</h6>
                         <div class="form-group mb-3 row">
                             <div class="col-12">
                                 <div class="custom-control custom-checkbox">
                                     <label class="form-label fw-normal" for="data_consent">
-                                        <input type="checkbox" class="custom-control-input" id="author" name="roles[]"
+                                        <input type="checkbox" class="custom-control-input" id="editor" name="roles[]"
                                             value="2"><a href="#" class="text-muted ms-6 ">
                                             Editor</a></label>
                                 </div>
@@ -144,6 +146,26 @@ Dashboard
                                             value="4"> <a href="#" class="text-muted  ms-6 ">
                                             Reviewer</a></label>
                                 </div>
+
+
+                                <!-- journal -->
+                                <div class="form-group mb-3 row" id="review-interests">
+                                    <div class="col-12">
+                                        <?php if ($journals): ?>
+                                            <label for="intrest" class="">Review Interests/Journal</label>
+                                            <select class="js-example-basic-multiple" style="width:100%;" name="interests[]"
+                                                multiple="multiple">
+
+                                                <?php foreach ($journals as $value): ?>
+                                                    <option value="<?= $value->id; ?>"><?= $value->journal_name; ?></option>
+                                                <?php endforeach; ?>
+
+                                            </select>
+                                        <?php endif; ?>
+
+                                    </div>
+                                </div>
+                                <!-- journal -->
                                 <div class="custom-control custom-checkbox">
                                     <label class="form-label fw-normal" for="notification">
                                         <input type="checkbox" class="custom-control-input" id="copy-editor"
@@ -152,7 +174,7 @@ Dashboard
                                 </div>
                                 <div class="custom-control custom-checkbox">
                                     <label class="form-label fw-normal" for="notification">
-                                        <input type="checkbox" class="custom-control-input" id="translator"
+                                        <input type="checkbox" class="custom-control-input" id="publisher"
                                             name="roles[]" value="6"> <a href="#" class="text-muted  ms-6 ">
                                             Publisher</a></label>
                                 </div>
@@ -206,10 +228,20 @@ Dashboard
 
     </div> <!-- row -->
 </div> <!--container-->
-
+<script>
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
 
 <?= $this->section('javascript'); ?>
 <script type="text/javascript" src="<?= base_url(); ?>js/admin.js"></script>
+<script type="text/javascript" src="<?= base_url(); ?>js/registration.js"></script>
+
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 
 <?= $this->endSection(); ?>
 <?= $this->endSection(); ?>

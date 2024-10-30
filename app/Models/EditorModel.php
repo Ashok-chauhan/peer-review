@@ -833,4 +833,34 @@ class EditorModel extends Model
 
     }
 
+    function reject_peer($sid)
+    {
+
+        $n = $this->db->table('notifications');
+        $n->where("submissionID", $sid);
+        $n->where("role", 4);
+        $n->delete();
+
+        $r = $this->db->table('reviews');
+        $r->where("submissionID", $sid);
+        $r->delete();
+        $rc = $this->db->table('review_content');
+        $rc->where("submission_id", $sid);
+        $rc->delete();
+        $ru = $this->db->table('review_uploads');
+        $ru->where("submission_id", $sid);
+        $ru->delete();
+
+        //update submission sttatus
+        $sub = $this->db->table('submission');
+        $sub->where('submissionID', $sid);
+        $sub->update(['status_id' => 0]);
+        if ($this->db->affectedRows() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
 }

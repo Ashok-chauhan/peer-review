@@ -65,6 +65,8 @@ $routes->group('editor', static function ($routes) {
     $routes->get('downloadpeerZip/(:segment)', 'Editor\Editor::downloadpeerZip');
 
     $routes->get('accepted/(:num)/(:num)', 'Editor\Editor::accepted/$1/$2', ['filter' => 'auth']);
+    $routes->get('reject_peer/(:num)', 'Editor\Editor::reject_peer/$1', ['filter' => 'auth']);
+
     $routes->get('accepted_copyediting/(:num)/(:num)', 'Editor\Editor::accepted_copyediting/$1/$2', ['filter' => 'auth']);
     $routes->get('accepted_production/(:num)/(:num)', 'Editor\Editor::accepted_production/$1/$2', ['filter' => 'auth']);
 

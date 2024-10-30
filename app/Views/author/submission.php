@@ -225,142 +225,143 @@ $attributes = ['id' => 'submission', 'name' => 'submission', 'onsubmit' => 'retu
                 <div hidden id="spinner"></div>
                 <div id="basic-pills-wizard" class="twitter-bs-wizard">
                     <div class="twitter-bs-wizard-tab-content">
-                        <div class="tab-pane" id="seller-details">
-
-                            <h4 class="card-title font-size-14"><b>Prefix</b></h4>
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <div class="mb-3">
-                                        <input type="text" class="form-control" id="prefix" name="prefix"
-                                            value="<?= set_value('prefix'); ?>">
-                                    </div>
+                        <h4 class="card-title font-size-14"><b>Prefix</b></h4>
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" id="prefix" name="prefix"
+                                        value="<?= set_value('prefix'); ?>">
                                 </div>
                             </div>
+                        </div>
 
 
-                            <h4 class="card-title font-size-14"><b>Title*</b></h4>
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <div class="mb-3">
-                                        <input type="text" class="form-control" id="title" name="title"
-                                            value="<?= set_value('title'); ?>">
-                                    </div>
+                        <h4 class="card-title font-size-14"><b>Title*</b></h4>
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" id="title" name="title"
+                                        value="<?= set_value('title'); ?>">
                                 </div>
                             </div>
+                        </div>
 
-                            <h4 class="card-title font-size-14"><b>Subtitle</b></h4>
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <div class="mb-3">
-                                        <input type="text" class="form-control" id="subtitle" name="subtitle"
-                                            value="<?= set_value('subtitle'); ?>">
-                                    </div>
+                        <h4 class="card-title font-size-14"><b>Subtitle</b></h4>
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" id="subtitle" name="subtitle"
+                                        value="<?= set_value('subtitle'); ?>">
                                 </div>
                             </div>
-                            <div class="form-group mb-3">
-                                <h4 class="card-title font-size-15"><b>Abstract*</b></h4>
+                        </div>
+                        <div class="form-group mb-3">
+                            <h4 class="card-title font-size-15"><b>Abstract*</b></h4>
 
-                                <!-- tinemce abstract-->
-                                <textarea-tiny name="abstract" id="abstract"></textarea-tiny>
-
-                                <!-- tinymce -->
-
-                            </div>
-
-                            <!-- contributor list -->
-
-                            <h4 class="card-title font-size-15"><b>List of Contributors</b></h4>
-
-                            <div class=" col-lg-8">
-                                <table id="datatable" class="table table-bordered dt-responsive nowrap font-size-13"
-                                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Role</th>
-                                            <th>Primary Contact</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody id="co-author">
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!-- eof contributor list -->
-                            <div>
-                                <div>
-                                    <button type="button" onclick="resetContributor();"
-                                        class="btn1 btn-primary waves-effect waves-light me-1" data-bs-toggle="modal"
-                                        data-bs-target="#contributorModal">
-                                        Add contributor
-                                    </button>
-                                </div>
-                                <span id="coauthor" class="fw-bold"> </span>
-                            </div>
-                            <br>
-                            <h4 class="card-title font-size-1 font-size-14"><b>Language</b></h4>
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <div class="mb-3">
-                                        <input type="text" class="form-control" id="language" name="language"
-                                            value="<?= set_value('language'); ?>">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <h4 class="card-title font-size-14"><b>Keyword</b></h4>
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <div class="mb-3">
-                                        <input type="text" class="form-control" id="keyword" name="keyword"
-                                            value="<?= set_value('keyword'); ?>">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <h4 class="card-title font-size-14"><b>References</b></h4>
-
-                            <!-- tinemce reference-->
-
-
-                            <textarea-tiny name="reference" id="reference"></textarea-tiny>
+                            <!-- tinemce abstract-->
+                            <textarea-tiny name="abstract" id="abstract"></textarea-tiny>
 
                             <!-- tinymce -->
-                            <br>
-
-                            <div class="form-group mb-3 row">
-                                <div class="col-12">
-                                    <div class="custom-control custom-checkbox">
-                                        <label class="form-label  fw-normal" for="data">
-                                            <input type="checkbox" class="custom-control-input" id="data" name="data"
-                                                checked> <a href="#" class="text-muted2 ms-1">Yes, I agree to have my
-                                                data collected and stored according to the Policy statement.</a></label>
-                                    </div>
-                                </div>
-                            </div>
-                            <br>
-                            <div class="mb-0">
-                                <div>
-                                    <!-- onclick="validateForm()" -->
-                                    <button type="submit" class="btn btn-primary waves-effect waves-light me-1">
-                                        Submit
-                                    </button>
-                                </div>
-                            </div>
-                            <br>
-
-
 
                         </div>
-                    </div>
 
+                        <!-- contributor list -->
+
+                        <h4 class="card-title font-size-15"><b>List of Contributors</b></h4>
+
+                        <div class=" col-lg-8">
+                            <table id="datatable" class="table table-bordered dt-responsive nowrap font-size-13"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Primary Contact</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="co-author">
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- eof contributor list -->
+                        <div>
+                            <div>
+                                <button type="button" onclick="resetContributor();"
+                                    class="btn1 btn-primary waves-effect waves-light me-1" data-bs-toggle="modal"
+                                    data-bs-target="#contributorModal">
+                                    Add contributor
+                                </button>
+                            </div>
+                            <span id="coauthor" class="fw-bold"> </span>
+                        </div>
+                        <br>
+                        <h4 class="card-title font-size-1 font-size-14"><b>Language</b></h4>
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" id="language" name="language"
+                                        value="<?= set_value('language'); ?>">
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 class="card-title font-size-14">
+                            <b>Keyword *</b>
+                        </h4>
+                        <code><b>Minimum 3 keywords required separated by comma " , "</b></code>
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" id="keyword" name="keyword"
+                                        value="<?= set_value('keyword'); ?>">
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 class="card-title font-size-14"><b>References</b></h4>
+
+                        <!-- tinemce reference-->
+
+
+                        <textarea-tiny name="reference" id="reference"></textarea-tiny>
+
+                        <!-- tinymce -->
+                        <br>
+
+                        <div class="form-group mb-3 row">
+                            <div class="col-12">
+                                <div class="custom-control custom-checkbox">
+                                    <label class="form-label  fw-normal" for="data">
+                                        <input type="checkbox" class="custom-control-input" id="data" name="data"
+                                            checked> <a href="#" class="text-muted2 ms-1">Yes, I agree to have my
+                                            data collected and stored according to the Policy statement.</a></label>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="mb-0">
+                            <div>
+                                <!-- onclick="validateForm()" -->
+                                <button type="submit" class="btn btn-primary waves-effect waves-light me-1">
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                        <br>
+
+
+
+                    </div>
                 </div>
 
             </div>
+
         </div>
     </div>
+</div>
 </div>
 <!-- </form> -->
 <?= form_close();

@@ -63,7 +63,8 @@ class SubmissionModel extends Model
         $builder->select('*');
         $builder->join('journal', 'journal.id = submission.submissionID', 'left');
         $builder->where('authorID', $authorID);
-        $builder->where('status_id <', 3);
+        //$builder->where('status_id <', 3);
+        $builder->where('status_id <=', 4);
         $builder->orderBy('submissionID', 'DESC');
         $query = $builder->get();
         if ($query) {
@@ -77,7 +78,8 @@ class SubmissionModel extends Model
         $Q = $this->db->table('submission');
         $Q->orderBy('submissionID', 'DESC');
         $Q->where('authorID', $authorID);
-        $Q->where('status_id >=', 3);
+        //$Q->where('status_id >=', 3);
+        $Q->where('status_id >=', 5);
         $query = $Q->get();
         if ($query) {
             return $query->getResult();
