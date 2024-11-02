@@ -115,7 +115,7 @@ Reviewer Dashboard
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th>Component</th>
+                                    <!-- <th>Component</th> -->
                                     <th>Filename</th>
                                     <th>Download</th>
                                 </tr>
@@ -142,35 +142,7 @@ Reviewer Dashboard
 
                                 <!-- peer uploads bof -->
                                 <?php if ($peerUploads): ?>
-
                                     <tr>
-                                        <td data-label="Component">
-                                            Title page
-                                        </td>
-                                        <td data-label="Filename">
-                                            <?= $peerUploads->title_page; ?>
-                                        </td>
-                                        <td data-label="Filename">
-                                            <?= anchor('author/downloads/' . $peerUploads->title_page, '<span class="btn1 btn-success">download</span>'); ?>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td data-label="Component">
-                                            Article Text
-                                        </td>
-                                        <td data-label="Filename">
-                                            <?= $peerUploads->article_text; ?>
-                                        </td>
-                                        <td data-label="Filename">
-                                            <?= anchor('author/downloads/' . $peerUploads->article_text, '<span class="btn1 btn-success">download</span>'); ?>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td data-label="Component">
-                                            <?= $peerUploads->article_type; ?>
-                                        </td>
                                         <td data-label="Filename">
                                             <?= $peerUploads->article_file; ?>
                                         </td>
@@ -189,7 +161,7 @@ Reviewer Dashboard
                     <div class="mb-0" style="float: right;">
                         <div>
 
-                            <?= anchor('editor/downloadZip/' . $details->submissionID, '<span class="btn btn-primary waves-effect waves-light me-1">Downloads</span>'); ?>
+                            <?= anchor('editcopy/downloadZip/' . $details->submissionID, '<span class="btn btn-primary waves-effect waves-light me-1">Downloads</span>'); ?>
 
                         </div>
                     </div>

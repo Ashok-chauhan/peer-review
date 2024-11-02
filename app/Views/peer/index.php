@@ -66,11 +66,6 @@ Dashboard
                                                                         class="fa fa-bell" aria-hidden="true"></i></sup>
                                                             </h4>
 
-                                                            <button type="button"
-                                                                class="btn2 btn-outline-primary waves-effect waves-light mb-2">Submitted
-                                                                on:
-                                                                <?= $row->submission_date; ?>
-                                                            </button>
                                                         </td>
 
                                                         <td>
@@ -152,17 +147,9 @@ Dashboard
                                                                 <?= $row->title; ?> <sup style="font-size:12px;"><i
                                                                         class="fa fa-bell" aria-hidden="true"></i></sup>
                                                             </h4>
-
-                                                            <!-- </h4> -->
-                                                            <button type="button"
-                                                                class="btn2 btn-outline-primary waves-effect waves-light mb-2">Submitted
-                                                                on:
-                                                                <?= $row->submission_date; ?>
-                                                            </button>
                                                         </td>
 
                                                         <td width="15%">
-                                                            <!-- <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2"> -->
 
                                                             <?php if ($row->status == 4): ?>
                                                                 <span class="btn-success waves-light"

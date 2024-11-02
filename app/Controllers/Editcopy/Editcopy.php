@@ -485,4 +485,39 @@ class Editcopy extends BaseController
     }
 
 
+
+    public function downloadZip()
+    {
+        $uri = $this->request->getUri();
+        $submissionID = $uri->getSegment(3);
+        $submission_content = $this->cpEditor->getBySubmissionId('submission_content', $submissionID);
+        if (!$submission_content)
+            return false;
+        $zip = new \ZipArchive();
+        $zipFilename = '/tmp/article.zip';
+        if ($zip->open($zipFilename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+            // Add files to the zip (replace with your actual file paths)
+            if ($submission_content) {
+                foreach ($submission_content as $content) {
+                    $zip->addFile(WRITEPATH . 'uploads/' . $content->content, $content->content);
+                }
+            }
+            // Close the zip file
+            $zip->close();
+            // Force download the zip file
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename="' . $zipFilename . '"');
+            header('Content-Length: ' . filesize($zipFilename));
+            header('Pragma: no-cache');
+            header('Expires: 0');
+            readfile($zipFilename);
+            // Delete the zip file after download (optional)
+            unlink($zipFilename);
+            exit;
+        } else {
+            echo 'Failed to create zip file';
+        }
+    }
+
+
 }

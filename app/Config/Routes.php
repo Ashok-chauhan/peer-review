@@ -122,6 +122,8 @@ $routes->group('admin', static function ($routes) {
 $routes->group('peer', static function ($routes) {
     $routes->get('', 'Peer\Peer::index', ['filter' => 'auth']);
     $routes->post('', 'Peer\Peer::index', ['filter' => 'auth']);
+    $routes->get('downloadZip/(:segment)', 'Peer\Peer::downloadZip');
+
     $routes->get('bellnotification', 'Peer\Peer::bellnotification', ['filter' => 'auth']);
     $routes->get('discussion/(:num)/(:num)', 'Peer\Peer::discussion/$1/$2', ['filter' => 'auth']);
     $routes->post('discussion/(:num)/(:num)', 'Peer\Peer::discussion/$1/$2', ['filter' => 'auth']);
@@ -140,6 +142,7 @@ $routes->group('peer', static function ($routes) {
 
 $routes->group('editcopy', static function ($routes) {
     $routes->get('', 'Editcopy\Editcopy::index');
+    $routes->get('downloadZip/(:segment)', 'Editcopy\Editcopy::downloadZip');
     $routes->get('accept/(:num)/(:num)', 'Editcopy\Editcopy::accept/$1/$2', ['filter' => 'auth']);
     $routes->post('accept/', 'Editcopy\Editcopy::accept', ['filter' => 'auth']);
     $routes->get('bellnotification', 'Editcopy\Editcopy::bellnotification', ['filter' => 'auth']);

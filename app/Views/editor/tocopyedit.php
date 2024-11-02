@@ -204,13 +204,11 @@ Dashboard
                                         <thead>
                                             <tr>
                                                 <th scope="col">Select files</th>
-                                                <th scope="col">Article component</th>
                                                 <th scope="col">Download</th>
                                                 <th scope="col">Submission date</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-
                                             <tr>
                                                 <td>
                                                     <div class="square-switch">
@@ -221,50 +219,16 @@ Dashboard
                                                             data-on-label="Yes" data-off-label="No"></label>
                                                     </div>
                                                 </td>
-                                                <td>
-                                                    Title page
-                                                </td>
-                                                <td><a
-                                                        href="<?= base_url(); ?>editor/downloads/<?= $final_upload->title_page; ?>">
-                                                        <?= $final_upload->title_page; ?>
-                                                    </a></td>
-                                                <td>
-                                                    <!-- date -->
-                                                    <?= $final_upload->date_created; ?>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-
-                                                    &nbsp;
-                                                </td>
-                                                <td>
-                                                    Article text
-                                                </td>
-                                                <td><a
-                                                        href="<?= base_url(); ?>editor/downloads/<?= $final_upload->article_text; ?>">
-                                                        <?= $final_upload->article_text; ?>
-                                                    </a></td>
-                                                <td>
-                                                    <!-- date -->
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    &nbsp;
-                                                </td>
-                                                <td>
-                                                    <?= $final_upload->article_type; ?>
-
-                                                </td>
                                                 <td><a
                                                         href="<?= base_url(); ?>editor/downloads/<?= $final_upload->article_file; ?>">
                                                         <?= $final_upload->article_file; ?>
-                                                    </a></td>
+                                                    </a>
+                                                </td>
                                                 <td>
-                                                    <!-- date -->
+                                                    <?= $final_upload->date_created; ?>
                                                 </td>
                                             </tr>
+
                                         </tbody>
                                     </table>
                                 <?php endif; ?>

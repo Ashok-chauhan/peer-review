@@ -203,7 +203,7 @@ Reviewer Dashboard
                     <div class="mb-0" style="float: right;">
                         <div>
 
-                            <?= anchor('editor/downloadZip/' . $details->submissionID, '<span class="btn btn-primary waves-effect waves-light me-1">Downloads</span>'); ?>
+                            <?= anchor('peer/downloadZip/' . $details->submissionID, '<span class="btn btn-primary waves-effect waves-light me-1">Downloads</span>'); ?>
 
                         </div>
                     </div>

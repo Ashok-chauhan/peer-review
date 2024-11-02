@@ -36,10 +36,16 @@ Peer Dashboard
 
 
                                 <div class="mb-3">
+                                    <label for="message" class="form-label">Message</label>
+                                    <textarea class="form-control" id="message" name="message" rows="3"></textarea>
+                                </div>
+
+                                <!-- <div class="mb-3">
                                     <label for="formFile" class="form-label">Title page*</label>
                                     <input class="form-control" type="file" id="title_page" name="title_page">
-                                </div>
-                                <div class="mb-3">
+                                </div> -->
+
+                                <!-- <div class="mb-3">
                                     <label for="formFile" class="form-label">Article text*</label>
                                     <input class="form-control" type="file" id="article_text" name="article_text">
                                 </div>
@@ -60,7 +66,8 @@ Peer Dashboard
                                         <option value="Other">Other</option>
                                     </select>
 
-                                </div>
+                                </div> -->
+
                                 <div class="mb-3">
                                     <label for="formFile" class="form-label">Article file*</label>
                                     <input class="form-control" type="file" id="article_file" name="article_file">

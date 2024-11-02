@@ -235,8 +235,9 @@ class Submission extends BaseController
             ];
             if ($this->validate($rules)) {
                 $file = $this->request->getFile('revisionFile');
+                $article_type = $this->request->getVar('article_type');
                 if ($file->isValid() && !$file->hasMoved()) {
-                    $newName = $file->getRandomName() . '_' . $file->getClientName();
+                    $newName = $article_type . '_' . time() . '_' . $file->getClientName();
                     if ($file->move(WRITEPATH . 'uploads/', $newName)) {
                         //  echo '<p>Uploaded successfully</p>';
                         $submission_content['submissionID'] = $this->request->getVar('submissionID');
@@ -315,9 +316,10 @@ class Submission extends BaseController
 
             if ($this->validate($rules)) {
                 $file = $this->request->getFile('revisionFile');
+                $article_component = $this->request->getVar('article_type');
                 if ($file->isValid() && !$file->hasMoved()) {
 
-                    $newName = $file->getRandomName() . '_' . $file->getClientName();
+                    $newName = $article_component . '_' . time() . '_' . $file->getClientName();
                     if ($file->move(WRITEPATH . 'uploads/', $newName)) {
 
                         $notification['sender'] = session()->get('fullName');
@@ -463,9 +465,11 @@ class Submission extends BaseController
             ];
             if ($this->validate($rules)) {
                 $file = $this->request->getFile('articlefile');
+                $articleComponent = $this->request->getVar('article_type');
                 if ($file->isValid() && !$file->hasMoved()) {
 
-                    $newName = $file->getRandomName() . '_' . $file->getClientName();
+                    //$newName = $file->getRandomName() . '_' . $file->getClientName();
+                    $newName = $articleComponent . '_' . time() . '_' . $file->getClientName();
                     //$newName = $file->getClientName();
 
                     //if ($file->move(WRITEPATH . 'uploads/' . session()->get('logged_user') . '/', $newName)) {

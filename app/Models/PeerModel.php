@@ -48,7 +48,7 @@ class PeerModel extends Model
 
         $builder = $this->db->table('submission');
         $builder->select('*');
-        $builder->join('reviews', 'reviews.submissionID = submission.submissionID AND submission.status_id IN (4)');
+        $builder->join('reviews', 'reviews.submissionID = submission.submissionID AND submission.status_id IN (4,5,6,7,8,9,10)');
         $builder->where('reviewerID', $reviewerID);
 
         $query = $builder->get()->getResult();

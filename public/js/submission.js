@@ -198,6 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const titleformData = new FormData(titleForm);
+    
     //formData.append("submissionID", subId);
 
     show_loader();

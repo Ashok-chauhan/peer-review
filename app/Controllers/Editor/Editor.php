@@ -183,8 +183,9 @@ class Editor extends BaseController
         $data['sentMessages'] = $this->editorModel->getSentDiscussion(session()->get('userID'), $submissionID);
         $data['editorialHistory'] = $this->editorialHistory($submissionID);
         $data['peer_final_uploads'] = $this->editorModel->getFinalupload($submissionID);
-        //print '<pre>';
-        //print_r($data['publisherDiscussions']);
+        // print '<pre>';
+        // print_r($data);
+        // exit;
         return view('editor/byauthor', $data);
     }
 
@@ -418,7 +419,8 @@ class Editor extends BaseController
                 $note['message'] = $this->request->getVar('message');
                 $insertNote = $this->editorModel->discussion($note);
                 $affected_id = $this->editorModel->accepted($this->request->getVar('submissionid'), 1); // sent to peer.
-
+                print_r($insertNote);
+                exit;
                 if ($insertNote) {
                     //send email
                     /*
@@ -750,6 +752,7 @@ class Editor extends BaseController
         $data['editorContent'] = $editorContent;
         $data['peerFiles'] = $this->editorModel->peerDiscussion($subid);
         $data['final_upload'] = $this->editorModel->getFinalupload($subid);
+
         return view('editor/tocopyedit', $data);
         /*
         $reviewer = $this->editorModel->getCopyeditor();
