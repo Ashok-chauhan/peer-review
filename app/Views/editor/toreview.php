@@ -33,13 +33,14 @@ Dashboard
                                 <div>
                                     <label for="title" class="form-label fw-bold ">Title<span
                                             class="redstar">*</span></label>
-                                    <input type="text" class="form-control" id="title" name="title" required />
+                                    <input type="text" class="form-control" id="title" value="<?= $title; ?>" name="title"
+                                        required />
                                 </div>
                                 <div>
                                     <label for="message" class="form-label fw-bold">Message <span
                                             class="redstar">*</span></label>
                                     <textarea class="form-control" id="message" name="message" rows="3"
-                                        required></textarea>
+                                        required><?= $peer_message; ?></textarea>
                                 </div>
                                 <p></p>
                                 <div>

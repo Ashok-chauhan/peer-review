@@ -364,7 +364,7 @@ class Editor extends BaseController
         $submission = $this->editorModel->getSubmission($subid);
         $reviewer = $this->editorModel->getReviewer(4, session()->get('logged_user'), $submission->jid); //param roee, email toexclude
 
-        $title = $this->request->getVar('title');
+        //$title = $this->request->getVar('title');
         $editorContent = $this->editorModel->getEditorialUploadsBySubId($subid);
         $subContents = $this->editorModel->getBySubmissionId('submission_content', $subid);
 
@@ -378,12 +378,17 @@ class Editor extends BaseController
 
         $data['peers'] = $reviewer;
         $data['peer'] = $peer;
-        $data['title'] = $title;
+        $data['title'] = $submission->title; //$title;
         $data['submissionid'] = $subid;
         $data['subContents'] = $subContents;
         $data['editorContent'] = $editorContent;
+
+        $peerfile = fopen(FCPATH . 'message_formats/peer.txt', "r") or die("Unable to open file!");
+        $peer_message = fread($peerfile, filesize(FCPATH . 'message_formats/peer.txt'));
+        fclose($peerfile);
+        $data['peer_message'] = $peer_message;
         // print '<pre>';
-        // print_r($data);
+        // print_r($submission);
         // exit;
         return view('editor/toreview', $data);
     }
@@ -419,8 +424,7 @@ class Editor extends BaseController
                 $note['message'] = $this->request->getVar('message');
                 $insertNote = $this->editorModel->discussion($note);
                 $affected_id = $this->editorModel->accepted($this->request->getVar('submissionid'), 1); // sent to peer.
-                print_r($insertNote);
-                exit;
+
                 if ($insertNote) {
                     //send email
                     /*
@@ -1092,10 +1096,26 @@ class Editor extends BaseController
         $uri = $this->request->getUri();
         $submissionID = $uri->getSegment(3);
         $submission_content = $this->editorModel->getBySubmissionId('submission_content', $submissionID);
+
+        $length = count($submission_content) - 1;
+        $component = '';
+        foreach ($submission_content as $key => $value) {
+
+            if ($key == 0) {
+                $component .= $submissionID . '-' . $value->article_component;
+            } else if ($key != $length) {
+                $component .= ', ' . $submissionID . '-' . $value->article_component;
+            } else {
+                $component .= ', ' . $submissionID . '-' . $value->article_component;
+            }
+
+        }
+
+
         if (!$submission_content)
             return false;
         $zip = new \ZipArchive();
-        $zipFilename = '/tmp/article.zip';
+        $zipFilename = $component . '.zip'; ///tmp/article.zip';
         if ($zip->open($zipFilename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
             // Add files to the zip (replace with your actual file paths)
             if ($submission_content) {
@@ -1653,6 +1673,43 @@ class Editor extends BaseController
         $id = $this->editorModel->reject_peer($sid);
         if ($id) {
             return redirect()->to('/editor/byauthor/' . $sid);
+        }
+
+    }
+
+    public function editor_upload()
+    {
+        $uri = $this->request->getUri();
+        $sid = $uri->getSegment(3);
+        if ($this->request->getMethod() == 'post' && ($_FILES)) {
+
+            foreach ($_FILES as $key => $value) {
+
+                $file = $this->request->getFile($key);
+                if (!$file->hasMoved()) {
+                    $newName = $this->request->getVar($key) . '_' . time() . '_' . $file->getClientName();
+
+                    if ($file->move(WRITEPATH . 'uploads/', $newName)) {
+
+                        $this->editorModel->updateSubmissionContent($key, ['content' => $newName]);
+                        // Setting a flash message in a controller
+                        $session = session();
+                        $session->setFlashdata('success', 'Files uploaded successfully!');
+                        return redirect()->to('editor/byauthor/' . $sid);
+
+                    } else {
+                        echo $file->getErrorString() . " " . $file->getError();
+                    }
+                }
+
+            }
+
+        } else {
+            $uri = $this->request->getUri();
+            $sid = $uri->getSegment(3);
+            $submission_content = $this->editorModel->getBySubmissionId('submission_content', $sid);
+            $data['contents'] = $submission_content;
+            return view('editor/editor_upload', $data);
         }
 
     }

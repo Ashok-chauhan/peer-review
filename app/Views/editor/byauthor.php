@@ -63,6 +63,13 @@ $STATUS = [
                     <?= session()->getTempdata('success'); ?>
                 </div>
             <?php endif; ?>
+
+            <?php if (session()->getFlashdata('success')): ?>
+                <div class="alert alert-success">
+                    <?= session()->getFlashdata('success') ?>
+                </div>
+            <?php endif; ?>
+
             <!-- validation eof -->
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                 <h4 class="mb-sm-0 font-size-24" style="text-transform: capitalize;">
@@ -195,12 +202,22 @@ $STATUS = [
                     </div>
 
                     <br>
+
+                    <div style="float: left;">
+
+                        <?= anchor('editor/editor_upload/' . $submission->submissionID, '<span class="btn btn-primary waves-effect waves-light me-1">Upload files</span>'); ?>
+
+                    </div>
                     <div class="mb-0" style="float: right;">
+
+
+
                         <div>
 
                             <?= anchor('editor/downloadZip/' . $submission->submissionID, '<span class="btn btn-primary waves-effect waves-light me-1">Downloads</span>'); ?>
 
                         </div>
+
                     </div>
 
                 </div>
@@ -227,7 +244,8 @@ $STATUS = [
                                 </span>
                             </div>
                         <?php endif; ?>
-                        <?php if ($sentMessages && $submission->status_id == 0): ?>
+                        <!-- $submission->status_id == 0 -->
+                        <?php if ($sentMessages && $submission->status_id <= 4): ?>
                             <div class="list-group-item" role="alert">
                                 <span class="btn-warning  waves-light" style="padding: 0.6rem 13px;border-radius: 5px;">
                                     <i class="fa fa-search"></i>&nbsp; Pre-Review Discussions
@@ -538,13 +556,12 @@ $STATUS = [
                             data-bs-parent="#accordionEditor">
                             <div class="accordion-body">
 
-                                <?php if (!$sentMessages): ?>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#revisionModal">
-                                        Start Discussion
-                                    </button>
-                                <?php endif; ?>
-
+                                <?php //if (!$sentMessages): ?>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#revisionModal">
+                                    Start Discussion
+                                </button>
+                                <?php //endif; ?>
 
                                 <?php if ($discussions): ?>
                                     <?php foreach ($discussions as $key => $discussion): ?>

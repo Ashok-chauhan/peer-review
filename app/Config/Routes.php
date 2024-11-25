@@ -105,6 +105,11 @@ $routes->group('editor', static function ($routes) {
     $routes->post('reset_all/', 'Editor\Editor::reset_all', ['filter' => 'auth']);
     $routes->post('update_bellnotification/', 'Editor\Editor::update_bellnotification', ['filter' => 'auth']);
 
+    $routes->get('editor_upload/(:num)', 'Editor\Editor::editor_upload/$1', ['filter' => 'auth']);
+    $routes->post('editor_upload/(:num)', 'Editor\Editor::editor_upload/$1', ['filter' => 'auth']);
+
+
+
 
 
 

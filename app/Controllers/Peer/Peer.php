@@ -132,10 +132,11 @@ class Peer extends BaseController
         $result = $this->peerModel->checkStatus($reviewTableId);
 
         //if ($result->status > 1 && $result->status <= 6) {
-        if ($result->status == 2) {
+        if ($result->status == 2 || $result->status == 3) {
             $data['status'] = true;
             return redirect()->to('peer/detailview/' . $submission_id . '/' . $reviewTableId);
-        } else if ($result->status == '3') {
+            //$result->status == '3'
+        } else if ($result->status == '4') {
 
             return redirect()->to('peer');
 
@@ -371,7 +372,7 @@ table='editor_peer_content'
         if ($this->validate($rules_article_file)) {
             $file = $this->request->getFile('article_file');
             if ($file->isValid() && !$file->hasMoved()) {
-                $newName = $file->getRandomName() . '_' . $file->getClientName();
+                $newName = 'ID' . $submissionid . '_' . time() . '_' . $file->getClientName();
                 if ($file->move(WRITEPATH . 'uploads/', $newName)) {
                     $peerUploads['article_file'] = $newName;
                 } else {

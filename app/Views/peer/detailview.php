@@ -225,7 +225,7 @@ Reviewer Dashboard
                         <input type="hidden" name="submissionid" value="<?= $details->submissionID; ?>">
                         <!-- <div class="d-flex justify-content-start"> -->
                         <div class="form-check">
-                            <?php if ($details->status == 2): ?>
+                            <?php if ($details->status == 2 || $details->status == 3): ?>
 
 
                                 <?= anchor('peer/finalupload/' . $details->submissionID . '/' . $details->reviewID, 'Upload final file & submit to complete', 'class="btn btn-primary"'); ?>

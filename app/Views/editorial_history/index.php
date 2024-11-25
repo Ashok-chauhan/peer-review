@@ -26,14 +26,30 @@ Dashboard
                     // print_r($notifications);
                     ?>
                     <?php if ($notifications): ?>
+                        <div class="row p-3">
+                            <div class="col-md-2">Date</div>
+                            <div class="col-md-2">User</div>
+                            <div class="col-md-8">Event</div>
+                        </div>
+
                         <div class="accordion" id="accordionNotifications">
+
+
+
                             <?php foreach ($notifications as $note): ?>
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="heading<?= $note['id']; ?>">
                                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#collapse<?= $note['id']; ?>" aria-expanded="true"
                                             aria-controls="collapse<?= $note['id']; ?>">
-                                            <?= $note['title']; ?> &nbsp; <code> <?= $note['date_created']; ?></code>
+                                            <!-- <? //= $note['title']; ?> &nbsp; <code> <? //= $note['date_created']; ?></code> -->
+                                            <div class="col-md-2"><?= $note['date_created']; ?></div>
+                                            <div class="col-md-2"><?= $note['sender']; ?></div>
+                                            <div class="col-md-8"><?= substr($note['message'], 0, 150); ?>
+                                                <?php if (strlen($note['message']) > 150): ?>
+                                                    ...
+                                                <?php endif; ?>
+                                            </div>
                                         </button>
                                     </h2>
                                     <div id="collapse<?= $note['id']; ?>" class="accordion-collapse collapse "
@@ -59,7 +75,14 @@ Dashboard
                         <!-- = $pager->links() ?> -->
                         <?= $pager->simpleLinks() ?>
                     </div>
+
+
+                    <div class="d-grid">
+                        <button class="btn btn btn-warning" onclick="history.back()">Cancel/Go Back</button>
+                    </div>
                 </div>
+
+
 
             </div>
 

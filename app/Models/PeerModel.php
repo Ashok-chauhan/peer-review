@@ -313,12 +313,28 @@ class PeerModel extends Model
     }
     public function peerUpload($data)
     {
-        $builder = $this->db->table('review_uploads');
-        $result = $builder->insert($data);
-        if ($this->db->affectedRows()) {
-            return $this->db->insertID();
+        $Q = $this->db->table('review_uploads');
+        $Q->where('submission_id', $data['submission_id']);
+        $row = $Q->get()->getRow();
+        if ($row) {
+            //update
+            $updateData = [
+                'message' => $data['message'],
+                'article_file' => $data['article_file'],
+                'status' => $data['status']
+            ];
+            $builder = $this->db->table('review_uploads');
+            $builder->where('submission_id', $data['submission_id']);
+            $builder->update($updateData);
         } else {
-            return false;
+
+            $builder = $this->db->table('review_uploads');
+            $result = $builder->insert($data);
+            if ($this->db->affectedRows()) {
+                return $this->db->insertID();
+            } else {
+                return false;
+            }
         }
     }
 

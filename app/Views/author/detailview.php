@@ -309,7 +309,7 @@ Dashboard
                                         Article component:
                                         <?= $discussion->article_component; ?>
                                         <p>
-                                            <?= anchor('editor/downloads/' . $discussion->file, $discussion->file); ?>
+                                            <?= anchor('author/downloads/' . $discussion->file, $discussion->file); ?>
                                         </p>
                                     <?php endif; ?>
 
