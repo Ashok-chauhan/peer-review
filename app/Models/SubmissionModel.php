@@ -402,4 +402,30 @@ class SubmissionModel extends Model
             return false;
         }
     }
+
+
+    public function getEditorialDecision($submissionID)
+    {
+        $q = $this->db->table('editorial_decision');
+        $q->where('submissionID', $submissionID);
+        $q->where('status', 0);
+        $data = $q->get()->getRow();
+        if ($data) {
+            return $data;
+        } else {
+            return false;
+        }
+    }
+    public function updateRevisionStatus($subid)
+    {
+
+        $builder = $this->db->table('editorial_decision');
+        $builder->where('submissionID', $subid);
+        $builder->update(['status' => 1]);
+        if ($this->db->affectedRows() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

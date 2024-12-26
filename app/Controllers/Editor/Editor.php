@@ -1115,23 +1115,29 @@ class Editor extends BaseController
         if (!$submission_content)
             return false;
         $zip = new \ZipArchive();
-        $zipFilename = $component . '.zip'; ///tmp/article.zip';
+        $zipFilename = '/tmp/articles.zip'; ///tmp/article.zip';
+        $zipName = $component . '.zip';
+
         if ($zip->open($zipFilename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
             // Add files to the zip (replace with your actual file paths)
+
             if ($submission_content) {
                 foreach ($submission_content as $content) {
-                    $zip->addFile(WRITEPATH . 'uploads/' . $content->content, $content->content);
+                    $zip->addFile(WRITEPATH . 'uploads/' . $content->content, $submissionID . '-' . $content->content);
+
                 }
             }
+
             // Close the zip file
             $zip->close();
             // Force download the zip file
             header('Content-Type: application/zip');
-            header('Content-Disposition: attachment; filename="' . $zipFilename . '"');
+            header('Content-Disposition: attachment; filename="' . $zipName . '"');
             header('Content-Length: ' . filesize($zipFilename));
             header('Pragma: no-cache');
             header('Expires: 0');
             readfile($zipFilename);
+
             // Delete the zip file after download (optional)
             unlink($zipFilename);
             exit;

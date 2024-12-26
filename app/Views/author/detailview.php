@@ -177,16 +177,22 @@ Dashboard
         <!-- right  col -->
 
         <div class="col-xl-4">
-            <div class="card">
-                <div class="card-body ">
+            <div class="card ">
+                <div class="card-body  ">
 
                     <div class="">
-                        <h4 class="card-title">CURRENT STATUS</h4>
+                        <h4 class="card-title text-center">CURRENT STATUS</h4>
 
-
+                        <?php if ($revisionRequested): ?>
+                            <div class="list-group-item text-center" role="alert">
+                                <span class=" btn-info waves-light" style="padding: 0.47rem 28px; border-radius: 5px;">
+                                    <i class="fas fa-edit"></i>&nbsp; Revision requested
+                                </span>
+                            </div>
+                        <?php endif; ?>
                         <?php if ($submission->status_id == 0 && !$discussions):
                             ?>
-                            <div class="list-group-item" role="alert">
+                            <div class="list-group-item text-center" role="alert">
                                 <span class="btn-primary " style="padding: 0.6rem 58px;border-radius: 5px;">
                                     <i class="fa fa-send-o"></i>
                                     Submitted
@@ -195,7 +201,7 @@ Dashboard
                         <?php endif;
                         ?>
                         <?php if ($discussions): ?>
-                            <div class="list-group-item" role="alert">
+                            <div class="list-group-item text-center" role="alert">
                                 <span class="btn-warning  waves-light" style="padding: 0.6rem 13px;border-radius: 5px;">
                                     <i class="fa fa-search"></i>&nbsp; Pre-Review Discussions
                                 </span>
@@ -204,7 +210,7 @@ Dashboard
 
 
                         <?php if ($submission->status_id > 1 && $submission->status_id < 3): ?>
-                            <div class="list-group-item" role="alert">
+                            <div class="list-group-item text-center" role="alert">
                                 <span class="btn-danger waves-light" style="padding: 0.47rem 60px; border-radius: 5px;">
                                     <i class="fa fa-comments"></i>&nbsp; In Review
 
@@ -213,7 +219,7 @@ Dashboard
                         <?php endif; ?>
 
                         <?php if ($submission->status_id == 3): ?>
-                            <div class="list-group-item" role="alert">
+                            <div class="list-group-item text-center" role="alert">
                                 <span class="btn-success waves-light" style="padding: 0.47rem 31px; border-radius: 5px;">
                                     <i class="fa fa-comments"></i>&nbsp; Review completed
 
@@ -224,7 +230,7 @@ Dashboard
 
 
                         <?php if ($submission->status_id == 7): ?>
-                            <div class="list-group-item" role="alert">
+                            <div class="list-group-item text-center" role="alert">
                                 <button type="button" class="btn btn-danger waves-effect waves-light"
                                     style="padding: 0.47rem 56px;">
                                     <i class="fa fa-comments"></i>&nbsp; Rejected
@@ -232,21 +238,21 @@ Dashboard
                             </div>
                         <?php endif; ?>
                         <?php if ($submission->status_id == 4): ?>
-                            <div class="list-group-item" role="alert">
+                            <div class="list-group-item text-center" role="alert">
                                 <span class=" btn-dark waves-light" style="padding: 0.47rem 18px; border-radius: 5px;">
                                     <i class="fas fa-edit"></i>&nbsp; Ready to Copy Editing
                                 </span>
                             </div>
                         <?php endif; ?>
                         <?php if ($submission->status_id == 5): ?>
-                            <div class="list-group-item" role="alert">
+                            <div class="list-group-item text-center" role="alert">
                                 <span class=" btn-danger waves-light" style="padding: 0.47rem 27px; border-radius: 5px;">
                                     <i class="fas fa-edit"></i>&nbsp; Under Copy Editing
                                 </span>
                             </div>
                         <?php endif; ?>
                         <?php if ($submission->status_id == 6): ?>
-                            <div class="list-group-item" role="alert">
+                            <div class="list-group-item text-center" role="alert">
                                 <span class=" btn-success waves-light" style="padding: 0.47rem 12px; border-radius: 5px;">
                                     <i class="fas fa-edit"></i>&nbsp; Copy Editing completed
                                 </span>
@@ -439,7 +445,7 @@ Dashboard
                     <form id="revisionForm" action="../revision" method="POST" enctype="multipart/form-data">
 
 
-
+                        <input type="hidden" name="jid" value="<?= $submission->jid; ?>">
                         <div class="mb-3">
                             <label for="subject-title" class="col-form-label">Subject:*</label>
                             <input type="text" class="form-control" id="subject-title" name="subject-title" required>

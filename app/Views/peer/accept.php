@@ -22,7 +22,7 @@ Peer Dashboard
             <div class="card">
                 <div class="card-body">
                     <div class="list-group col-6 p-2 mx-auto">
-                        <h2>Request to copy-edit</h2>
+                        <h2>Review request</h2>
                         <div class="p-2">
                             <p>
                             <h5><?= $copyTerms->title; ?></h5>

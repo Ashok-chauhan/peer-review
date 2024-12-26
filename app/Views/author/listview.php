@@ -119,6 +119,14 @@ Dashboard
 
                                                         <td width="15%">
                                                             <!-- <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2"> -->
+
+                                                            <?php if (in_array($row->submissionID, $revisionRequested)): ?>
+                                                                <span class="btn-info  waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-edit"></i>&nbsp; Revision requested
+                                                                </span>
+                                                            <?php endif; ?>
+
                                                             <?php if ($row->status_id == 0 && isset($row->notification) < 1): ?>
                                                                 <span class="btn-primary "
                                                                     style="padding: 0.6rem 58px;border-radius: 50px;">

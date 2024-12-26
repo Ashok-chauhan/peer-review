@@ -171,11 +171,12 @@ class Submission extends BaseController
 
     public function listView()
     {
+
         $data = [];
         $submission = $this->submissionModel->getByAuthorId(session()->get("userID"));
 
         $completed = $this->submissionModel->getCompleted(session()->get("userID"));
-
+        $revisionRequested = [];
         foreach ($submission as $key => $subid) {
             $submission_content = $this->submissionModel->getBySubmissionId($subid->submissionID);
             $coauthor = $this->submissionModel->coauthorBySubmission(session()->get("userID"), $subid->submissionID);
@@ -192,6 +193,11 @@ class Submission extends BaseController
             if ($note) {
                 $submission[$key]->notification = $note;
             }
+            $editorDecision = $this->submissionModel->getEditorialDecision($subid->submissionID);
+            if ($editorDecision) {
+                array_push($revisionRequested, $editorDecision->submissionID);
+            }
+
         }
 
         foreach ($completed as $key => $subid) {
@@ -207,8 +213,10 @@ class Submission extends BaseController
                 $completed[$key]->notification = $note;
             }
         }
+
         $data['list'] = $submission;
         $data['completed'] = $completed;
+        $data['revisionRequested'] = $revisionRequested;
 
         return view('author/listview', $data);
     }
@@ -276,7 +284,25 @@ class Submission extends BaseController
                     $response = $this->revisionMail($editor->email, $editorFullName, $subtitle, $subid, $subDate, $subjectTitle, $message, $jornal, $revfile);
                 }
                 // email eof
+                // update revision status
+                $this->submissionModel->updateRevisionStatus($subid);
+                $journal = $this->submissionModel->getJournal($this->request->getVar('jid'));
+                $user = $user = $this->submissionModel->getUser($journal->editor_id);
+                $notification = [];
+                $notification['title'] = $subjectTitle;
+                $notification['message'] = $message;
+                $notification['article_component'] = $this->request->getVar('article_type');
+                $notification['file'] = ($newName) ? $newName : '';
+                $notification['role'] = 3;
+                $notification['sender'] = session()->get('fullName');
+                $notification['sender_email'] = session()->get('logged_user');
+                $notification['sender_id'] = session()->get('userID');
+                $notification['submissionID'] = $this->request->getVar('submissionID');
+                $notification['recipient'] = $user->email;
+                $notification['recipient_id'] = $user->userID;
 
+
+                $note = $this->submissionModel->discussion($notification);
             } else {
                 $data['validation'] = $this->validator;
             }
@@ -501,6 +527,7 @@ class Submission extends BaseController
         $submission_id = $uri->getSegment(3);
         $data = [];
         $submission = $this->submissionModel->getById($submission_id);
+        $revisionRequested = $this->submissionModel->getEditorialDecision($submission_id);
         $submission_content = $this->submissionModel->getBySubmissionId($submission_id);
         $coauthor = $this->submissionModel->coauthorBySubmission(session()->get("userID"), $submission_id);
         $user = $this->submissionModel->getUser($submission->authorID);
@@ -536,6 +563,7 @@ class Submission extends BaseController
         $data['submission_content'] = $submission_content;
         $data['coauthor'] = $coauthor;
         $data['user'] = $user;
+        $data['revisionRequested'] = $revisionRequested;
         //$data['sentMessages'] = $this->submissionModel->getSentDiscussion(session()->get('userID'), $submission_id);
 
         return view('author/detailview', $data);

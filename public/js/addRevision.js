@@ -24,10 +24,10 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
     const formData = new FormData(replyForm);
-    console.log(formData);
     formData.append("submissionID", subId);
     // body: new FormData(replyForm),
     // Perform AJAX request
+   
     fetch(replyForm.action, {
       method: "POST",
       body: formData,

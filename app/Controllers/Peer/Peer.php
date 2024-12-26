@@ -507,24 +507,40 @@ table='editor_peer_content'
     {
         $uri = $this->request->getUri();
         $submissionID = $uri->getSegment(3);
-        $submission_content = $this->peerModel->getBySubmissionId('submission_content', $submissionID);
-        if (!$submission_content)
+        $reviewContent = $this->peerModel->getReviewRequest(session()->get('userID'));
+        foreach ($reviewContent as $key => $value) {
+            if ($value->submissionID == $submissionID) {
+                $peerContents = array_slice($reviewContent, $key);
+            }
+        }
+
+        //$submission_content = $this->peerModel->getBySubmissionId('submission_content', $submissionID);
+        if (!$peerContents[0]->reviewContents)
             return false;
         $zip = new \ZipArchive();
         $zipFilename = '/tmp/article.zip';
+
         if ($zip->open($zipFilename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
             // Add files to the zip (replace with your actual file paths)
-            if ($submission_content) {
+            if ($peerContents[0]->reviewContents) {
+                $zipName = '';
+                foreach ($peerContents[0]->reviewContents as $k => $content) {
+                    if ($k == 0) {
+                        $zipName .= $content->submissionID . '-' . $content->article_component;
+                    } else {
+                        $zipName .= ', ' . $content->article_component;
+                    }
+                    $zip->addFile(WRITEPATH . 'uploads/' . $content->content, $content->submissionID . '-' . $content->content);
 
-                foreach ($submission_content as $content) {
-                    $zip->addFile(WRITEPATH . 'uploads/' . $content->content, $content->content);
                 }
             }
+            $zipName .= '.zip';
+
             // Close the zip file
             $zip->close();
             // Force download the zip file
             header('Content-Type: application/zip');
-            header('Content-Disposition: attachment; filename="' . $zipFilename . '"');
+            header('Content-Disposition: attachment; filename="' . $zipName . '"');
             header('Content-Length: ' . filesize($zipFilename));
             header('Pragma: no-cache');
             header('Expires: 0');
