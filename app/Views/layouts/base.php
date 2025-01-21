@@ -424,9 +424,15 @@
                 </div>
 
                 <?php if (session()->get('role') == 1): ?>
+
                     <div class="mt-3" style=" margin-left:15px;">
-                        <a style="color: #ffffff;" href="<?= base_url(); ?>admin/registration">
-                            Registration
+                        <a style="color: #ffffff;" href="<?= base_url(); ?>admin">
+                            User Management
+                        </a>
+                    </div>
+                    <div class="mt-3" style=" margin-left:15px;">
+                        <a style="color: #ffffff;" href="<?= base_url(); ?>admin/journal">
+                            Journal Management
                         </a>
                     </div>
                 <?php endif; ?>

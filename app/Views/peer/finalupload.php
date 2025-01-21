@@ -6,8 +6,6 @@ Peer Dashboard
 
 <?= $this->section("content"); ?>
 
-
-
 <div class="container">
     <?php if ($page_session->getTempdata("success")): ?>
         <div class="alert alert-success"><?= $page_session->getTempdata("success"); ?></div>
@@ -24,8 +22,6 @@ Peer Dashboard
                     <div class="list-group col-8 p-2 mx-auto">
                         <h2 class="text-center">Upload files</h2>
 
-
-
                         <!-- <form method="POST" action="../../detailview"> -->
                         <form method="POST" action="../../updateReview" enctype="multipart/form-data">
                             <div class="d-grid gap-2 col-6 mx-auto">
@@ -39,41 +35,10 @@ Peer Dashboard
                                     <label for="message" class="form-label">Message</label>
                                     <textarea class="form-control" id="message" name="message" rows="3"></textarea>
                                 </div>
-
-                                <!-- <div class="mb-3">
-                                    <label for="formFile" class="form-label">Title page*</label>
-                                    <input class="form-control" type="file" id="title_page" name="title_page">
-                                </div> -->
-
-                                <!-- <div class="mb-3">
-                                    <label for="formFile" class="form-label">Article text*</label>
-                                    <input class="form-control" type="file" id="article_text" name="article_text">
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="c-country" class="col-form-label">Article component* </label>
-
-                                    <select class="form-select" name="article_type" id="article_type">
-
-                                        <option value="" disabled selected>Select article component</option>
-                                        <option value="Reasearch Instrument">Research Instrument</option>
-                                        <option value="Research Materials">Research Materials</option>
-                                        <option value="Research Results">Research Results</option>
-                                        <option value="Transcripts">Transcripts</option>
-                                        <option value="Data Analysis">Data Analysis</option>
-                                        <option value="Data Set">Data set</option>
-                                        <option value="Source Texts">Source Texts</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-
-                                </div> -->
-
                                 <div class="mb-3">
                                     <label for="formFile" class="form-label">Article file*</label>
                                     <input class="form-control" type="file" id="article_file" name="article_file">
                                 </div>
-
-
                             </div>
 
                             <div class="d-grid gap-2 col-6 mx-auto">

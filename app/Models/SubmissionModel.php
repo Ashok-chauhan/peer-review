@@ -428,4 +428,15 @@ class SubmissionModel extends Model
             return false;
         }
     }
+
+    public function getByReviewStatus($table, $submissionID)
+    {
+        $Q = $this->db->table($table)->select('*')->where('submissionID', $submissionID);
+        $query = $Q->get();
+        if ($query) {
+            return $query->getResult();
+        } else {
+            return false;
+        }
+    }
 }

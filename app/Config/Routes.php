@@ -63,9 +63,10 @@ $routes->group('editor', static function ($routes) {
     $routes->get('downloads/(:segment)', 'Editor\Editor::downloads');
     $routes->get('downloadZip/(:segment)', 'Editor\Editor::downloadZip');
     $routes->get('downloadpeerZip/(:segment)', 'Editor\Editor::downloadpeerZip');
-
-    $routes->get('accepted/(:num)/(:num)', 'Editor\Editor::accepted/$1/$2', ['filter' => 'auth']);
-    $routes->get('reject_peer/(:num)', 'Editor\Editor::reject_peer/$1', ['filter' => 'auth']);
+    $routes->get('downloadcopyEditorZip/(:segment)', 'Editor\Editor::downloadcopyEditorZip');
+    $routes->get('downloadproductionZip/(:segment)', 'Editor\Editor::downloadproductionZip');
+    $routes->get('accepted/(:num)/(:num)/(:num)', 'Editor\Editor::accepted/$1/$2/$3', ['filter' => 'auth']);
+    $routes->get('reject_peer/(:num)/(:num)/(:num)', 'Editor\Editor::reject_peer/$1/$2/$3', ['filter' => 'auth']);
 
     $routes->get('accepted_copyediting/(:num)/(:num)', 'Editor\Editor::accepted_copyediting/$1/$2', ['filter' => 'auth']);
     $routes->get('accepted_production/(:num)/(:num)', 'Editor\Editor::accepted_production/$1/$2', ['filter' => 'auth']);
@@ -107,6 +108,7 @@ $routes->group('editor', static function ($routes) {
 
     $routes->get('editor_upload/(:num)', 'Editor\Editor::editor_upload/$1', ['filter' => 'auth']);
     $routes->post('editor_upload/(:num)', 'Editor\Editor::editor_upload/$1', ['filter' => 'auth']);
+    $routes->get('getAssignedPeer/(:num)', 'Editor\Editor::getAssignedPeer/$1', ['filter' => 'auth']);
 
 
 
@@ -122,6 +124,27 @@ $routes->group('admin', static function ($routes) {
 
     $routes->get('registration/', 'Admin\Admin::registration', ['filter' => 'auth']);
     $routes->post('registration/', 'Admin\Admin::registration', ['filter' => 'auth']);
+    $routes->post('useredit', 'Admin\Admin::useredit', ['filter' => 'auth']);
+    $routes->get('useredit/(:num)', 'Admin\Admin::useredit/$1', ['filter' => 'auth']);
+    $routes->get('addJournal', 'Admin\Admin::addJournal', ['filter' => 'auth']);
+    $routes->post('addJournal', 'Admin\Admin::addJournal', ['filter' => 'auth']);
+    $routes->get('journal', 'Admin\Admin::journal', ['filter' => 'auth']);
+    $routes->get('editJournal/(:num)', 'Admin\Admin::editJournal/$1', ['filter' => 'auth']);
+    $routes->post('editJournal', 'Admin\Admin::editJournal', ['filter' => 'auth']);
+
+    $routes->get('journalDetails/(:num)', 'Admin\Admin::journalDetails/$1', ['filter' => 'auth']);
+    $routes->post('journalDetails/', 'Admin\Admin::journalDetails/', ['filter' => 'auth']);
+    $routes->post('assigneditor/', 'Admin\Admin::assigneditor/', ['filter' => 'auth']);
+    $routes->post('revoke/', 'Admin\Admin::revoke/', ['filter' => 'auth']);
+
+
+
+
+
+
+
+
+
 });
 
 $routes->group('peer', static function ($routes) {

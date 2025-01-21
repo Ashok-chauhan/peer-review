@@ -61,6 +61,7 @@ class Registration extends Controller
                     'middle_name' => $this->request->getVar('middle_name', FILTER_SANITIZE_STRING),
                     'last_name' => $this->request->getVar('last_name', FILTER_SANITIZE_STRING),
                     'email' => $this->request->getVar('email'),
+                    'phone' => $this->request->getVar('phone'),
                     'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
                     'uniid' => $uniid,
                     'activation_date' => date("Y-m-d h:i:s"),

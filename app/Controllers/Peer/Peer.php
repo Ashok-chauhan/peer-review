@@ -83,12 +83,11 @@ class Peer extends BaseController
             $data['status'] = false;
         }
         $data['completion_date'] = $result->completion_date;
-        $data['details'] = $this->peerModel->getReviewDetailBySubid($submission_id);
+        $data['details'] = $this->peerModel->getReviewDetailBySubid($submission_id, $reviewTableId);
         $data['discussions'] = $this->peerModel->getDiscussion($submission_id);
         $data['editor'] = $this->peerModel->getUser($data['details']->editor_id);
         $data['peerTerms'] = $this->peerModel->peerTerms(session()->get('userID'), $submission_id);
         $data['submission_id'] = $submission_id;
-
         return view('peer/detailview', $data);
     }
 
@@ -115,7 +114,7 @@ class Peer extends BaseController
             $id = $this->request->getVar('id');
             $sid = $this->request->getVar('submission_id');
             $this->peerModel->updateReview($id, $status);
-            $this->peerModel->updateSubmissionStatus($this->request->getVar('submission_id'), $status);
+            //# $this->peerModel->updateSubmissionStatus($this->request->getVar('submission_id'), $status);
             $result = $this->peerModel->checkStatus($id);
             if ($result->status == '20')
                 return redirect()->to('peer');
@@ -259,14 +258,7 @@ class Peer extends BaseController
                     $newName = $file->getRandomName() . '_' . $file->getClientName();
                     if ($file->move(WRITEPATH . 'uploads/', $newName)) {
                         echo '<p>Uploaded successfully</p>';
-                        /*
-                        $submission_content['editor_id'] = $this->request->getVar('editor_id');
-                        $submission_content['peer_id'] = session()->get('userID');
-                        $submission_content['submission_id'] = $this->request->getVar('submission_id');
-                        $submission_content['content'] = $newName;
-                        $revision_id = $this->peerModel->uploadPeerResponseToEditor($submission_content);
-table='editor_peer_content'
-                        */
+
                         $editor = $this->userModel->getUser($this->request->getVar('editor_id'));
                         $notification['sender'] = session()->get('username');
                         $notification['sender_email'] = session()->get('logged_user');
@@ -323,13 +315,14 @@ table='editor_peer_content'
         $sub = $this->peerModel->getSubmission($submissionid);
         if ($sub) {
             $journal = $this->peerModel->getJournal($sub->jid);
-            $editor = $this->peerModel->getUser($journal->editor_id);
+            $reviewdata = $this->peerModel->getReviewsByPeerNsubmission($revId, $submissionid);
+            $editor = $this->peerModel->getUser($reviewdata->editor_id);
         }
         $mailData['subtitle'] = $sub->title;
         $mailData['journal'] = $journal->journal_name;
         $to = $editor->email;
         $q = $this->peerModel->updateReview($revId, $status);
-        $this->peerModel->updateSubmissionStatus($submissionid, $status);
+        //$this->peerModel->updateSubmissionStatus($submissionid, $status);
 
         /*
 
@@ -388,16 +381,6 @@ table='editor_peer_content'
         $peerUploads['message'] = $this->request->getVar('message');
         $this->peerModel->peerUpload($peerUploads);
         // eof review_uploads table
-
-        /*
-        if ($q) {
-            $success = array('success' => 'Review status has been updated successfully!');
-            echo json_encode($success);
-        } else {
-            $error = array('error' => 'Somethng went wrong!');
-            echo json_encode($error);
-        }
-            */
 
         if ($status == 3) {
             //send mail to editor

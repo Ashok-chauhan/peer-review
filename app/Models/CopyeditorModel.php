@@ -337,5 +337,35 @@ class CopyeditorModel extends Model
         }
     }
 
+    function updateReviews($subid, $reviewID, $status)
+    {
+        $sub = $this->db->table('reviews');
+        $sub->where('submissionID', $subid);
+        $sub->where('reviewID', $reviewID);
+
+        $sub->update(['status' => $status]);
+        if ($this->db->affectedRows() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public function getCopyeditingByCopyNsubmission($copyid, $sid)
+    {
+        $Q = $this->db->table('copyediting');
+        $Q->where('id', $copyid);
+        $Q->where('submissionID', $sid);
+        $qry = $Q->get();
+        $result = $qry->getRow();
+        if ($result) {
+            return $result;
+        } else {
+            return false;
+        }
+
+    }
+
 
 }

@@ -197,6 +197,18 @@ class Submission extends BaseController
             if ($editorDecision) {
                 array_push($revisionRequested, $editorDecision->submissionID);
             }
+            /////
+            $peerState = $this->submissionModel->getByReviewStatus('reviews', $subid->submissionID);
+            $peerStatus = [];
+            if (count($peerState) > 0) {
+                foreach ($peerState as $pstate) {
+                    $peerStatus[] = $pstate->status;
+                }
+                $peerStatus = max($peerStatus);
+            }
+            $submission[$key]->peerStatus = ($peerStatus) ? $peerStatus : '';
+            /////
+
 
         }
 
@@ -217,7 +229,6 @@ class Submission extends BaseController
         $data['list'] = $submission;
         $data['completed'] = $completed;
         $data['revisionRequested'] = $revisionRequested;
-
         return view('author/listview', $data);
     }
 
@@ -555,9 +566,20 @@ class Submission extends BaseController
         usort($discussion_merge_sentDiscussion, function ($a, $b) {
             return strtotime($b->date_created) - strtotime($a->date_created);
         });
-
-
-
+        // Getting status from Reviewr bof
+        $peerState = $this->submissionModel->getByReviewStatus('reviews', $submission_id);
+        $peerStatus = [];
+        if (count($peerState) > 0) {
+            foreach ($peerState as $pstate) {
+                $peerStatus[] = $pstate->status;
+            }
+            $peerStatus = max($peerStatus);
+        }
+        $peerStat = ($peerStatus) ? $peerStatus : '';
+        if (!$submission->status_id) {
+            $submission->status_id = $peerStat;
+        }
+        // status eof 
         $data['discussions'] = $discussion_merge_sentDiscussion; //$discussions;
         $data['submission'] = $submission;
         $data['submission_content'] = $submission_content;
@@ -565,7 +587,6 @@ class Submission extends BaseController
         $data['user'] = $user;
         $data['revisionRequested'] = $revisionRequested;
         //$data['sentMessages'] = $this->submissionModel->getSentDiscussion(session()->get('userID'), $submission_id);
-
         return view('author/detailview', $data);
     }
 

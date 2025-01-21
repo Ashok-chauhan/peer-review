@@ -84,12 +84,15 @@ class Editcopy extends BaseController
 
     public function accept()
     {
+
+
         if ($this->request->getMethod() == 'post') {
             $status = $this->request->getVar('consent');
             $id = $this->request->getVar('id');
             $sid = $this->request->getVar('submission_id');
             $this->cpEditor->updateCopyediting($id, $status);
             $this->cpEditor->updateSubmissionStatus($this->request->getVar('submission_id'), $status);
+
             $result = $this->cpEditor->checkStatus($id);
             if ($result->status == '20')
                 return redirect()->to('editcopy');
@@ -100,6 +103,8 @@ class Editcopy extends BaseController
         $uri = $this->request->getUri();
         $submission_id = $uri->getSegment(3);
         $reviewTableId = $uri->getSegment(4); //to update review table
+
+
         $data = [];
         //$data['reviewTableId'] = $reviewTableId;
         $data['copyTerms'] = $this->cpEditor->copyTerms(session()->get('userID'), $submission_id);
@@ -368,7 +373,8 @@ class Editcopy extends BaseController
         $sub = $this->cpEditor->getSubmission($submissionid);
         if ($sub) {
             $journal = $this->cpEditor->getJournal($sub->jid);
-            $editor = $this->cpEditor->getUser($journal->editor_id);
+            $copyEditor = $this->cpEditor->getCopyeditingByCopyNsubmission($copyId, $submissionid);
+            $editor = $this->cpEditor->getUser($copyEditor->editor_id);
         }
         $mailData['subtitle'] = $sub->title;
         $mailData['journal'] = $journal->journal_name;
@@ -383,7 +389,8 @@ class Editcopy extends BaseController
         if ($this->validate($rules_title_page)) {
             $file = $this->request->getFile('title_page');
             if ($file->isValid() && !$file->hasMoved()) {
-                $newName = $file->getRandomName() . '_' . $file->getClientName();
+                // $newName = $file->getRandomName() . '_' . $file->getClientName();
+                $newName = 'ID' . $submissionid . '_' . time() . '_' . $file->getClientName();
                 if ($file->move(WRITEPATH . 'uploads/', $newName)) {
                     $copyeditorUploads['title_page'] = $newName;
                 } else {
@@ -398,7 +405,9 @@ class Editcopy extends BaseController
         if ($this->validate($rules_article_text)) {
             $file = $this->request->getFile('article_text');
             if ($file->isValid() && !$file->hasMoved()) {
-                $newName = $file->getRandomName() . '_' . $file->getClientName();
+                // $newName = $file->getRandomName() . '_' . $file->getClientName();
+                $newName = 'ID' . $submissionid . '_' . time() . '_' . $file->getClientName();
+
                 if ($file->move(WRITEPATH . 'uploads/', $newName)) {
                     $copyeditorUploads['article_text'] = $newName;
                 } else {
@@ -412,7 +421,9 @@ class Editcopy extends BaseController
         if ($this->validate($rules_article_file)) {
             $file = $this->request->getFile('article_file');
             if ($file->isValid() && !$file->hasMoved()) {
-                $newName = $file->getRandomName() . '_' . $file->getClientName();
+                // $newName = $file->getRandomName() . '_' . $file->getClientName();
+                $newName = 'ID' . $submissionid . '_' . time() . '_' . $file->getClientName();
+
                 if ($file->move(WRITEPATH . 'uploads/', $newName)) {
                     $copyeditorUploads['article_file'] = $newName;
                 } else {

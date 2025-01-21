@@ -61,6 +61,9 @@ Dashboard
                                                     <?php
                                                     // print '<pre>';
                                                     // print_r($row);
+                                                    if (!$row->status_id) {
+                                                        $row->status_id = $row->peerStatus;
+                                                    }
                                                     ?>
                                                     <?php $revId = $row->submissionID; ?>
 

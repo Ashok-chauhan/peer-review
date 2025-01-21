@@ -228,7 +228,7 @@ Reviewer Dashboard
                             <?php if ($details->status == 2 || $details->status == 3): ?>
 
 
-                                <?= anchor('peer/finalupload/' . $details->submissionID . '/' . $details->reviewID, 'Upload final file & submit to complete', 'class="btn btn-primary"'); ?>
+                                <?= anchor('peer/finalupload/' . $details->submissionID . '/' . $reviewTableId, 'Upload final file & submit to complete', 'class="btn btn-primary"'); ?>
 
                             <?php endif; ?>
 

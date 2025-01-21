@@ -138,38 +138,40 @@ Dashboard
                                         </thead>
                                         <tbody>
                                             <?php foreach ($peerFiles as $k => $content): ?>
-                                                <?php
-                                                session_start();
-                                                $_SESSION["peerFiles"] = $peerFiles;
-                                                ?>
+                                                <?php if ($content->article_component && $content->file): ?>
+                                                    <?php
+                                                    session_start();
+                                                    $_SESSION["peerFiles"] = $peerFiles;
+                                                    ?>
 
-                                                <?php $submissionid = $content->submissionID; ?>
-                                                <tr>
-                                                    <td>
-                                                        <div class="square-switch">
-                                                            <input type="checkbox" id="contentid_rev<?= $k; ?>" switch="info"
-                                                                name="content_id[]" value="<?= $content->id; ?>" />
+                                                    <?php $submissionid = $content->submissionID; ?>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="square-switch">
+                                                                <input type="checkbox" id="contentid_rev<?= $k; ?>" switch="info"
+                                                                    name="content_id[]" value="<?= $content->id; ?>" />
 
-                                                            <label for="contentid_rev<?= $k; ?>" data-on-label="Yes"
-                                                                data-off-label="No"></label>
+                                                                <label for="contentid_rev<?= $k; ?>" data-on-label="Yes"
+                                                                    data-off-label="No"></label>
 
-                                                        </div>
-                                                        <!-- <input type="hidden" name="content_id[]" value="<?= $content->id; ?>" /> -->
-                                                        <!-- <input class="checkmark" type="checkbox" id="contentid" name="contentid[]" value="<? //= $content->id; 
-                                                                ?>"> -->
-                                                        <? //= $title; 
-                                                                ?>
-                                                    </td>
-                                                    <td>
-                                                        <?= $content->article_component; ?>
-                                                    </td>
-                                                    <td><a href="<?= base_url(); ?>editor/downloads/<?= $content->file; ?>">
-                                                            <?= $content->file; ?>
-                                                        </a></td>
-                                                    <td>
-                                                        <?= $content->date_created; ?>
-                                                    </td>
-                                                </tr>
+                                                            </div>
+                                                            <!-- <input type="hidden" name="content_id[]" value="<?= $content->id; ?>" /> -->
+                                                            <!-- <input class="checkmark" type="checkbox" id="contentid" name="contentid[]" value="<? //= $content->id; 
+                                                                        ?>"> -->
+                                                            <? //= $title; 
+                                                                        ?>
+                                                        </td>
+                                                        <td>
+                                                            <?= $content->article_component; ?>
+                                                        </td>
+                                                        <td><a href="<?= base_url(); ?>editor/downloads/<?= $content->file; ?>">
+                                                                <?= $content->file; ?>
+                                                            </a></td>
+                                                        <td>
+                                                            <?= $content->date_created; ?>
+                                                        </td>
+                                                    </tr>
+                                                <?php endif; ?>
                                             <?php endforeach; ?>
                                             <?php if ($editorContent): ?>
                                                 <tr>
@@ -200,6 +202,7 @@ Dashboard
 
                                 <?php if ($final_upload): ?>
                                     <h4>Reviewer's final files</h4>
+                                    <input type="hidden" name="reviewID" value="<?= $final_upload->peer_id; ?>" />
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
@@ -215,6 +218,7 @@ Dashboard
                                                         <input type="checkbox" id="contentid_rev1<?= $final_upload->id; ?>"
                                                             switch="info" name="final_upload"
                                                             value="<?= $final_upload->id; ?>" />
+
                                                         <label for="contentid_rev1<?= $final_upload->id; ?>"
                                                             data-on-label="Yes" data-off-label="No"></label>
                                                     </div>

@@ -382,7 +382,7 @@ class Production extends BaseController
         if ($this->validate($rules_title_page)) {
             $file = $this->request->getFile('title_page');
             if ($file->isValid() && !$file->hasMoved()) {
-                $newName = $file->getRandomName() . '_' . $file->getClientName();
+                $newName = 'ID' . $submissionid . '_' . time() . '_' . $file->getClientName();
                 if ($file->move(WRITEPATH . 'uploads/', $newName)) {
                     $copyeditorUploads['title_page'] = $newName;
                 } else {
@@ -397,7 +397,7 @@ class Production extends BaseController
         if ($this->validate($rules_article_text)) {
             $file = $this->request->getFile('article_text');
             if ($file->isValid() && !$file->hasMoved()) {
-                $newName = $file->getRandomName() . '_' . $file->getClientName();
+                $newName = 'ID' . $submissionid . '_' . time() . '_' . $file->getClientName();
                 if ($file->move(WRITEPATH . 'uploads/', $newName)) {
                     $copyeditorUploads['article_text'] = $newName;
                 } else {
@@ -411,7 +411,7 @@ class Production extends BaseController
         if ($this->validate($rules_article_file)) {
             $file = $this->request->getFile('article_file');
             if ($file->isValid() && !$file->hasMoved()) {
-                $newName = $file->getRandomName() . '_' . $file->getClientName();
+                $newName = 'ID' . $submissionid . '_' . time() . '_' . $file->getClientName();
                 if ($file->move(WRITEPATH . 'uploads/', $newName)) {
                     $copyeditorUploads['article_file'] = $newName;
                 } else {

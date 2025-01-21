@@ -4,230 +4,225 @@ Dashboard
 <?= $this->endSection(); ?>
 
 <?= $this->section("content"); ?>
-<?php $page_session = \Config\Services::session(); ?>
 <div class="container">
+
+    <!-- start page title -->
     <div class="row">
-        <div class="list-group col-8">
-
-
-            <?php
-            $role = [
-                '1' => 'Admin',
-                '2' => 'Editor',
-                '3' => 'Author',
-                '4' => 'Reviewr',
-                '5' => 'Copy-editor',
-                '6' => 'Publisher',
-                '7' => 'Reader',
-            ];
-            $status = [
-                'active' => 'Active',
-                'inactive' => 'Inactive',
-
-            ];
-            ?>
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">Add User</h4>
+            </div>
+        </div>
+    </div>
+    <!-- end page title -->
+    <?php if (session()->getFlashdata('error')): ?>
+        <div class="alert alert-danger">
+            <?= session()->getFlashdata('error') ?>
+        </div>
+    <?php endif; ?>
+    <div class="row">
+        <div class="col-xl-12">
             <div class="card">
                 <div class="card-body">
-
-
-
-                    <h4 class="text-muted text-center font-size-18"><b>REGISTER</b></h4>
-
-                    <?php if ($page_session->getTempdata("success")): ?>
-                        <div class="alert alert-success"><?= $page_session->getTempdata("success"); ?></div>
-                    <?php endif; ?>
-
-                    <?php if (isset($validation)): ?>
-                        <div class="alert alert-danger"><?= $validation->listErrors(); ?></div>
-                    <?php endif; ?>
-                    <div id="error"></div>
-                    <div class="p-3">
-                        <!-- <form class="form-horizontal mt-3" action="#"> -->
-                        <?php $attributes = ['class' => 'form-horizontal mt-3', 'id' => 'registration']; ?>
-                        <?= form_open('', $attributes) ?>
-
-                        <div class="form-group mb-3 row">
-                            <div class="col-12">
-                                <!--  <input class="form-control" type="text" required="" placeholder="Title"> -->
-                                <select class="form-select" name="title">
-                                    <option selected>Dr.</option>
-                                    <option selected>Prof.</option>
-                                    <option selected>Mr.</option>
-                                    <option selected>Ms.</option>
-                                    <option selected>Mrs.</option>
-                                    <option selected>Title</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3 row">
-                            <div class="col-12">
-                                <!-- <input class="form-control" type="text" required="" placeholder="First name"> -->
-                                <input name="username" value="<?= set_value('username'); ?>" id="username"
-                                    class="form-control" placeholder="First name" type="text">
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3 row">
-                            <div class="col-12">
-
-                                <input name="middle_name" value="<?= set_value('middle_name'); ?>" id="middle_name"
-                                    class="form-control" placeholder="Middle name" type="text">
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3 row">
-                            <div class="col-12">
-                                <input name="last_name" value="<?= set_value('last_name'); ?>" id="last_name"
-                                    class="form-control" placeholder="Last name" type="text" required>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3 row">
-                            <div class="col-12">
-                                <!-- <input class="form-control" type="email" required="" placeholder="Email"> -->
-                                <input name="email" value="<?= set_value('email'); ?>" id="email" class="form-control"
-                                    placeholder="Email address" type="email">
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3 row">
-                            <div class="col-12">
-                                <!-- <input class="form-control" type="text" required="" placeholder="Phone number"> -->
-                                <input name="phone" value="<?= set_value('phone'); ?>" id="phone" class="form-control"
-                                    placeholder="Phone number" type="text">
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3 row">
-                            <div class="col-12">
-                                <input name="country" value="<?= set_value('country'); ?>" id="country"
-                                    class="form-control" placeholder="Country" type="text">
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3 row">
-                            <div class="col-12">
-                                <input name="password" value="<?= set_value('password'); ?>" id="password"
-                                    class="form-control" placeholder="Create password" type="password">
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-3 row">
-                            <div class="col-12">
-                                <input name="cpass" value="<?= set_value('cpass'); ?>" id="cpass" class="form-control"
-                                    placeholder="Repeat password" type="password">
-                                <!-- <input type="hidden" id="roleID" name="roleID" value="3"> -->
-                            </div>
-                        </div>
-
-
-
-
-                        <h6 class="alert-warning">You have to select appropriate role to register</h6>
-                        <div class="form-group mb-3 row">
-                            <div class="col-12">
-                                <div class="custom-control custom-checkbox">
-                                    <label class="form-label fw-normal" for="data_consent">
-                                        <input type="checkbox" class="custom-control-input" id="editor" name="roles[]"
-                                            value="2"><a href="#" class="text-muted ms-6 ">
-                                            Editor</a></label>
+                    <h4 class="card-title">New Users Register Here</h4>
+                    <form class="needs-validation" action="../admin/registration" method="POST" novalidate="">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <select class="form-select" name="title">
+                                        <option selected="" disabled="" value="">-- Select Title --</option>
+                                        <option>Dr.</option>
+                                        <option>Prof.</option>
+                                        <option>Mr.</option>
+                                        <option>Ms.</option>
+                                        <option>Mrs.</option>
+                                    </select>
                                 </div>
-                                <div class="custom-control custom-checkbox">
-                                    <label class="form-label fw-normal" for="data_consent">
-                                        <input type="checkbox" class="custom-control-input" id="author" name="roles[]"
-                                            value="3"><a href="#" class="text-muted ms-6 ">
-                                            Author</a></label>
-                                </div>
-
-                                <div class="custom-control custom-checkbox">
-                                    <label class="form-label fw-normal" for="notification">
-                                        <input type="checkbox" class="custom-control-input" id="reviewer" name="roles[]"
-                                            value="4"> <a href="#" class="text-muted  ms-6 ">
-                                            Reviewer</a></label>
-                                </div>
-
-
-                                <!-- journal -->
-                                <div class="form-group mb-3 row" id="review-interests">
-                                    <div class="col-12">
-                                        <?php if ($journals): ?>
-                                            <label for="intrest" class="">Review Interests/Journal</label>
-                                            <select class="js-example-basic-multiple" style="width:100%;" name="interests[]"
-                                                multiple="multiple">
-
-                                                <?php foreach ($journals as $value): ?>
-                                                    <option value="<?= $value->id; ?>"><?= $value->journal_name; ?></option>
-                                                <?php endforeach; ?>
-
-                                            </select>
-                                        <?php endif; ?>
-
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <!-- <label for="validationCustom01" class="form-label">First
+                                                                name</label> -->
+                                    <input type="text" class="form-control" id="username" placeholder="Enter First name"
+                                        required name="username">
+                                    <div class="valid-feedback">
+                                        Looks good!
                                     </div>
                                 </div>
-                                <!-- journal -->
-                                <div class="custom-control custom-checkbox">
-                                    <label class="form-label fw-normal" for="notification">
-                                        <input type="checkbox" class="custom-control-input" id="copy-editor"
-                                            name="roles[]" value="5"> <a href="#" class="text-muted  ms-6 ">
-                                            Copy-editor</a></label>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <!-- <label for="validationCustom02" class="form-label">Middle
+                                                                name</label> -->
+                                    <input type="text" class="form-control" id="middle_name"
+                                        placeholder="Enter Middle name" name="middle_name" required="">
+                                    <div class="valid-feedback">
+                                        Looks good!
+                                    </div>
                                 </div>
-                                <div class="custom-control custom-checkbox">
-                                    <label class="form-label fw-normal" for="notification">
-                                        <input type="checkbox" class="custom-control-input" id="publisher"
-                                            name="roles[]" value="6"> <a href="#" class="text-muted  ms-6 ">
-                                            Publisher</a></label>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <!-- <label for="validationCustom02" class="form-label">Last
+                                                                name</label> -->
+                                    <input type="text" class="form-control" id="last_name" placeholder="Enter Last name"
+                                        required="" name="last_name">
+                                    <div class="valid-feedback">
+                                        Looks good!
+                                    </div>
                                 </div>
-
-                                <div class="custom-control custom-checkbox">
-                                    <label class="form-label fw-normal" for="notification">
-                                        <input type="checkbox" class="custom-control-input" id="translator"
-                                            name="roles[]" value="7"> <a href="#" class="text-muted  ms-6 ">
-                                            Translator</a></label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <!-- <label for="validationCustom04"
+                                                                class="form-label">Email address</label> -->
+                                    <input type="email" class="form-control" id="email" placeholder="email@.com"
+                                        required="" name="email">
+                                    <div class="invalid-feedback">
+                                        Please Enter valid Email id.
+                                    </div>
                                 </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <!-- <label for="validationCustom04"
+                                                                class="form-label">Phone number
+                                                            </label> -->
+                                    <input type="number" class="form-control" id="phone" placeholder="+91 0000000000"
+                                        required="" name="phone">
+                                    <div class="invalid-feedback">
+                                        Please enter valid Phone no.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <!-- <label for="validationCustom04"
+                                                                class="form-label">Country
+                                                            </label> -->
+                                    <input type="text" class="form-control" id="country"
+                                        placeholder="Enter Your Country" required="" name="country">
+                                    <div class="invalid-feedback">
+                                        Please enter valid Phone no.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <!-- <label for="validationCustom05"
+                                                                class="form-label">Create Password</label> -->
+                                    <input type="password" class="form-control" id="password"
+                                        placeholder="Create Your Password" required="" name="password">
+                                    <div class="invalid-feedback">
+                                        Create password.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <!-- <label for="validationCustom05"
+                                                                class="form-label">Repeat Password</label> -->
+                                    <input type="text" class="form-control" id="cpass" placeholder="Repeat Your Pssword"
+                                        required="" name="cpass">
+                                    <div class="invalid-feedback">
+                                        Please Enetr Repeat password.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <h4 class="card-title">You Have To Select Appropriate Role To
+                                Register</h4>
+                            <div class="col-sm-2">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" id="checkbox1" name="roles[]" class="form-check-input"
+                                        value="1">
+                                    <label class="form-check-label" for="checkbox1">Admin</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" id="checkbox2" name="roles[]" class="form-check-input"
+                                        value="2">
+                                    <label class="form-check-label" for="checkbox2">Editor</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" id="checkbox3" name="roles[]" class="form-check-input"
+                                        value="3">
+                                    <label class="form-check-label" for="checkbox3">Author</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" id="reviewer" name="roles[]" class="form-check-input"
+                                        value="4">
+                                    <label class="form-check-label" for="checkbox4">Reviewer</label>
+                                </div>
+                            </div>
+
+                            <!-- journal -->
+                            <div class="form-group mb-3 row" id="review-interests">
+                                <div class="col-12">
+                                    <?php if ($journals): ?>
+                                        <label for="intrest" class="">Review Interests/Journal</label>
+                                        <select class="js-example-basic-multiple" style="width:100%;" name="interests[]"
+                                            multiple="multiple">
+
+                                            <?php foreach ($journals as $value): ?>
+                                                <option value="<?= $value->id; ?>"><?= $value->journal_name; ?></option>
+                                            <?php endforeach; ?>
+
+                                        </select>
+                                    <?php endif; ?>
+
+                                </div>
+                            </div>
+                            <!-- journal -->
 
 
-
+                            <div class="col-sm-2">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" id="checkbox5" name="roles[]" class="form-check-input"
+                                        value="5">
+                                    <label class="form-check-label" for="checkbox5">Copy-editor</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" id="checkbox6" name="roles[]" class="form-check-input"
+                                        value="6">
+                                    <label class="form-check-label" for="checkbox6">Production</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" id="checkbox7" name="roles[]" class="form-check-input"
+                                        value="7">
+                                    <label class="form-check-label" for="checkbox7">Translator</label>
+                                </div>
                             </div>
 
                         </div>
 
-
-
-                        <div class="form-group text-center row mt-3 pt-1">
-                            <div class="col-12">
-                                <button class="btn btn-info w-100 waves-effect waves-light"
-                                    type="submit">Register</button>
-                            </div>
+                        <div>
+                            <button class="btn btn-primary" type="submit">Register</button>
                         </div>
-
-
-                        <!-- </form> -->
-                        <?= form_close() ?>
-                        <!-- end form -->
-                    </div>
+                    </form>
                 </div>
-                <!-- end cardbody -->
             </div>
+            <!-- end card -->
+        </div> <!-- end col -->
 
+    </div>
+    <!-- end row -->
 
+</div> <!-- container -->
 
-
-
-
-        </div>
-        <!-- right col bof -->
-        <div class="col-4">
-
-        </div>
-        <!-- right col eof -->
-
-        <!-- Editor bof -->
-
-        <!-- editor eof -->
-
-    </div> <!-- row -->
-</div> <!--container-->
 <script>
     $(document).ready(function () {
         $('.js-example-basic-multiple').select2();
@@ -235,6 +230,9 @@ Dashboard
 </script>
 
 <?= $this->section('javascript'); ?>
+<link href="<?= base_url(); ?>assets/css/admin.css" rel="stylesheet" type="text/css" />
+
+
 <script type="text/javascript" src="<?= base_url(); ?>js/admin.js"></script>
 <script type="text/javascript" src="<?= base_url(); ?>js/registration.js"></script>
 

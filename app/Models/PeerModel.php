@@ -72,20 +72,25 @@ class PeerModel extends Model
         }
     }
 
-    public function getReviewDetailBySubid($id)
+    public function getReviewDetailBySubid($id, $revId)
     {
 
         $builder = $this->db->table('submission');
         $builder->select('*');
         $builder->join('reviews', 'reviews.submissionID = submission.submissionID');
         $builder->where('submission.submissionID', $id);
+        $builder->where('reviews.reviewID', $revId);
+
         $query = $builder->get()->getRow();
 
         if (isset($query->reviewerID)) {
             $q = $this->db->table('review_content');
             $q->select('*');
             $q->join('submission_content', 'review_content.submission_content_id= submission_content.id');
-            $q->where('peer_id', $query->reviewerID);
+            //$q->where('peer_id', $query->reviewerID);
+            $q->where('review_id', $revId);
+
+
             $revContents = $q->get()->getResult();
             foreach ($revContents as $revContent) {
                 if ($query->submissionID == $revContent->submissionID) {
@@ -233,6 +238,7 @@ class PeerModel extends Model
         }
     }
 
+
     public function checkStatus($reviewid)
     {
         $Q = $this->db->table('reviews');
@@ -245,7 +251,20 @@ class PeerModel extends Model
             return false;
         }
     }
+    public function getReviewsByPeerNsubmission($peerid, $sid)
+    {
+        $Q = $this->db->table('reviews');
+        $Q->where('reviewID', $peerid);
+        $Q->where('submissionID', $sid);
+        $qry = $Q->get();
+        $result = $qry->getRow();
+        if ($result) {
+            return $result;
+        } else {
+            return false;
+        }
 
+    }
 
 
     public function updateSubmissionStatus($subid, $status)
@@ -315,6 +334,8 @@ class PeerModel extends Model
     {
         $Q = $this->db->table('review_uploads');
         $Q->where('submission_id', $data['submission_id']);
+        $Q->where('peer_id', $data['peer_id']);
+
         $row = $Q->get()->getRow();
         if ($row) {
             //update
@@ -325,6 +346,7 @@ class PeerModel extends Model
             ];
             $builder = $this->db->table('review_uploads');
             $builder->where('submission_id', $data['submission_id']);
+            $builder->where('peer_id', $data['peer_id']);
             $builder->update($updateData);
         } else {
 

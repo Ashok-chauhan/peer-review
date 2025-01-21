@@ -22,10 +22,26 @@ class EditorModel extends Model
             return false;
         }
         */
+
+        /*
         $builder = $this->db->table('submission');
         $builder->select('*');
         $builder->join('journal', 'journal.id = submission.jid', 'left');
         $builder->where('editor_id', $editor_id);
+        $builder->whereIn('status_id', $status);
+        $builder->orderBy('submissionID', 'DESC');
+        $query = $builder->get();
+        if ($query) {
+            return $query->getResult();
+        } else {
+            return false;
+        }
+            */
+
+        $builder = $this->db->table('submission');
+        $builder->select('*');
+        $builder->join('journal_editor', 'journal_editor.jid = submission.jid', 'left');
+        $builder->where('eid', $editor_id);
         $builder->whereIn('status_id', $status);
         $builder->orderBy('submissionID', 'DESC');
         $query = $builder->get();
@@ -187,7 +203,7 @@ class EditorModel extends Model
 
     public function getNoticeCount($recipientid, $submissionID)
     {
-        //$count =  $this->db->table('notifications')->where('recipient_id', $recipientid)->countAllResults();
+
         $Q = $this->db->table('notifications');
         $Q->where('recipient_id', $recipientid);
         $Q->where("submissionID", $submissionID);
@@ -567,8 +583,23 @@ class EditorModel extends Model
 
     public function getEditorialDecision_bySubid($submissionID)
     {
+        // abbandoned
         $q = $this->db->table('editorial_decision');
         $q->where('submissionID', $submissionID);
+        $data = $q->get()->getRow();
+        if ($data) {
+            return $data;
+        } else {
+            return false;
+        }
+    }
+
+    public function getEditorialDecisionBySubidPeerid($submissionID, $peer_id)
+    {
+        $q = $this->db->table('editorial_decision');
+        $q->where('submissionID', $submissionID);
+        $q->where('peer_id', $peer_id);
+
         $data = $q->get()->getRow();
         if ($data) {
             return $data;
@@ -653,20 +684,24 @@ class EditorModel extends Model
 
     public function accepted($submissionID, $status)
     {
+
         $Q = $this->db->table('submission');
         $Q->where('submissionID', $submissionID);
         $Q->update(['status_id' => $status]);
         if ($this->db->affectedRows() == 1) {
-            return true;
+            return $status; //true;
         } else {
             return false;
         }
     }
 
+    // public function updateTableStatus($table, $submissionID, $status, $reviewerid)
     public function updateTableStatus($table, $submissionID, $status)
     {
         $Q = $this->db->table($table);
         $Q->where('submissionID', $submissionID);
+        // $Q->where('reviewerID', $reviewerid);
+
         $Q->update(['status' => $status]);
         if ($this->db->affectedRows() == 1) {
             return true;
@@ -750,11 +785,29 @@ class EditorModel extends Model
         }
     }
 
-    public function getFinalupload($subid)
+    public function getFinalupload($subid, $peer_id)
     {
         $builder = $this->db->table('review_uploads');
         $builder->where('submission_id', $subid);
+        $builder->where('peer_id', $peer_id);
+
         $row = $builder->get()->getRow();
+        if ($row) {
+            return $row;
+        } else {
+            return false;
+        }
+        //Need to retire since multipeer crating use peerFinalupload
+    }
+
+    public function peerFinalupload($subid, $review_id)
+    {
+        $builder = $this->db->table('review_uploads');
+        $builder->where('submission_id', $subid);
+        $builder->where('peer_id', $review_id);
+
+        $row = $builder->get()->getRow();
+
         if ($row) {
             return $row;
         } else {
@@ -833,28 +886,94 @@ class EditorModel extends Model
 
     }
 
-    function reject_peer($sid)
+    function reject_peer($sid, $reviewsTableId, $reviwerid)
     {
 
         $n = $this->db->table('notifications');
         $n->where("submissionID", $sid);
+        $n->where("recipient_id", $reviwerid);
         $n->where("role", 4);
         $n->delete();
 
         $r = $this->db->table('reviews');
         $r->where("submissionID", $sid);
+        $r->where("reviewID", $reviewsTableId);
         $r->delete();
         $rc = $this->db->table('review_content');
-        $rc->where("submission_id", $sid);
+        $rc->where("review_id", $reviewsTableId);
         $rc->delete();
         $ru = $this->db->table('review_uploads');
-        $ru->where("submission_id", $sid);
+        $ru->where("peer_id", $reviewsTableId);
         $ru->delete();
+        return true;
+        /*
+                //update submission sttatus
+                $sub = $this->db->table('submission');
+                $sub->where('submissionID', $sid);
+                $sub->update(['status_id' => 0]);
+                if ($this->db->affectedRows() == 1) {
+                    return true;
+                } else {
+                    return false;
+                }
+        */
+    }
 
-        //update submission sttatus
-        $sub = $this->db->table('submission');
-        $sub->where('submissionID', $sid);
-        $sub->update(['status_id' => 0]);
+    function peerAssigned($subid)
+    {
+
+        $builder = $this->db->table('reviews');
+        $builder->select('reviews.reviewID, reviews.submissionID, reviews.reviewerID, reviews.review_date, 
+        reviews.completion_date, reviews.recommendation, reviews.score, reviews.comments, 
+        reviews.round , reviews.editor_id, reviews.status, users.userID, users.title, users.username, users.middle_name, users.last_name, users.email');
+        $builder->join('users', 'users.userID = reviews.reviewerID', 'left');
+        $builder->where('submissionID', $subid);
+        $builder->where('users.status', 'active');
+
+        $builder->orderBy('review_date', 'DESC');
+        $query = $builder->get();
+        if ($query) {
+            return $query->getResult();
+        } else {
+            return false;
+        }
+    }
+
+    function getAssignedPeer($reviewID)
+    {
+        $Q = $this->db->table('reviews');
+        $Q->where('reviewID', $reviewID);
+        $row = $Q->get()->getRow();
+        // print_r($row);
+        if ($row) {
+            return $row;
+        } else {
+            return false;
+        }
+
+    }
+
+    function getContentIds($subid, $peer_id)
+    {
+        $query = $this->db->query("SELECT submission_content_id FROM `review_content` WHERE submission_id='" . $subid . "' AND peer_id='" . $peer_id . "'");
+        foreach ($query->getResult() as $row) {
+            $rows[] = $this->getRevisionFile($row->submission_content_id);
+            //  $rows[] = $row->submission_content_id;
+        }
+        if ($rows) {
+            return $rows;
+        } else {
+            return false;
+        }
+    }
+
+    function updateReviews($subid, $reviewID, $status)
+    {
+        $sub = $this->db->table('reviews');
+        $sub->where('submissionID', $subid);
+        $sub->where('reviewID', $reviewID);
+
+        $sub->update(['status' => $status]);
         if ($this->db->affectedRows() == 1) {
             return true;
         } else {
@@ -862,5 +981,4 @@ class EditorModel extends Model
         }
 
     }
-
 }
