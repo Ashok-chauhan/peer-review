@@ -176,7 +176,7 @@ Reviewer Dashboard
 
         <div class="col-xl-4">
             <div class="card">
-                <h5 class="card-title p-2">Update review status</h5>
+                <h5 class="card-title p-2 text-center">Update status</h5>
 
                 <div class="card-body">
                     <div id="msg"></div>
@@ -331,7 +331,7 @@ Reviewer Dashboard
 
                         </select> -->
 
-                        <div class="fw-bold">Article Component *</div>
+                        <div class="fw-bold">Article Component ( Optional )</div>
 
                         <select class="form-select" name="article_type" id="article_type">
                             <option value="" disabled selected>Select article component</option>

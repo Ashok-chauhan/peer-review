@@ -89,7 +89,7 @@ Dashboard
                                                             <?php elseif ($row->status == 3): ?>
                                                                 <span class="btn-success waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fa fa-area-chart"></i>&nbsp; Completed
+                                                                    <i class="fa fa-area-chart"></i>&nbsp; Review completed
                                                                 </span>
                                                             <?php elseif ($row->status == 20): ?>
                                                                 <span class="btn-danger  waves-light"

@@ -206,7 +206,7 @@ Reviewer Dashboard
 
         <div class="col-xl-4">
             <div class="card">
-                <h5 class="card-title p-2">Update review status</h5>
+                <h5 class="card-title p-2 text-center">Update review status</h5>
 
                 <div class="card-body">
                     <div id="msg"></div>

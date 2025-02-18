@@ -245,13 +245,13 @@ $STATUS = [
                             </div>
                         <?php endif; ?>
                         <!-- $submission->status_id == 0 -->
-                        <?php if ($sentMessages && $peerStatus < 3): ?>
-                            <div class="list-group-item" role="alert">
+                        <?php //if ($sentMessages && $peerStatus < 3): ?>
+                        <!-- <div class="list-group-item" role="alert">
                                 <span class="btn-warning  waves-light" style="padding: 0.6rem 13px;border-radius: 5px;">
                                     <i class="fa fa-search"></i>&nbsp; Pre-Review Discussions
                                 </span>
-                            </div>
-                        <?php endif; ?>
+                            </div> -->
+                        <?php //endif; ?>
 
                         <?php if ($submission->status_id < 1): ?>
                             <div class="list-group-item" role="alert">
@@ -260,7 +260,7 @@ $STATUS = [
                                     <input type="hidden" name="title" value="<?= $submission->title; ?>" />
 
                                     <button class="btn btn-warning waves-effect waves-light" submit="button"
-                                        style="padding: 0.47rem 43px;">
+                                        style="padding: 0.40rem 40px;">
                                         <i class="fa fa-search"></i>&nbsp;Send to review
                                     </button>
                                 </form>
@@ -279,7 +279,13 @@ $STATUS = [
                                 <?= anchor('editor/requestrevision/' . $submission->submissionID, '<span class="btn-dark waves-light" style="padding: 0.47rem 36px; border-radius: 5px;"><i class="fa fa-send-o"></i>&nbsp;Request revision</span>'); ?>
                             </div>
                         <?php endif; ?>
-
+                        <?php if ($submission->revision_round): ?>
+                            <div class="list-group-item" role="alert">
+                                <span class="btn-dark waves-light" style="padding: 0.47rem 22px; border-radius: 5px;"><i
+                                        class="fa fa-send-o"></i>&nbsp;Revision <?= $submission->revision_round; ?>
+                                    submitted</span>
+                            </div>
+                        <?php endif; ?>
 
                         <?php if ($peerStatus > 1 && $peerStatus < 3): ?>
                             <div class="list-group-item" role="alert">
@@ -293,7 +299,7 @@ $STATUS = [
                         <?php if ($peerStatus == 3): ?>
                             <div class="list-group-item" role="alert">
                                 <span class="btn-success waves-light" style="padding: 0.47rem 31px; border-radius: 5px;">
-                                    <i class="fa fa-comments"></i>&nbsp; Review completed
+                                    <i class="fa fa-comments"></i>&nbsp; Review submitted
 
                                 </span>
                             </div>
@@ -448,7 +454,7 @@ $STATUS = [
                 <div class="card">
                     <div class="card-body ">
                         <div class="">
-                            <h4 class="card-title">Copy-editor disscusion files</h4>
+                            <h4 class="card-title">Copy Editor disscusion files</h4>
 
                             <?php if ($cpEditorDiscussions): ?>
                                 <?php foreach ($cpEditorDiscussions as $copyfile): ?>
@@ -470,7 +476,7 @@ $STATUS = [
                 <div class="card">
                     <div class="card-body ">
                         <div class="">
-                            <h4 class="card-title">Copy-editor final uploads</h4>
+                            <h4 class="card-title">Copy Editor final uploads</h4>
                             <?php if ($copyEditorUploads): ?>
                                 <?= anchor('editor/downloadcopyEditorZip/' . $submission->submissionID, '<span class="btn1 btn-success">downloads</span>'); ?>
                             <?php endif; ?>
@@ -532,7 +538,7 @@ $STATUS = [
                             <h2 class="accordion-header" id="headingAuthor">
                                 <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                    Pre-Review Discussion
+                                    Author Discussion
                                 </button>
                             </h2>
                             <div id="collapseOne" class="accordion-collapse collapse show"
@@ -601,13 +607,13 @@ $STATUS = [
                         </div>
 
 
-                        <!-- copy-editor disscusson bof -->
+                        <!-- Copy Editor disscusson bof -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingCopyeditor">
                                 <button class="accordion-button collapsed fw-bold" type="button"
                                     data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false"
                                     aria-controls="collapseThree">
-                                    Copy-editor Discussion
+                                    Copy Editor Discussion
                                 </button>
                             </h2>
                             <div id="collapseThree" class="accordion-collapse collapse"
@@ -680,7 +686,7 @@ $STATUS = [
 
                             </div>
                         </div>
-                        <!-- copy-editor disscusson eof -->
+                        <!-- Copy Editor disscusson eof -->
                         <!-- publisher disscusion bof -->
 
                         <div class="accordion-item">
@@ -779,7 +785,7 @@ $STATUS = [
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <h5>Add revision copy-editor</h5>
+                                    <h5>Add revision Copy Editor</h5>
 
                                     <div id="editor"></div>
                                     <form id="publisherReplyForm" action="../notify" method="POST"
@@ -860,7 +866,7 @@ $STATUS = [
                         </div>
                     </div>
                     <!-- publisher ready modal eof inserting into notifications table -->
-                    <!-- COPY-EDITOR/ reply Modal bof inserting in to notifications table-->
+                    <!-- Copy Editor/ reply Modal bof inserting in to notifications table-->
                     <div class="modal fade" id="copyeditorModal" data-bs-backdrop="static" data-bs-keyboard="false"
                         tabindex="-1" aria-labelledby="copyeditorModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
@@ -871,7 +877,7 @@ $STATUS = [
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <h5>Add revision copy-editor</h5>
+                                    <h5>Add revision Copy Editor</h5>
 
                                     <div id="editor"></div>
                                     <form id="copyEditorReplyForm" action="../notify" method="POST"
@@ -991,7 +997,8 @@ $STATUS = [
                                                 required></textarea>
                                         </div>
                                         <h3>File attachment</h3>
-                                        <div class="fw-bold">Revision file? *</div>
+                                        <code><strong>This is OPTIONAL if you opt. this will replace author's uploaded version of submission.</strong></code>
+                                        <div class="fw-bold">Revision file? ( Optional )</div>
                                         <select class="form-select" name="updateFileId" id="updateFileId">
                                             <option value="0">This is not a revision of an existing file</option>
 
@@ -1006,7 +1013,7 @@ $STATUS = [
 
                                         </select>
 
-                                        <div class="fw-bold">Article Component *</div>
+                                        <div class="fw-bold">Article Component</div>
 
                                         <select class="form-select" name="article_type" id="article_type">
                                             <option value="" disabled selected>Select article component</option>

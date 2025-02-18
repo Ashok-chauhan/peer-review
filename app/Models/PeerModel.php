@@ -17,7 +17,7 @@ class PeerModel extends Model
 
         $builder = $this->db->table('submission');
         $builder->select('*');
-        $builder->join('reviews', 'reviews.submissionID = submission.submissionID');
+        $builder->join('reviews', 'reviews.submissionID = submission.submissionID ');
         $builder->where('reviewerID', $reviewerID);
         $builder->where('status <=', 3);
         $query = $builder->get()->getResult();

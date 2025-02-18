@@ -37,7 +37,7 @@ Dashboard
     <?php if ($peerDetails->status == 3): ?>
       <div class="list-group-item" role="alert">
         <span class="btn-success waves-light" style="padding: 0.47rem 31px; border-radius: 5px;">
-          <i class="fa fa-comments"></i>&nbsp; Review completed
+          <i class="fa fa-comments"></i>&nbsp; Review submitted
 
         </span>
       </div>

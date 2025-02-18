@@ -439,4 +439,17 @@ class SubmissionModel extends Model
             return false;
         }
     }
+
+
+    public function updateRevisionRound($sid, $revRound)
+    {
+        $builder = $this->db->table('submission');
+        $builder->where('submissionID', $sid);
+        $builder->update(['revision_round' => $revRound]);
+        if ($this->db->affectedRows() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

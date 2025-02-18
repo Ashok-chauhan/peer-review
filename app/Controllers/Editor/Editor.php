@@ -106,7 +106,16 @@ class Editor extends BaseController
                     }
                     $peerStatus = max($peerStatus);
                 }
-                $submissions[$key]->peerStatus = ($peerStatus) ? $peerStatus : '';
+                $submissions[$key]->peerStatus = ($peerStatus) ? $peerStatus : 0;
+
+                if ($submission->status_id) {
+                    $submissions[$key]->peerStatus = $submission->status_id;
+                } else {
+                    $submissions[$key]->peerStatus = $submission->peerStatus;
+                }
+
+
+
             }
         }
         if (is_array($completed)) {
@@ -1744,28 +1753,22 @@ class Editor extends BaseController
         $uri = $this->request->getUri();
         $sid = $uri->getSegment(3);
         if ($this->request->getMethod() == 'post' && ($_FILES)) {
-
             foreach ($_FILES as $key => $value) {
-
                 $file = $this->request->getFile($key);
                 if (!$file->hasMoved()) {
                     $newName = $this->request->getVar($key) . '_' . time() . '_' . $file->getClientName();
-
                     if ($file->move(WRITEPATH . 'uploads/', $newName)) {
-
                         $this->editorModel->updateSubmissionContent($key, ['content' => $newName]);
-                        // Setting a flash message in a controller
-                        $session = session();
-                        $session->setFlashdata('success', 'Files uploaded successfully!');
-                        return redirect()->to('editor/byauthor/' . $sid);
-
                     } else {
                         echo $file->getErrorString() . " " . $file->getError();
                     }
                 }
 
             }
-
+            // Setting a flash message in a controller
+            $session = session();
+            $session->setFlashdata('success', 'Files uploaded successfully!');
+            return redirect()->to('editor/byauthor/' . $sid);
         } else {
             $uri = $this->request->getUri();
             $sid = $uri->getSegment(3);

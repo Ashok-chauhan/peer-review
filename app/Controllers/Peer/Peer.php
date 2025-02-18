@@ -48,6 +48,7 @@ class Peer extends BaseController
         $uid = session()->get('userID');
 
         $reviews = $this->peerModel->getReviewRequest($uid);
+        rsort($reviews);
         $completed = $this->peerModel->getReviewCompleted($uid);
 
         if ($reviews) {

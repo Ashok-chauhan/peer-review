@@ -53,6 +53,7 @@ Dashboard
 
                                                     <?php $revId = $row->submissionID; ?>
 
+
                                                     <tr>
                                                         <td width="10%">
                                                             <?= $row->submissionID; ?>
@@ -107,6 +108,12 @@ Dashboard
 
                                                         <td width="15%">
                                                             <!-- <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light mb-2"> -->
+                                                            <?php if ($row->revision_round): ?>
+                                                                <span class="btn-dark waves-light"
+                                                                    style="padding: 0.6rem 13px;border-radius: 50px;">
+                                                                    <i class="fa fa-send-o"></i>&nbsp;Revision
+                                                                    <?= $row->revision_round; ?> submitted </span>
+                                                            <?php endif; ?>
                                                             <?php if ($row->status_id == 0 && $row->preReview == ''): ?>
                                                                 <span class="btn-primary "
                                                                     style="padding: 0.6rem 58px;border-radius: 50px;">
@@ -135,17 +142,19 @@ Dashboard
                                                                 <span class="btn-success waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <!-- <i class="fa fa-area-chart"></i>&nbsp; Completed -->
-                                                                    <i class="fa fa-comments"></i>&nbsp; Completed
+                                                                    <i class="fa fa-comments"></i>&nbsp; Review submitted
                                                                 </span>
+
                                                             <?php elseif ($row->peerStatus == 4): ?>
                                                                 <span class="btn-dark  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fa fa-comments"></i>&nbsp; Accept & proceed
+                                                                    <i class="fa fa-comments"></i>&nbsp;Send Copy Editor
+                                                                    <!-- Accept & proceed -->
                                                                 </span>
                                                             <?php elseif ($row->peerStatus == 5): ?>
                                                                 <span class="btn-secondary  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fas fa-edit"></i>&nbsp;Send Copy Editing
+                                                                    <i class="fas fa-edit"></i>&nbsp;Sent to Copy Editor
                                                                 </span>
                                                             <?php elseif ($row->status_id == 6): ?>
                                                                 <span class="btn-danger  waves-light"
@@ -175,20 +184,21 @@ Dashboard
                                                             <?php elseif ($row->status_id == 11): ?>
                                                                 <span class="btn-success  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fa fa-comments"></i>&nbsp; Production complted
+                                                                    <i class="fa fa-comments"></i>&nbsp; Production completed
                                                                 </span>
                                                             <?php elseif ($row->status_id == 12): ?>
                                                                 <span class="btn-secondary  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fa fa-comments"></i>&nbsp;Accept Production
                                                                 </span>
+
+
                                                             <?php elseif ($row->peerStatus == 20): ?>
                                                                 <span class="btn-danger  waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
                                                                     <i class="fa fa-comments"></i>&nbsp;Rejected
                                                                 </span>
                                                             <?php endif; ?>
-
                                                             <!-- </button> -->
                                                             <p></p>
                                                             <?php if (isset($row->notification)): ?>

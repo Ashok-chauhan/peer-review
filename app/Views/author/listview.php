@@ -59,8 +59,7 @@ Dashboard
                                             <tbody>
                                                 <?php foreach ($list as $key => $row): ?>
                                                     <?php
-                                                    // print '<pre>';
-                                                    // print_r($row);
+
                                                     if (!$row->status_id) {
                                                         $row->status_id = $row->peerStatus;
                                                     }
@@ -130,6 +129,7 @@ Dashboard
                                                                 </span>
                                                             <?php endif; ?>
 
+
                                                             <?php if ($row->status_id == 0 && isset($row->notification) < 1): ?>
                                                                 <span class="btn-primary "
                                                                     style="padding: 0.6rem 58px;border-radius: 50px;">
@@ -150,7 +150,7 @@ Dashboard
                                                             <?php elseif ($row->status_id == 3): ?>
                                                                 <span class="btn-success waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">
-                                                                    <i class="fa fa-comments"></i>&nbsp; Completed
+                                                                    <i class="fa fa-comments"></i>&nbsp; Review completed
                                                                 </span>
                                                             <?php elseif ($row->status_id == 4): ?>
                                                                 <span class="btn-dark  waves-light"
@@ -247,7 +247,7 @@ Dashboard
                                                             <?php if ($row->status_id == 0): ?>
                                                                 Submitted
                                                             <?php elseif ($row->status_id >= 1 && $row->status_id < 3): ?>
-                                                                Under reviw
+                                                                Under review
                                                             <?php elseif ($row->status_id >= 3): ?>
                                                                 <span class="btn-success waves-light"
                                                                     style="padding: 0.6rem 13px;border-radius: 50px;">

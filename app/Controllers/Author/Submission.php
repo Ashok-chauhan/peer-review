@@ -206,7 +206,7 @@ class Submission extends BaseController
                 }
                 $peerStatus = max($peerStatus);
             }
-            $submission[$key]->peerStatus = ($peerStatus) ? $peerStatus : '';
+            $submission[$key]->peerStatus = ($peerStatus) ? $peerStatus : 0;
             /////
 
 
@@ -229,6 +229,7 @@ class Submission extends BaseController
         $data['list'] = $submission;
         $data['completed'] = $completed;
         $data['revisionRequested'] = $revisionRequested;
+
         return view('author/listview', $data);
     }
 
@@ -314,6 +315,8 @@ class Submission extends BaseController
 
 
                 $note = $this->submissionModel->discussion($notification);
+                // Update revision round in submissino table
+                $this->submissionModel->updateRevisionRound($submission->submissionID, $submission->revision_round + 1);
             } else {
                 $data['validation'] = $this->validator;
             }
@@ -575,7 +578,7 @@ class Submission extends BaseController
             }
             $peerStatus = max($peerStatus);
         }
-        $peerStat = ($peerStatus) ? $peerStatus : '';
+        $peerStat = ($peerStatus) ? $peerStatus : 0;
         if (!$submission->status_id) {
             $submission->status_id = $peerStat;
         }
